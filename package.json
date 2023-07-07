@@ -1,4 +1,9 @@
 {
+  "name": "j20",
+  "version": "0.0.0",
+  "author": "anuoua",
+  "homepage": "https://www.github.com/anuoua/j20",
+  "main": "dist/index.js",
   "dependencies": {
     "@vue/reactivity": "^3.3.4"
   },
