@@ -1,0 +1,39 @@
+{
+  "name": "j20",
+  "version": "0.0.1",
+  "homepage": "https://www.github.com/anuoua/j20",
+  "type": "module",
+  "author": "anuoua",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    },
+    "./jsx-runtime": {
+      "import": "./dist/jsx-runtime.mjs",
+      "types": "./dist/jsx-runtime.d.mts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite example --config vite.config.mjs",
+    "build": "rimraf dist && tsdown",
+    "test:watch": "vitest",
+    "test": "vitest --run --dom"
+  },
+  "dependencies": {
+    "csstype": "^3.1.2"
+  },
+  "devDependencies": {
+    "@j20org/signal": "workspace:*",
+    "happy-dom": "^10.1.1",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.1.6",
+    "vitest": "^0.33.0",
+    "tsdown": "^0.16.6",
+    "vite": "^6.3.5"
+  }
+}

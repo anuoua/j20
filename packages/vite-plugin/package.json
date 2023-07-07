@@ -1,0 +1,38 @@
+{
+  "name": "@j20org/vite-plugin",
+  "version": "0.0.2",
+  "description": "Vite plugin preset for j20 framework",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "scripts": {
+    "build": "rimraf dist && tsdown"
+  },
+  "keywords": [
+    "vite",
+    "plugin",
+    "j20",
+    "jsx",
+    "signal"
+  ],
+  "author": "anuoua",
+  "license": "MIT",
+  "peerDependencies": {
+    "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "@j20org/jsx-transform": "workspace:*",
+    "signal-compiler": "^0.0.32"
+  },
+  "devDependencies": {
+    "j20": "workspace:*",
+    "rimraf": "^5.0.10",
+    "tsdown": "^0.16.6"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ]
+}

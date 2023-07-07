@@ -1,0 +1,30 @@
+name: "vite-plugin publish"
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'packages/vite-plugin/**'
+
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
+jobs:
+  "publish":
+    runs-on: ubuntu-latest
+    if: ${{startsWith(github.event.head_commit.message, 'release(vite-plugin):')}}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - run: |
+          pnpm install
+          cd packages/vite-plugin
+          pnpm build
+          pnpm publish --no-git-checks --access public

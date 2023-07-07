@@ -1,0 +1,15 @@
+{
+  "name": "j20",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "pull:signal-compiler": "git subtree pull --prefix=packages/signal-compiler git@github.com:anuoua/signal-compiler.git main"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
+}

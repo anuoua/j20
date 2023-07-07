@@ -1,0 +1,27 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "packageManager": "pnpm@10.5.2",
+  "dependencies": {
+    "@j20org/vite-plugin": "workspace:*",
+    "j20": "workspace:*",
+    "unocss": "^66.5.0",
+    "vite": "^6.3.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.12",
+    "daisyui": "^5.1.6",
+    "tailwindcss": "^4.1.12",
+    "typescript": "^5.9.3"
+  }
+}

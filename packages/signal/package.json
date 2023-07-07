@@ -1,0 +1,30 @@
+{
+  "name": "@j20org/signal",
+  "version": "0.0.1",
+  "description": "A reactive signal library for J20 framework",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "private": true,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rimraf dist && tsdown",
+    "test": "vitest --run --dom"
+  },
+  "keywords": [
+    "signal",
+    "reactive",
+    "j20"
+  ],
+  "author": "anuoua",
+  "license": "MIT",
+  "devDependencies": {
+    "happy-dom": "^10.1.1",
+    "rimraf": "^5.0.1",
+    "tsdown": "^0.16.6",
+    "typescript": "^5.1.6",
+    "vitest": "^0.33.0"
+  }
+}
