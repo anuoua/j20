@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@vue/reactivity": "^3.3.4"
+  },
+  "scripts": {
+    "dev": "vite example",
+    "build": "vite build example"
+  },
+  "devDependencies": {
+    "csstype": "^3.1.2",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.1"
+  }
+}
