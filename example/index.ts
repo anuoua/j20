@@ -5,11 +5,12 @@ import { For } from "../src/control";
 import { str } from "../src/tags";
 import { Item } from "./item";
 
-const { div, ul, h1, button, input } = tags;
+const { div, ul, h1, button, input, dialog } = tags;
 
 export interface TodoItem {
   name: string;
   canceled: boolean;
+  editable: boolean;
 }
 
 const App = defineComponent(
@@ -29,6 +30,7 @@ const App = defineComponent(
         {
           name: inputRef.value,
           canceled: false,
+          editable: false,
         },
       ];
     };
@@ -37,34 +39,32 @@ const App = defineComponent(
       list.value = list.value.filter((i) => i !== item);
     };
 
-    return div(
-      {},
-      h1({ style: { color: "red" } }, str("Todo list")),
-      div(
-        {},
+    const handleSwitch = () => {
+      list.value = [...list.value].reverse();
+    };
+
+    return div()(
+      h1({ style: { color: "red" } })(str("Todo list")),
+      div()(
         (inputRef = input({
           placeholder: "请输入",
           onKeydown: handleAdd,
-        }) as HTMLInputElement),
-        button(
-          {
-            onClick: handleAdd,
-          },
-          str("添加")
-        )
+        })() as HTMLInputElement),
+        button({
+          onClick: handleAdd,
+        })(str("添加")),
+        button({
+          onClick: handleSwitch,
+        })(str("倒序"))
       ),
-      div(
-        {},
+      div()(
         For({
           list,
           children: (item) =>
-            div(
-              {},
-              Item({
-                item,
-                onDelete: () => handleRemove(item),
-              })
-            ),
+            Item({
+              item,
+              onDelete: () => handleRemove(item),
+            }),
         })
       )
     );

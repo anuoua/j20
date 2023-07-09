@@ -1,50 +1,101 @@
 import { Prop, defineComponent, getCurrentInstance } from "./component";
-import { EffectScope, Ref, computed, effect, ref } from "@vue/reactivity";
-import { prop } from "./utils";
+import {
+  EffectScope,
+  Ref,
+  computed,
+  effect,
+  isRef,
+  ref,
+  toRef,
+} from "@vue/reactivity";
+
+export interface Item {
+  indexRef: Ref<number>;
+  els: HTMLElement[];
+  effectScope: EffectScope;
+}
+
+const createItem = (
+  get: () => HTMLElement | HTMLElement[],
+  indexRef: Ref<number>
+): Item => {
+  const effectScope = new EffectScope();
+  let els: HTMLElement[] = [];
+
+  effectScope.run(() => {
+    els = [get()].flat();
+  });
+
+  return {
+    indexRef,
+    els,
+    effectScope,
+  };
+};
+
+const findPreEl = (items: Item[], start: number) => {
+  for (let i = start; i >= 0; i--) {
+    const els = getItemEls(items[i]);
+    if (els.length > 0) {
+      return els[els.length - 1];
+    }
+  }
+};
+
+const getFragmentEls = (anchor: HTMLElement): HTMLElement[] => {
+  const results: HTMLElement[] = [anchor];
+  let i: any = anchor;
+  let flag = 1;
+  while ((i = i.nextSibling)) {
+    results.push(i);
+    if (i.__isStartIndex) flag++;
+    if (i.__isEndIndex) flag--;
+    if (i.__isEndIndex && flag === 0) {
+      return results;
+    }
+  }
+  return results;
+};
+
+const getItemEls = (item: Item) => {
+  const results = item.els
+    .map((el) => {
+      // @ts-ignore
+      if (el.__isStartIndex) {
+        return getFragmentEls(el);
+      } else {
+        return el;
+      }
+    })
+    .flat();
+  item.els = results;
+  return results;
+};
 
 export const For = defineComponent(
   {},
   <T>(p: {
     list: Prop<T[]>;
-    children: (item: T, index: Ref<number>) => HTMLElement;
+    children: (item: T, index: Ref<number>) => HTMLElement | HTMLElement[];
   }) => {
     const ins = getCurrentInstance()!;
-    const propList = prop(p.list);
-
-    const createItem = (get: () => HTMLElement, indexRef: Ref<number>) => {
-      const effectScope = new EffectScope();
-      let el: HTMLElement = undefined!;
-
-      effectScope.run(() => {
-        el = get();
-      });
-
-      return {
-        indexRef,
-        el,
-        effectScope,
-      };
-    };
+    const propList = computed(() => (isRef(p.list) ? p.list.value : p.list));
 
     let list: any[] = [];
-    let items: {
-      el: HTMLElement;
-      effectScope: EffectScope;
-      indexRef: Ref<number>;
-    }[] = [];
+    let items: Item[] = [];
 
     effect(() => {
-      if (!ins.el.isConnected) {
-        items = propList().map((item, index) => {
+      if (!ins.indexStart?.isConnected) {
+        items = propList.value.map((item, index) => {
           const indexRef = ref(index);
           return createItem(() => p.children(item, indexRef), indexRef);
         });
-        list = [...propList()];
+        list = [...propList.value];
       } else {
         const visitMap = new Map<any, number>();
 
-        for (let i = 0; i < propList().length; i++) {
-          const walkData = propList()[i];
+        for (let i = 0; i < propList.value.length; i++) {
+          const walkData = propList.value[i];
 
           if (list.includes(walkData)) {
             const exist = visitMap.get(walkData);
@@ -72,7 +123,10 @@ export const For = defineComponent(
           if (oldIndex !== -1) {
             // insert
             if (i === oldIndex || i > oldIndex) continue;
-            (items[i - 1]?.el ?? ins.el).after(items[oldIndex].el);
+
+            const preEl = findPreEl(items, i - 1) ?? ins.indexStart;
+            preEl.after(...getItemEls(items[oldIndex]));
+
             const [d1] = items.splice(oldIndex, 1);
             items.splice(i, 0, d1);
             const [d2] = list.splice(oldIndex, 1);
@@ -84,7 +138,11 @@ export const For = defineComponent(
               () => p.children(walkData, indexRef),
               indexRef
             );
-            (items[i - 1]?.el ?? ins.el).after(newItem.el);
+
+            const preEl = findPreEl(items, i - 1) ?? ins.indexStart;
+
+            preEl.after(...newItem.els);
+
             items.splice(i, 0, newItem);
             list.splice(i, 0, walkData);
           }
@@ -95,26 +153,56 @@ export const For = defineComponent(
         visitMap.clear();
 
         // remove rest
-        if (list.length > propList().length) {
-          list.splice(propList().length);
-          const removeItems = items.splice(propList().length);
+        if (list.length > propList.value.length) {
+          list.splice(propList.value.length);
+          const removeItems = items.splice(propList.value.length);
           removeItems.forEach((i) => {
             i.effectScope.stop();
-            i.el.remove();
+            getItemEls(i).forEach((el) => el.remove());
           });
         }
       }
     });
 
-    return items.map((i) => i.el);
+    return items.reduce((pre, cur) => pre.concat(cur.els), [] as HTMLElement[]);
   }
 );
 
-export const If = (p: { when: Prop<boolean>; children: () => HTMLElement }) => {
-  const propWhen = prop(p.when);
-  const list = computed(() => (propWhen() ? [true] : []));
+export const If = (p: {
+  when: Prop<boolean>;
+  children: () => HTMLElement | HTMLElement[];
+  else: () => HTMLElement | HTMLElement[];
+}) => {
+  const propWhen = toRef(p.when);
+  const list = computed(() => (propWhen.value ? [p.children] : [p.else]));
   return For({
     list,
-    children: () => p.children(),
+    children: (item) => item(),
   });
+};
+
+export const Switch = ({ children }: { children: MatchProp[] }) => {
+  const list = computed(() => {
+    const results = children.filter((item) =>
+      isRef(item.when) ? item.when.value : item.when
+    );
+    return results.length ? results.slice(0, 1) : [];
+  });
+
+  return For({
+    list,
+    children: (item) => item.children(),
+  });
+};
+
+interface MatchProp {
+  when: Prop<boolean>;
+  children: () => HTMLElement | HTMLElement[];
+}
+
+export const Match = ({ when, children }: MatchProp) => {
+  return {
+    when,
+    children,
+  };
 };

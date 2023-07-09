@@ -1,7 +1,9 @@
 import { EffectScope, Ref } from "@vue/reactivity";
 
 export interface Instance {
-  el: HTMLElement;
+  host?: HTMLElement;
+  indexStart?: HTMLElement;
+  indexEnd?: HTMLElement;
   effectScope: EffectScope;
 }
 
@@ -12,13 +14,20 @@ let currentInstance: Instance | undefined;
 
 export const getCurrentInstance = () => currentInstance;
 
-interface defineOpt {
+interface DefineOption {
   tag?: string;
   shadow?: boolean;
 }
 
-export const defineComponent = <T extends object>(
-  opt: defineOpt,
+type DefineComponent = {
+  <T extends object, P extends DefineOption>(
+    opt: P,
+    fn: (p: T) => HTMLElement | HTMLElement[]
+  ): undefined extends P["tag"] ? HTMLElement[] : HTMLElement;
+};
+
+export const defineComponent = <T extends object, P extends DefineOption>(
+  opt: P,
   fn: (p: T) => HTMLElement | HTMLElement[]
 ) => {
   if (opt.tag) {
@@ -39,16 +48,26 @@ export const defineComponent = <T extends object>(
     const isCustomElement = opt.tag !== undefined;
     const isShadow = opt.shadow ?? false;
 
-    let anchorNode: HTMLElement = undefined!;
+    let host: HTMLElement = undefined!;
+    let indexStart: HTMLElement = undefined!;
+    let indexEnd: HTMLElement = undefined!;
 
     if (opt.tag) {
-      anchorNode = document.createElement(opt.tag);
+      host = document.createElement(opt.tag);
     } else {
-      anchorNode = document.createComment(id++ + "") as unknown as HTMLElement;
+      const i = id++;
+      indexStart = document.createComment(i + "s") as unknown as HTMLElement;
+      indexEnd = document.createComment(i + "e") as unknown as HTMLElement;
+      // @ts-ignore
+      indexStart.__isStartIndex = true;
+      // @ts-ignore
+      indexEnd.__isEndIndex = true;
     }
 
     const instance: Instance = {
-      el: anchorNode,
+      host,
+      indexStart,
+      indexEnd,
       effectScope,
     };
 
@@ -60,17 +79,17 @@ export const defineComponent = <T extends object>(
     });
 
     if (isCustomElement) {
-      isShadow
-        ? anchorNode.shadowRoot?.append(...result)
-        : anchorNode.append(...result);
-      result = [anchorNode];
+      isShadow ? host.shadowRoot?.append(...result) : host.append(...result);
+      result = [host];
     } else {
-      result = [anchorNode, ...result];
+      result = [indexStart, ...result, indexEnd];
     }
 
     // @ts-ignore
-    anchorNode.__instance = instance;
+    (host ?? indexStart).__instance = instance;
 
-    return isCustomElement ? result[0] : result;
+    return (isCustomElement ? result[0] : result) as undefined extends P["tag"]
+      ? HTMLElement[]
+      : HTMLElement;
   };
 };

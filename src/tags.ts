@@ -2,27 +2,21 @@ import { isRef, effect } from "@vue/reactivity";
 import type { Ref } from "@vue/reactivity";
 import { IntrinsicElementAttributes } from "../jsx";
 import { Prop } from "./component";
-import { prop } from "./utils";
 
 export type Tags = {
   [K in keyof IntrinsicElementAttributes]: (
-    p:
+    p?:
       | {
           [K2 in keyof IntrinsicElementAttributes[K]]:
             | IntrinsicElementAttributes[K][K2]
             | Ref<IntrinsicElementAttributes[K][K2]>;
         }
-      | undefined,
-    ...children: (HTMLElement | HTMLElement[])[]
-  ) => HTMLElement;
+      | undefined
+  ) => (...children: (HTMLElement | HTMLElement[])[]) => HTMLElement;
 };
 
-const h = (
-  tag: string,
-  p: any = {},
-  children: HTMLElement[] | HTMLElement[][] = []
-) => {
-  const isText = tag === "text";
+const h = (tag: string, p: any = {}) => {
+  const isText = tag === "str";
   const el = isText
     ? (document.createTextNode(p.nodeValue) as unknown as HTMLElement)
     : document.createElement(tag);
@@ -38,7 +32,9 @@ const h = (
       } else if (isEvent) {
         el.addEventListener(key.slice(2).toLowerCase(), val);
       } else if (isAttr) {
-        el.setAttribute(key, val);
+        typeof val === "string"
+          ? el.setAttribute(key, val)
+          : ((el as any)[key] = val);
       } else {
         typeof val === "string"
           ? (el.style.cssText = val)
@@ -49,16 +45,19 @@ const h = (
   effect(() => {
     setAttrs();
   });
-  !isText && children.length > 0 && el.append(...children.flat());
-  return el;
+  return (children: HTMLElement[] | HTMLElement[][] = []) => {
+    !isText && children.length > 0 && el.append(...children.flat());
+    return el;
+  };
 };
 
 export const tags = new Proxy<Tags>({} as any, {
   get(target, tag: string) {
-    return (props: any, ...children: any[]) => {
-      return h(tag, props, children);
+    return (props: any) => {
+      const appendFn = h(tag, props);
+      return (...children: any[]) => appendFn(children);
     };
   },
 });
 
-export const str = (s: Prop<string>) => h("text", { nodeValue: prop(s)() });
+export const str = (s: Prop<string>) => h("str", { nodeValue: s })();
