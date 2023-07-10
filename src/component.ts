@@ -74,8 +74,7 @@ export const defineComponent = <T extends object, P extends DefineOption>(
     currentInstance = instance;
 
     effectScope.run(() => {
-      const res = fn(p);
-      result = Array.isArray(res) ? [...res] : [res];
+      result = [fn(p)].flat();
     });
 
     if (isCustomElement) {

@@ -8,6 +8,7 @@ import {
   ref,
   toRef,
 } from "@vue/reactivity";
+import { isPrimitive } from "./utils";
 
 export interface Item {
   indexRef: Ref<number>;
@@ -72,14 +73,30 @@ const getItemEls = (item: Item) => {
   return results;
 };
 
+const isSame = (key: string | undefined, a: any, b: any) => {
+  return a === b;
+  // if (
+  //   (!key && a === b) ||
+  //   (!isPrimitive(a) &&
+  //     !isPrimitive(b) &&
+  //     key &&
+  //     a?.[key] === b[key])
+  // ) {
+  //   return true;
+  // }
+  // return false
+}
+
 export const For = defineComponent(
   {},
   <T>(p: {
+    key?: Prop<string>;
     list: Prop<T[]>;
     children: (item: T, index: Ref<number>) => HTMLElement | HTMLElement[];
   }) => {
     const ins = getCurrentInstance()!;
     const propList = computed(() => (isRef(p.list) ? p.list.value : p.list));
+    const key = computed(() => (isRef(p.key) ? p.key.value : p.key));
 
     let list: any[] = [];
     let items: Item[] = [];
@@ -109,7 +126,9 @@ export const For = defineComponent(
             j < list.length;
             j++
           ) {
-            if (list[j] === walkData) {
+            if (
+              isSame(key.value, list[j], walkData)
+            ) {
               if (k > 0) {
                 k--;
                 continue;

@@ -5,7 +5,7 @@ import { For } from "../src/control";
 import { str } from "../src/tags";
 import { Item } from "./item";
 
-const { div, ul, h1, button, input, dialog } = tags;
+const { div, h1, button, input } = tags;
 
 export interface TodoItem {
   name: string;
@@ -33,6 +33,7 @@ const App = defineComponent(
           editable: false,
         },
       ];
+      inputRef.value = "";
     };
 
     const handleRemove = (item: TodoItem) => {
