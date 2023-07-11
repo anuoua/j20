@@ -75,17 +75,10 @@ const getItemEls = (item: Item) => {
 
 const isSame = (key: string | undefined, a: any, b: any) => {
   return a === b;
-  // if (
-  //   (!key && a === b) ||
-  //   (!isPrimitive(a) &&
-  //     !isPrimitive(b) &&
-  //     key &&
-  //     a?.[key] === b[key])
-  // ) {
-  //   return true;
-  // }
-  // return false
-}
+};
+
+const updateIndex = (items: Item[], index: number) =>
+  (items[index].indexRef.value = index);
 
 export const For = defineComponent(
   {},
@@ -126,9 +119,7 @@ export const For = defineComponent(
             j < list.length;
             j++
           ) {
-            if (
-              isSame(key.value, list[j], walkData)
-            ) {
+            if (isSame(key.value, list[j], walkData)) {
               if (k > 0) {
                 k--;
                 continue;
@@ -140,9 +131,12 @@ export const For = defineComponent(
           }
 
           if (oldIndex !== -1) {
-            // insert
-            if (i === oldIndex || i > oldIndex) continue;
+            if (i >= oldIndex) {
+              updateIndex(items, i);
+              continue;
+            }
 
+            // insert
             const preEl = findPreEl(items, i - 1) ?? ins.indexStart;
             preEl.after(...getItemEls(items[oldIndex]));
 
@@ -150,6 +144,8 @@ export const For = defineComponent(
             items.splice(i, 0, d1);
             const [d2] = list.splice(oldIndex, 1);
             list.splice(i, 0, d2);
+
+            updateIndex(items, i);
           } else {
             // create
             const indexRef = ref(i);
@@ -164,9 +160,9 @@ export const For = defineComponent(
 
             items.splice(i, 0, newItem);
             list.splice(i, 0, walkData);
+
+            updateIndex(items, i);
           }
-          // update index
-          items[i].indexRef.value = i;
         }
 
         visitMap.clear();
@@ -183,7 +179,7 @@ export const For = defineComponent(
       }
     });
 
-    return items.reduce((pre, cur) => pre.concat(cur.els), [] as HTMLElement[]);
+    return items.map((item) => item.els).flat();
   }
 );
 
