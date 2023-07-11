@@ -24,50 +24,55 @@ interface DefineOption {
   shadow?: boolean;
 }
 
-export const defineComponent = <T extends object, P extends DefineOption>(
+export const defineComponent = <
+  T extends Record<string, any>,
+  P extends DefineOption
+>(
   opt: P,
-  fn: (p: T) => HTMLElement | HTMLElement[]
+  fn: (p: T) => HTMLElement
 ) => {
-  customElements.define(
-    opt.tag,
-    class extends HTMLElement {
-      constructor() {
-        super();
-        if (opt.shadow) this.attachShadow({ mode: "open" });
-      }
+  class TagElement extends HTMLElement {
+    __instance: Instance = undefined!;
+
+    constructor() {
+      super();
     }
-  );
+
+    init(p: T) {
+      if (opt.shadow) this.attachShadow({ mode: "open" });
+
+      let result: HTMLElement[] = undefined!;
+
+      const effectScope = new EffectScope();
+
+      const instance: Instance = {
+        host: this,
+        effectScope,
+      };
+
+      currentInstance = instance;
+      this.__instance = instance;
+
+      effectScope.run(() => {
+        result = [fn(p)].flat();
+      });
+
+      (this.shadowRoot ?? this).append(...result);
+
+      return this;
+    }
+  }
+
+  customElements.define(opt.tag, TagElement);
 
   return (p: T = {} as T) => {
-    let result: HTMLElement[] = undefined!;
-
-    const effectScope = new EffectScope();
-
-    const host: HTMLElement = document.createElement(opt.tag);
-
-    const instance: Instance = {
-      host,
-      effectScope,
-    };
-
-    currentInstance = instance;
-
-    effectScope.run(() => {
-      result = [fn(p)].flat();
-    });
-
-    (host.shadowRoot ?? host).append(...result);
-
+    const el = document.createElement(opt.tag);
     // @ts-ignore
-    host.__instance = instance;
-
-    return host;
+    return el.init(p);
   };
 };
 
-export const defineFragment = <T>(
-  fn: (p: T) => HTMLElement | HTMLElement[]
-) => {
+export const defineFragment = <T>(fn: (p: T) => HTMLElement[]) => {
   return (p: T = {} as T) => {
     let result: HTMLElement[] = undefined!;
     const effectScope = new EffectScope();
