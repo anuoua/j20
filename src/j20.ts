@@ -1,3 +1,3 @@
-export * from './component'
-export * from './control'
-export * from './tags'
+export * from "./define";
+export * from "./control";
+export * from "./tags";

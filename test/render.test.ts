@@ -1,6 +1,6 @@
 import { it, expect, beforeEach } from "vitest";
 import { str, tags } from "../src/tags";
-import { defineComponent } from "../src/component";
+import { defineComponent } from "../src/define";
 import { For, If } from "../src/control";
 import { computed, ref } from "@vue/reactivity";
 
@@ -42,13 +42,13 @@ it("render", () => {
 
   body.append(App());
   expect(body.innerHTML).toBe(
-    `<app-main><div><div>str</div><div class="hello"><!--0s--><span>cccc</span><!--0e--></div></div></app-main>`
+    `<app-main><div><div>str</div><div class="hello"><!--s--><span>cccc</span><!--e--></div></div></app-main>`
   );
 
   visible.value = !visible.value;
 
   expect(body.innerHTML).toBe(
-    `<app-main><div><div>str</div><div class="hello"><!--0s--><span>world</span><!--0e--></div></div></app-main>`
+    `<app-main><div><div>str</div><div class="hello"><!--s--><span>world</span><!--e--></div></div></app-main>`
   );
 });
 
@@ -69,12 +69,12 @@ it("list", () => {
   body.append(...results);
 
   expect(body.innerHTML).toBe(
-    "<!--1s--><ul><li>1: 0</li></ul><ul><li>2: 1</li></ul><ul><li>3: 2</li></ul><!--1e-->"
+    "<!--s--><ul><li>1: 0</li></ul><ul><li>2: 1</li></ul><ul><li>3: 2</li></ul><!--e-->"
   );
 
   list.value = [...list.value].reverse();
 
   expect(body.innerHTML).toBe(
-    "<!--1s--><ul><li>3: 0</li></ul><ul><li>2: 1</li></ul><ul><li>1: 2</li></ul><!--1e-->"
+    "<!--s--><ul><li>3: 0</li></ul><ul><li>2: 1</li></ul><ul><li>1: 2</li></ul><!--e-->"
   );
 });

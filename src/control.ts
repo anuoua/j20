@@ -1,4 +1,4 @@
-import { Prop, defineComponent, getCurrentInstance } from "./component";
+import { Prop, defineFragment, getCurrentInstance } from "./define";
 import {
   EffectScope,
   Ref,
@@ -8,7 +8,6 @@ import {
   ref,
   toRef,
 } from "@vue/reactivity";
-import { isPrimitive } from "./utils";
 
 export interface Item {
   indexRef: Ref<number>;
@@ -43,15 +42,18 @@ const findPreEl = (items: Item[], start: number) => {
   }
 };
 
+const isStartIndex = (el: Comment) => el.data === "s";
+const isEndIndex = (el: Comment) => el.data === "e";
+
 const getFragmentEls = (anchor: HTMLElement): HTMLElement[] => {
   const results: HTMLElement[] = [anchor];
   let i: any = anchor;
   let flag = 1;
   while ((i = i.nextSibling)) {
     results.push(i);
-    if (i.__isStartIndex) flag++;
-    if (i.__isEndIndex) flag--;
-    if (i.__isEndIndex && flag === 0) {
+    if (isStartIndex(i)) flag++;
+    if (isEndIndex(i)) flag--;
+    if (isEndIndex(i) && flag === 0) {
       return results;
     }
   }
@@ -59,29 +61,23 @@ const getFragmentEls = (anchor: HTMLElement): HTMLElement[] => {
 };
 
 const getItemEls = (item: Item) => {
-  const results = item.els
+  return (item.els = item.els
     .map((el) => {
-      // @ts-ignore
-      if (el.__isStartIndex) {
+      if (isStartIndex(el as unknown as Comment)) {
         return getFragmentEls(el);
       } else {
         return el;
       }
     })
-    .flat();
-  item.els = results;
-  return results;
+    .flat());
 };
 
-const isSame = (key: string | undefined, a: any, b: any) => {
-  return a === b;
-};
+const isSame = (key: string | undefined, a: any, b: any) => a === b;
 
 const updateIndex = (items: Item[], index: number) =>
   (items[index].indexRef.value = index);
 
-export const For = defineComponent(
-  {},
+export const For = defineFragment(
   <T>(p: {
     key?: Prop<string>;
     list: Prop<T[]>;

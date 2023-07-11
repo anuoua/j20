@@ -1,10 +1,10 @@
 import { computed, toRef } from "@vue/reactivity";
 import { str, tags } from "../src/tags";
 import { TodoItem } from ".";
-import { defineComponent } from "../src/component";
+import { defineComponent } from "../src/define";
 import { If } from "../src/control";
 
-const { div, input, button, span, del } = tags;
+const { div, input, button, del } = tags;
 
 export const Item = defineComponent(
   {

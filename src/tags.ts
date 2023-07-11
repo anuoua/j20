@@ -1,7 +1,7 @@
 import { isRef, effect } from "@vue/reactivity";
 import type { Ref } from "@vue/reactivity";
 import { IntrinsicElementAttributes } from "../jsx";
-import { Prop } from "./component";
+import { Prop } from "./define";
 
 export type Tags = {
   [K in keyof IntrinsicElementAttributes]: (

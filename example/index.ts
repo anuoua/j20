@@ -1,5 +1,5 @@
 import { ref } from "@vue/reactivity";
-import { defineComponent } from "../src/component";
+import { defineComponent } from "../src/define";
 import { tags } from "../src/tags";
 import { For } from "../src/control";
 import { str } from "../src/tags";
