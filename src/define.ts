@@ -24,12 +24,11 @@ interface DefineOption {
   shadow?: boolean;
 }
 
-export const defineComponent = <
-  T extends Record<string, any>,
-  P extends DefineOption
->(
-  opt: P,
-  fn: (p: T) => HTMLElement
+export const defineComponent = <T>(
+  opt: DefineOption,
+  fn:
+    | ((p: T) => HTMLElement | HTMLElement[])
+    | (() => HTMLElement | HTMLElement[])
 ) => {
   class TagElement extends HTMLElement {
     __instance: Instance = undefined!;
@@ -38,7 +37,7 @@ export const defineComponent = <
       super();
     }
 
-    init(p: T) {
+    init(p: any) {
       if (opt.shadow) this.attachShadow({ mode: "open" });
 
       let result: HTMLElement[] = undefined!;
@@ -65,15 +64,17 @@ export const defineComponent = <
 
   customElements.define(opt.tag, TagElement);
 
-  return (p: T = {} as T) => {
+  return ((p: any) => {
     const el = document.createElement(opt.tag);
     // @ts-ignore
     return el.init(p);
-  };
+  }) as unknown as unknown extends T
+    ? () => HTMLElement
+    : (p: T) => HTMLElement;
 };
 
-export const defineFragment = <T>(fn: (p: T) => HTMLElement[]) => {
-  return (p: T = {} as T) => {
+export const defineFragment = <T extends Function>(fn: T) => {
+  return ((p: any) => {
     let result: HTMLElement[] = undefined!;
     const effectScope = new EffectScope();
 
@@ -98,5 +99,5 @@ export const defineFragment = <T>(fn: (p: T) => HTMLElement[]) => {
     indexStart.__instance = instance;
 
     return result;
-  };
+  }) as unknown as T;
 };

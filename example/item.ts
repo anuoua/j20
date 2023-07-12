@@ -6,12 +6,17 @@ import { If } from "../src/control";
 
 const { div, input, button, del } = tags;
 
-export const Item = defineComponent(
+export interface ItemProps {
+  item: TodoItem;
+  onDelete: () => void;
+}
+
+export const Item = defineComponent<ItemProps>(
   {
     tag: "todo-item",
     shadow: true,
   },
-  (p: { item: TodoItem; onDelete: () => void }) => {
+  (p) => {
     const item = toRef(p.item);
 
     const editable = computed(() => item.value.editable);
