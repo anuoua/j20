@@ -1,0 +1,70 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`compiler 1`] = `
+"function _extends() { _extends = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+let $a = signal(1),
+  $b = signal(2);
+let $c = signal(1);
+let $__0 = computed(() => ({}));
+let $p = signal(($__0.value["a"] ?? 3)["p"]);
+let $cc = signal((($__0.value["a"] ?? 3)["$ddd"] ?? 8)["c"]["1"]);
+let $bb = signal((($__0.value["a"] ?? 3)["$ddd"] ?? 8)["b"]["0"]);
+const $d = computed(() => $a.value + $b.value);
+const $__1 = computed(() => ({}));
+const $rest2 = computed(() => (() => {
+  const {
+    he,
+    he2,
+    $ki: __2,
+    ...__3
+  } = $__1.value["b"]["$rest2"];
+  return __3;
+})());
+const $ki = computed(() => $__1.value["b"]["$ki"]);
+const $he2 = computed(() => $__1.value["b"]["he2"]);
+const he = $__1.value["b"]["he"];
+const $rest = computed(() => $__1.value["a"].slice(1));
+const $aaa = computed(() => $__1.value["a"]["0"]);
+const $useClip = $__2 => {
+  const $rest = computed(() => (() => {
+    const {
+      x,
+      y,
+      ...__2
+    } = $__2.value["$rest"];
+    return __2;
+  })());
+  const $y = computed(() => $__2.value["y"]);
+  const $x = computed(() => $__2.value["x"]);
+};
+function $useClip2($__3) {
+  const $rest = computed(() => (() => {
+    const {
+      x,
+      y,
+      ...__2
+    } = $__3.value["$rest"];
+    return __2;
+  })());
+  const $y = computed(() => $__3.value["y"]);
+  const $x = computed(() => $__3.value["x"]);
+}
+const $useClip3 = ($x, $y) => {};
+const $__4 = computed(() => $useClip3(computed(() => $a.value + 1), computed(() => $b.value)));
+const $k = computed(() => $__4.value["k"]);
+const hello = /*#__PURE__*/React.createElement("div", _extends({
+  style: computed(() => $k.value),
+  className: {
+    value: "p-1"
+  },
+  abc: {
+    value: true
+  },
+  num: {
+    value: 1
+  }
+}, computed(() => ({
+  ...$a.value,
+  ...$b.value
+}))));"
+`;

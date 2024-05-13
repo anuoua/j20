@@ -1,0 +1,24 @@
+{
+  "name": "signal-compiler",
+  "module": "./dist/index.js",
+  "type": "module",
+  "types": "./dist/types.d.ts",
+  "typings": "./dist/types.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "bun run build.ts && tsc -p tsconfig.build.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.24.5",
+    "@babel/preset-react": "^7.24.1"
+  },
+  "dependencies": {
+    "@babel/core": "^7.24.5",
+    "@babel/preset-react": "^7.24.1"
+  }
+}
