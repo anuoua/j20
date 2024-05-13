@@ -1,15 +1,35 @@
-# signal-compiler
+# Signal Compiler
 
-To install dependencies:
+A presets of signal compile strategies.
 
-```bash
-bun install
+## Install
+
+```shell
+npm i signal-compiler
 ```
 
-To run:
+## Config
 
-```bash
-bun run index.ts
+babel.config.js
+
+```javascript
+import { signalCompiler } from 'signal-compiler'
+
+{
+    plugins: [
+      [
+        signalCompiler,
+        {
+          // state: "signal",
+          // computed: "computed",
+          // polyfill: true, (default)
+          // identifierSignalDeclaration: true, (default)
+          // patternSignalDeclaration: true, (default)
+          // identifierSignalRead: true, (default)
+          // functionAutoSignal: true, (default)
+          // jsxAutoSignal: true, (default)
+        },
+      ],
+    ],
+}
 ```
-
-This project was created using `bun init` in bun v1.0.30. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
