@@ -9,6 +9,9 @@
   "scripts": {
     "build": "bun run build.ts && tsc -p tsconfig.build.json"
   },
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "typescript": "^5.0.0",
     "@types/babel__core": "^7.20.5",
