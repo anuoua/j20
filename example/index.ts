@@ -1,75 +1,77 @@
-import { ref } from "@vue/reactivity";
-import { defineComponent } from "../src/define";
-import { tags } from "../src/tags";
-import { For } from "../src/control";
-import { str } from "../src/tags";
-import { Item } from "./item";
+import { computed } from "../src/api/computed";
+import { effect } from "../src/api/effect";
+import { state } from "../src/api/state";
+import { JSignalLike } from "../src/api/types";
+import { List } from "../src/control/list";
+import { createElement } from "../src/h/createElement";
 
-const { div, h1, button, input } = tags;
+let msg = state("killer");
+let color = state("blue");
 
-export interface TodoItem {
-  name: string;
-  canceled: boolean;
-  editable: boolean;
+setTimeout(() => {
+  msg.value = "kkkkk";
+  color.value = "red";
+}, 1000);
+
+function App(props: any) {
+  const [$1, $2, $3] = props.value.children;
+
+  const b = createElement(Bpp, {});
+
+  return [$1, $2, $3, b, createElement(Bpp, {})];
 }
 
-const App = defineComponent(
-  {
-    tag: "app-main",
-    shadow: true,
-  },
-  () => {
-    let inputRef: HTMLInputElement = undefined!;
+function Bpp() {
+  return createElement("span", {
+    children: computed(() => [computed(() => "B"), computed(() => "dddd")]),
+  });
+}
 
-    const list = ref<TodoItem[]>([]);
+const clickSign = state({
+  onClick: () => alert(),
+});
+const toggle = state(true);
+const events = computed(() => (toggle.value ? clickSign.value : {}));
+const list = state<number[]>([1, 2, 3, 4, 5]);
 
-    const handleAdd = (e: MouseEvent | KeyboardEvent) => {
-      if (e instanceof KeyboardEvent && e.key !== "Enter") return;
-      list.value = [
-        ...list.value,
-        {
-          name: inputRef.value,
-          canceled: false,
-          editable: false,
-        },
-      ];
-      inputRef.value = "";
-    };
+setTimeout(() => {
+  toggle.value = false;
+  list.value = [1, 2, 3, 3.1, 4, 5];
 
-    const handleRemove = (item: TodoItem) => {
-      list.value = list.value.filter((i) => i !== item);
-    };
+  setTimeout(() => {
+    list.value = [2, 1, 7, 3, 4]; // 乱序
+    // list.value = [1, 2, 3]; // 添加
+  }, 1000);
+}, 1000);
 
-    const handleSwitch = () => {
-      list.value = [...list.value].reverse();
-    };
-
-    return div()(
-      h1({ style: { color: "red" } })(str("Todo list")),
-      div()(
-        (inputRef = input({
-          placeholder: "请输入",
-          onKeydown: handleAdd,
-        })() as HTMLInputElement),
-        button({
-          onClick: handleAdd,
-        })(str("添加")),
-        button({
-          onClick: handleSwitch,
-        })(str("倒序"))
-      ),
-      div()(
-        For({
-          list,
-          children: (item) =>
-            Item({
-              item,
-              onDelete: () => handleRemove(item),
-            }),
+document.querySelector("#root")!.append(
+  createElement("div", [
+    {
+      style: computed(() => `background: ${color.value}`),
+      // onClick: computed(() => () => alert()),
+      children: computed(() =>
+        createElement(App, {
+          children: computed(() => [
+            computed(() => msg.value),
+            // computed(() => "222"),
+            computed(() =>
+              createElement(List, {
+                of: computed(() => list.value),
+                children: computed(() =>
+                  computed(
+                    () =>
+                      ($item: JSignalLike<any>, $index: JSignalLike<number>) =>
+                        createElement("div", {
+                          children: computed(() => "item_" + $item.value),
+                        })
+                  )
+                ),
+              })
+            ),
+          ]),
         })
-      )
-    );
-  }
+      ),
+    },
+    computed(() => events.value),
+  ])
 );
-
-document.querySelector("#root")?.append(...([] as HTMLElement[]).concat(App()));

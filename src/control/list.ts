@@ -1,0 +1,307 @@
+import { effect } from "../api/effect";
+import { JSignalLike } from "../api/types";
+import {
+  Instance,
+  instanceCreate,
+  getCurrentInstance,
+  instanceGetElements,
+  instanceDestroy,
+} from "../h/instance";
+
+function insertAfter(parentNode: Node, newNode: Node, targetNode: Node) {
+  parentNode?.insertBefore(newNode, targetNode.nextSibling);
+}
+
+const getTrait = (item: any, trait: ((item: any) => string) | undefined) =>
+  trait ? trait(item) : item;
+
+const isSame = (a: any, b: any, trait: ((item: any) => string) | undefined) => {
+  return Object.is(getTrait(a, trait), getTrait(b, trait));
+};
+
+const ListItem = (props: {
+  value: {
+    item: JSignalLike<any>;
+    index: JSignalLike<number>;
+    create: (
+      $item: JSignalLike<any>,
+      $index: JSignalLike<number>
+    ) => [Instance, Node[]];
+  };
+}) => {
+  return props.value.create(props.value.item, props.value.index);
+};
+
+export const List = (props: {
+  value: {
+    of: any;
+    children: JSignalLike<(a: any, b: any) => any>;
+    trait?: (item: any) => string;
+  };
+}) => {
+  let initialized = false;
+
+  const currentInstance = getCurrentInstance()!;
+
+  let oldList: any[] = [];
+  let oldInstances: Instance[] = [];
+
+  let initElements: Element[] = [];
+
+  effect(() => {
+    const trait = props.value.trait;
+    const newList = props.value.of;
+    const newInstances: Instance[] = new Array(newList.length);
+
+    // 实现 diff 逻辑，参考 vue3
+
+    let i = 0;
+    const l2 = newList.length;
+    let e1 = oldList.length - 1; // prev ending index
+    let e2 = l2 - 1; // next ending index
+
+    // 1. sync from start
+    // (a b) c
+    // (a b) d e
+    while (i <= e1 && i <= e2) {
+      if (isSame(oldList[i], newList[i], trait)) {
+        newInstances[i] = oldInstances[i];
+        i++;
+      } else {
+        break;
+      }
+    }
+
+    // 2. sync from end
+    // a (b c)
+    // d e (b c)
+    while (i <= e1 && i <= e2) {
+      if (isSame(oldList[e1], newList[e2], trait)) {
+        newInstances[e2] = oldInstances[e1];
+        e1--;
+        e2--;
+      } else {
+        break;
+      }
+    }
+
+    // 3. common sequence + mount
+    // (a b)
+    // (a b) c
+    // i = 2, e1 = 1, e2 = 2
+    // (a b)
+    // c (a b)
+    // i = 0, e1 = -1, e2 = 0
+    if (i > e1) {
+      if (i <= e2) {
+        for (; i <= e2; i++) {
+          const [newInstance, newInstanceFragment] = instanceCreate(() => {
+            const newChild = props.value.children.value(
+              {
+                value: newList[i],
+              },
+              {
+                value: i,
+              }
+            );
+            return newChild;
+          }, currentInstance);
+
+          if (!initialized) {
+            initElements.push(newInstanceFragment);
+          } else {
+            if (i > 0) {
+              const prev = oldInstances[i - 1];
+              const prevEl = prev.range[1];
+              insertAfter(prevEl.parentNode!, newInstanceFragment, prevEl);
+            } else {
+              const parentNode = currentInstance.range[0].parentNode;
+              parentNode?.insertBefore(
+                newInstanceFragment,
+                currentInstance.range[0]
+              );
+            }
+          }
+
+          newInstances[i] = newInstance;
+        }
+      }
+    }
+
+    // 4. common sequence + unmount
+    else if (i > e2) {
+      while (i <= e1) {
+        // remove elements
+        instanceGetElements(oldInstances[i]).forEach((el) => {
+          el.parentNode?.removeChild(el);
+        });
+        instanceDestroy(currentInstance, oldInstances[i]);
+        i++;
+      }
+    }
+
+    // 5. unknown sequence
+    else {
+      // 创建一个 key -> index 的映射，用于快速查找旧列表中的项
+      const s1 = i; // 旧列表开始索引
+      const s2 = i; // 新列表开始索引
+      
+      // 为新的未处理项创建 key -> index 映射
+      const keyToNewIndexMap = new Map();
+      for (let i = s2; i <= e2; i++) {
+        keyToNewIndexMap.set(getTrait(newList[i], trait), i);
+      }
+      
+      // 需要处理的新项数量
+      const toBePatched = e2 - s2 + 1;
+      // 创建一个数组，存储新旧索引的映射关系
+      const newIndexToOldIndexMap = new Array(toBePatched);
+      for (let i = 0; i < toBePatched; i++) newIndexToOldIndexMap[i] = 0;
+      
+      // 遍历旧列表中未处理的项，如果在新列表中存在则更新，否则删除
+      let patched = 0;
+      let moved = false;
+      let maxNewIndexSoFar = 0;
+      
+      for (let i = s1; i <= e1; i++) {
+        if (patched >= toBePatched) {
+          // 所有新项都已处理，剩余的旧项可以直接删除
+          instanceGetElements(oldInstances[i]).forEach((el) => {
+            el.parentNode?.removeChild(el);
+          });
+          instanceDestroy(currentInstance, oldInstances[i]);
+          continue;
+        }
+        
+        const oldItem = oldList[i];
+        const oldKey = getTrait(oldItem, trait);
+        const newIndex = keyToNewIndexMap.get(oldKey);
+        
+        if (newIndex === undefined) {
+          // 在新列表中不存在，删除
+          instanceGetElements(oldInstances[i]).forEach((el) => {
+            el.parentNode?.removeChild(el);
+          });
+          instanceDestroy(currentInstance, oldInstances[i]);
+        } else {
+          // 在新列表中存在，更新映射关系
+          // newIndex - s2 得到在 newIndexToOldIndexMap 中的位置
+          // i + 1 避免与初始值 0 冲突
+          newIndexToOldIndexMap[newIndex - s2] = i + 1;
+          
+          // 检查是否需要移动
+          if (newIndex >= maxNewIndexSoFar) {
+            maxNewIndexSoFar = newIndex;
+          } else {
+            moved = true;
+          }
+          
+          // 复用实例
+          newInstances[newIndex] = oldInstances[i];
+          patched++;
+        }
+      }
+      
+      // 如果需要移动节点，使用最长递增子序列算法优化移动
+      const increasingNewIndexSequence = moved
+        ? getSequence(newIndexToOldIndexMap)
+        : [];
+      
+      // 从后向前遍历，确保插入顺序正确
+      let j = increasingNewIndexSequence.length - 1;
+      
+      for (let i = toBePatched - 1; i >= 0; i--) {
+        const newIndex = s2 + i;
+        const newItem = newList[newIndex];
+        
+        // 确定锚点元素
+        const anchor = newIndex + 1 < l2
+          ? newInstances[newIndex + 1].range[0]
+          : currentInstance.range[1];
+        
+        if (newIndexToOldIndexMap[i] === 0) {
+          // 创建新节点
+          const [newInstance, newInstanceFragment] = instanceCreate(() => {
+            const newChild = props.value.children.value(
+              {
+                value: newItem,
+              },
+              {
+                value: newIndex,
+              }
+            );
+            return newChild;
+          }, currentInstance);
+          
+          // 插入到 DOM
+          anchor.parentNode?.insertBefore(newInstanceFragment, anchor);
+          newInstances[newIndex] = newInstance;
+        } else if (moved) {
+          // 需要移动
+          if (j < 0 || i !== increasingNewIndexSequence[j]) {
+            // 移动节点
+            const nodeToMove = newInstances[newIndex];
+            const elementsToMove = instanceGetElements(nodeToMove);
+            
+            // 将所有元素移动到锚点之前
+            elementsToMove.forEach(el => {
+              anchor.parentNode?.insertBefore(el, anchor);
+            });
+          } else {
+            // 不需要移动，跳过
+            j--;
+          }
+        }
+      }
+    }
+
+    oldList = newList;
+    oldInstances = newInstances;
+  });
+
+  initialized = true;
+
+  return initElements.splice(0, initElements.length);
+};
+
+// https://en.wikipedia.org/wiki/Longest_increasing_subsequence
+function getSequence(arr: number[]): number[] {
+  const p = arr.slice();
+  const result = [0];
+  let i, j, u, v, c;
+  const len = arr.length;
+  for (i = 0; i < len; i++) {
+    const arrI = arr[i];
+    if (arrI !== 0) {
+      j = result[result.length - 1];
+      if (arr[j] < arrI) {
+        p[i] = j;
+        result.push(i);
+        continue;
+      }
+      u = 0;
+      v = result.length - 1;
+      while (u < v) {
+        c = (u + v) >> 1;
+        if (arr[result[c]] < arrI) {
+          u = c + 1;
+        } else {
+          v = c;
+        }
+      }
+      if (arrI < arr[result[u]]) {
+        if (u > 0) {
+          p[i] = result[u - 1];
+        }
+        result[u] = i;
+      }
+    }
+  }
+  u = result.length;
+  v = result[u - 1];
+  while (u-- > 0) {
+    result[u] = v;
+    v = p[v];
+  }
+  return result;
+}

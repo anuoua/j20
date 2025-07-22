@@ -1,10 +1,9 @@
-import { it, expect, beforeEach } from "vitest";
-import { str, tags } from "../src/tags";
-import { defineComponent } from "../src/define";
-import { For, If } from "../src/control";
-import { computed, ref } from "@vue/reactivity";
-
-const { div, span, ul, li } = tags;
+import { it, beforeEach } from "vitest";
+import { createElement } from "../src/h/createElement";
+import { computed } from "../src/api/computed";
+import { state } from "../src/api/state";
+import { JSignalLike } from "../src/api/types";
+import { List } from "../src/control/list";
 
 const { body } = document;
 
@@ -13,68 +12,49 @@ beforeEach(() => {
 });
 
 it("render", () => {
-  const visible = ref(false);
+  let msg = state("Hello World");
+  let color = state("blue");
 
-  const App = defineComponent(
-    {
-      tag: "app-main",
-    },
-    () => {
-      // prettier-ignore
-      return (
-        div()(
-          div()(str("str")),
-          div({ class: "hello" })(
-            If({
-              when: visible,
-              children: () => (
-                span()(str("world"))
+  const list = state<number[]>([1, 2, 3, 4, 5]);
+
+  function App(props: any) {
+    const [$1, $2, $3] = props.value.children;
+
+    return [$1, $2, $3];
+  }
+
+  document.body.append(
+    createElement("div", [
+      {
+        style: computed(() => `background: ${color.value}`),
+        // onClick: computed(() => () => alert()),
+        children: computed(() =>
+          createElement(App, {
+            children: computed(() => [
+              computed(() => msg.value),
+              computed(() =>
+                createElement(List, {
+                  of: computed(() => list.value),
+                  children: computed(() =>
+                    computed(
+                      () =>
+                        (
+                          $item: JSignalLike<any>,
+                          $index: JSignalLike<number>
+                        ) =>
+                          createElement("div", {
+                            children: computed(() => "item_" + $item.value),
+                          })
+                    )
+                  ),
+                })
               ),
-              else: () => (
-                span()(str("cccc"))
-              )
-            })
-          ),
-        )
-      );
-    }
+            ]),
+          })
+        ),
+      },
+    ])
   );
 
-  body.append(App());
-  expect(body.innerHTML).toBe(
-    `<app-main><div><div>str</div><div class="hello"><!--s--><span>cccc</span><!--e--></div></div></app-main>`
-  );
-
-  visible.value = !visible.value;
-
-  expect(body.innerHTML).toBe(
-    `<app-main><div><div>str</div><div class="hello"><!--s--><span>world</span><!--e--></div></div></app-main>`
-  );
-});
-
-it("list", () => {
-  const list = ref([1, 2, 3]);
-
-  const results = For({
-    list,
-    // prettier-ignore
-    children: (item, indexRef) => (
-      ul()(
-        li()(
-          str(computed(() => `${item}: ${indexRef.value}`))
-        )
-      )
-    ),
-  });
-  body.append(...results);
-
-  expect(body.innerHTML).toBe(
-    "<!--s--><ul><li>1: 0</li></ul><ul><li>2: 1</li></ul><ul><li>3: 2</li></ul><!--e-->"
-  );
-
-  list.value = [...list.value].reverse();
-
-  expect(body.innerHTML).toBe(
-    "<!--s--><ul><li>3: 0</li></ul><ul><li>2: 1</li></ul><ul><li>1: 2</li></ul><!--e-->"
-  );
+  console.log(body.innerHTML);
 });

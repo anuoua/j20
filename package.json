@@ -9,13 +9,13 @@
   "types": "dist/j20.d.ts",
   "typings": "dist/j20.d.ts",
   "dependencies": {
-    "@vue/reactivity": "^3.3.4"
+    "signal-polyfill": "^0.1.1"
   },
   "scripts": {
     "dev": "vite example",
     "build": "rimraf build dist && tsc -p tsconfig.build.json && rollup -c rollup.config.mjs",
     "test:watch": "vitest",
-    "test": "vitest --run"
+    "test": "vitest --run --dom"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.1.0",
