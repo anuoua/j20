@@ -13,9 +13,10 @@
     "dist"
   ],
   "devDependencies": {
-    "typescript": "^5.0.0",
     "@types/babel__core": "^7.20.5",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "typescript": "^5.0.0",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "@babel/core": "^7.24.5",
@@ -23,6 +24,8 @@
   },
   "dependencies": {
     "@babel/core": "^7.24.5",
-    "@babel/preset-react": "^7.24.1"
+    "@babel/preset-react": "^7.24.1",
+    "@rollup/pluginutils": "^5.2.0",
+    "rollup": "^4.46.2"
   }
 }

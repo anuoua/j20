@@ -1,0 +1,47 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`test > transform 1`] = `
+"function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+let $a = signal(1),
+  $b = signal(2);
+signal(1);
+let $__0 = computed(() => ({}));
+signal(($__0.value["a"] ?? 3)["p"]);
+signal((($__0.value["a"] ?? 3)["$ddd"] ?? 8)["c"]["1"]);
+signal((($__0.value["a"] ?? 3)["$ddd"] ?? 8)["b"]["0"]);
+computed(() => $a.value + $b.value);
+const $__1 = computed(() => ({}));
+computed(() => (() => {
+  const {
+    he,
+    he2,
+    $ki: __2,
+    ...__3
+  } = $__1.value["b"]["$rest2"];
+  return __3;
+})());
+computed(() => $__1.value["b"]["$ki"]);
+computed(() => $__1.value["b"]["he2"]);
+$__1.value["b"]["he"];
+computed(() => $__1.value["a"].slice(1));
+computed(() => $__1.value["a"]["0"]);
+const $useClip3 = ($x, $y) => {};
+const $__4 = computed(() => $useClip3(computed(() => $a.value + 1), computed(() => $b.value)));
+const $k = computed(() => $__4.value["k"]);
+/*#__PURE__*/React.createElement("div", _extends({
+  style: computed(() => $k.value),
+  className: {
+    value: "p-1"
+  },
+  abc: {
+    value: true
+  },
+  num: {
+    value: 1
+  }
+}, computed(() => ({
+  ...$a.value,
+  ...$b.value
+}))));
+"
+`;

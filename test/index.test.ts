@@ -1,26 +1,12 @@
-import { it, expect } from "bun:test";
+import { it, expect } from "vitest";
 import { transform } from "@babel/core";
 import { signalCompiler } from "../src/index";
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 
-const from = `
-let $a = 1, $b = 2;
-let $c = 1;
-let { a: { $ddd: { b: [$bb], c: [,$cc] } = 8, p: $p } = 3 } = {};
-
-const $d = $a + $b;
-
-const { a: [$aaa, ...$rest], b: { he, he2: $he2, $ki, ...$rest2 } } = {}
-
-const $useClip = ({ x: $x, y: $y, ...$rest }) => {}
-
-function $useClip2({ x: $x, y: $y, ...$rest }) {}
-
-const $useClip3 = ($x, $y) => {};
-
-const { k: $k } = $useClip3($a + 1, $b);
-
-const hello = <div style={$k} className="p-1" abc num={1} {...{ ...$a, ...$b }}></div>
-`;
+const from = readFileSync(resolve(__dirname, './code.js'), {
+  encoding: 'utf-8'
+}).toString();
 
 it("compiler", async () => {
   const res2 = transform(from, {
