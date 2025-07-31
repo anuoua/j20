@@ -1,31 +1,30 @@
 {
   "name": "signal-compiler",
-  "module": "./dist/index.js",
-  "type": "module",
+  "main": "./dist/index.js",
   "types": "./dist/types.d.ts",
   "typings": "./dist/types.d.ts",
   "license": "MIT",
   "version": "0.0.1-0",
   "scripts": {
-    "build": "bun run build.ts && tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest"
   },
   "files": [
     "dist"
   ],
+  "exports": {
+    "./rollup": {
+      "default": "./dist/rollup.js",
+      "types": "./dist/rollup.d.ts"
+    }
+  },
   "devDependencies": {
-    "@types/babel__core": "^7.20.5",
-    "@types/bun": "latest",
+    "@babel/core": "~7.24.5",
+    "@babel/preset-react": "~7.24.1",
+    "@rollup/pluginutils": "~5.2.0",
+    "@types/babel__core": "~7.20.5",
+    "rollup": "^4.46.2",
     "typescript": "^5.0.0",
     "vitest": "^3.2.4"
-  },
-  "peerDependencies": {
-    "@babel/core": "^7.24.5",
-    "@babel/preset-react": "^7.24.1"
-  },
-  "dependencies": {
-    "@babel/core": "^7.24.5",
-    "@babel/preset-react": "^7.24.1",
-    "@rollup/pluginutils": "^5.2.0",
-    "rollup": "^4.46.2"
   }
 }
