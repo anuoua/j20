@@ -1,14 +1,21 @@
-import { describe, it, expect } from "vitest";
+import { it, expect } from "vitest";
 import type { InputOptions, OutputOptions } from "rollup";
 import { rollup } from "rollup";
 import { signalCompilerRollup } from "../src/rollup";
+import * as fs from 'node:fs'
+import { resolve } from 'node:path'
+import { config } from "./config";
 
-describe("test", () => {
-  it("transform", async () => {
-    const inputOptions: InputOptions = {
-      input: "./test/code.js",
+const pairs = fs.readdirSync(resolve(__dirname, './pairs/'));
+
+const trans = async (pair: string) => {
+      const inputOptions: InputOptions = {
+      input: resolve(__dirname, `./pairs/${pair}/source.js`),
+      treeshake: false,
       plugins: [
-        signalCompilerRollup({}),
+        signalCompilerRollup({
+          config: {...config}
+        }),
       ],
     //   external: ["test", "test2"],
     };
@@ -21,9 +28,14 @@ describe("test", () => {
 
     const { output } = await bundle.generate(outputOptions);
 
-    for (let chunk of output) {
-      // @ts-ignore
-      expect(chunk.code).toMatchSnapshot();
-    }
-  });
-});
+    return output?.[0]?.code;
+}
+
+for (const pair of pairs) {
+  it(pair, async () => {
+    const code = await trans(pair);
+    expect(code).toBe(fs.readFileSync(resolve(__dirname, `./pairs/${pair}/dist.js`), {
+      encoding: 'utf-8'
+    }).toString() + '\n');
+  })
+}

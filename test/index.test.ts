@@ -1,32 +1,32 @@
-import { it, expect } from "vitest";
+import { expect, it } from "vitest";
 import { transform } from "@babel/core";
 import { signalCompiler } from "../src/index";
-import { readFileSync } from 'node:fs'
+import * as fs from 'node:fs'
 import { resolve } from 'node:path'
+import { config } from "./config";
 
-const from = readFileSync(resolve(__dirname, './code.js'), {
-  encoding: 'utf-8'
-}).toString();
+const pairs = fs.readdirSync(resolve(__dirname, './pairs/'));
 
-it("compiler", async () => {
-  const res2 = transform(from, {
+const trans = (code: string) => transform(code, {
     presets: [["@babel/preset-react", {}]],
     plugins: [
       [
         signalCompiler,
-        {
-          state: "signal",
-          computed: "computed",
-          polyfill: false,
-          identifierSignalDeclaration: true,
-          patternSignalDeclaration: true,
-          identifierSignalRead: true,
-          functionAutoSignal: true,
-          jsxAutoSignal: true,
-        },
+        {...config},
       ],
     ],
-  });
+  })
 
-  expect(res2!.code).toMatchSnapshot();
-});
+for (const pair of pairs) {
+  const source = fs.readFileSync(resolve(__dirname, `./pairs/${pair}/source.js`), {
+    encoding: 'utf-8'
+  }).toString();
+
+  const dist = fs.readFileSync(resolve(__dirname, `./pairs/${pair}/dist.js`), {
+    encoding: 'utf-8'
+  }).toString();
+
+  it(`pair: ${pair}`, () => {
+    expect(trans(source)!.code).toBe(dist);
+  })
+}

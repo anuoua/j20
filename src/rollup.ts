@@ -3,11 +3,13 @@ import * as babelCore from "@babel/core";
 import { createFilter } from "@rollup/pluginutils";
 import type { FilterPattern } from "@rollup/pluginutils";
 import { signalCompiler } from ".";
+import { Config } from "./types";
 
 export interface ReassignOptions {
   include?: FilterPattern;
   exclude?: FilterPattern;
   sourcemap?: boolean;
+  config: Config
 }
 
 export function signalCompilerRollup(options: ReassignOptions): Plugin {
@@ -24,16 +26,7 @@ export function signalCompilerRollup(options: ReassignOptions): Plugin {
         presets: [["@babel/preset-react", {}]],
         plugins: [[
             signalCompiler,
-            {
-              state: "signal",
-              computed: "computed",
-              polyfill: false,
-              identifierSignalDeclaration: true,
-              patternSignalDeclaration: true,
-              identifierSignalRead: true,
-              functionAutoSignal: true,
-              jsxAutoSignal: true,
-            },
+            options.config,
           ],],
       });
 
