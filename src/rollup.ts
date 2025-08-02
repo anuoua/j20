@@ -10,7 +10,11 @@ export interface ReassignOptions {
   include?: FilterPattern;
   exclude?: FilterPattern;
   sourcemap?: boolean;
-  config: Config
+  config: Config;
+  jsx?: {
+    importSource?: string;
+    throwIfNamespace?: boolean;
+  }
 }
 
 export function signalCompilerRollup(options: ReassignOptions): Plugin {
@@ -27,7 +31,8 @@ export function signalCompilerRollup(options: ReassignOptions): Plugin {
         plugins: [
           ["@babel/plugin-syntax-jsx"],
           [transformJsxReact, {
-            runtime: 'automatic'
+            runtime: 'automatic',
+            ...options.jsx
           }],
           [
             signalCompiler,
