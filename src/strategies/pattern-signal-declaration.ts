@@ -189,10 +189,7 @@ const buildPattern = (
           }
         } else if (t.isRestElement(property)) {
           if (t.isIdentifier(property.argument)) {
-            const expression = buildPatternToMemberExpression({
-              OBJECT: object,
-              PROPERTY: `"${property.argument.name}"`,
-            });
+            const expression = object;
 
             const insertNode = template.statement(`
               ${kind} %%VAR_NAME%% = (() => {

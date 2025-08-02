@@ -9,7 +9,7 @@ const $rest2 = computed(() => (() => {
     he2,
     $ki: __2,
     ...__3
-  } = $__1.value["b"]["$rest2"];
+  } = $__1.value["b"];
   return __3;
 })());
 const $ki = computed(() => $__1.value["b"]["$ki"]);
