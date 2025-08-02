@@ -16,6 +16,10 @@
     "./rollup": {
       "default": "./dist/rollup.js",
       "types": "./dist/rollup.d.ts"
+    },
+    "./transform-jsx-react": {
+      "default": "./dist/transform-jsx-react.js",
+      "types": "./dist/transform-jsx-react.d.ts"
     }
   },
   "devDependencies": {
