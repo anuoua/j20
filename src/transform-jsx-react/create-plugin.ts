@@ -286,8 +286,8 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
           exit(path, file) {
             let callExpr;
             if (
-              get(file, "runtime") === "classic" ||
-              shouldUseCreateElement(path)
+              get(file, "runtime") === "classic"
+              // || shouldUseCreateElement(path)
             ) {
               callExpr = buildCreateElementCall(path, file);
             } else {
@@ -514,17 +514,17 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
             case "__self":
               if (extracted[name]) throw sourceSelfError(path, name);
             /* falls through */
-            case "key": {
-              const keyValue = convertAttributeValue(attr.node.value);
-              if (keyValue === null) {
-                throw attr.buildCodeFrameError(
-                  'Please provide an explicit key value. Using "key" as a shorthand for "key={true}" is not allowed.',
-                );
-              }
+            // case "key": {
+            //   const keyValue = convertAttributeValue(attr.node.value);
+            //   if (keyValue === null) {
+            //     throw attr.buildCodeFrameError(
+            //       'Please provide an explicit key value. Using "key" as a shorthand for "key={true}" is not allowed.',
+            //     );
+            //   }
 
-              extracted[name] = keyValue;
-              break;
-            }
+            //   extracted[name] = keyValue;
+            //   break;
+            // }
             default:
               attribsArray.push(attr);
           }

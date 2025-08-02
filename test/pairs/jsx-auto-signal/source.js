@@ -1,1 +1,1 @@
-const hello = <div style={$k} className="p-1" abc num={1} {...{ ...$a, ...$b }}></div>;
+const hello = <div style={$k} className="p-1" abc num={1} {...{ ...$a, ...$b }} key="id1"></div>;

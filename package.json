@@ -7,7 +7,7 @@
   "version": "0.0.3",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "test": "vitest"
+    "test": "vitest --disableConsoleIntercept"
   },
   "files": [
     "dist"
@@ -35,8 +35,6 @@
     "@babel/helper-plugin-utils": "^7.27.1",
     "@babel/plugin-syntax-jsx": "^7.27.1",
     "@babel/types": "^7.28.2",
-    "@types/babel__core": "^7.20.5",
-    "@types/babel-plugin-syntax-jsx": "^6.18.2",
-    "babel-plugin-syntax-jsx": "^6.18.0"
+    "@types/babel__core": "^7.20.5"
   }
 }

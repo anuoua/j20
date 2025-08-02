@@ -5,5 +5,6 @@ const hello = /*#__PURE__*/_jsx("div", computed(() => ({
   abc: true,
   num: 1,
   ...$a.value,
-  ...$b.value
+  ...$b.value,
+  key: "id1"
 })));
