@@ -1,7 +1,7 @@
 import { it, beforeEach } from "vitest";
 import { createElement } from "../src/h/createElement";
 import { computed } from "../src/api/computed";
-import { state } from "../src/api/state";
+import { signal } from "../src/api/signal";
 import { JSignalLike } from "../src/api/types";
 import { List } from "../src/control/list";
 
@@ -12,10 +12,10 @@ beforeEach(() => {
 });
 
 it("render", () => {
-  let msg = state("Hello World");
-  let color = state("blue");
+  let msg = signal("Hello World");
+  let color = signal("blue");
 
-  const list = state<number[]>([1, 2, 3, 4, 5]);
+  const list = signal<number[]>([1, 2, 3, 4, 5]);
 
   function App(props: any) {
     const [$1, $2, $3] = props.value.children;

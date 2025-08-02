@@ -63,11 +63,7 @@ export const createDom = (tag: string, props: Props) => {
     oldProps = newProps;
   });
 
-  const arr = getChildren(children.value);
-
-  for (const i of arr) {
-    i != null && node.append(i);
-  }
+  node.append(...getChildren(children.value));
 
   return node;
 };

@@ -1,12 +1,11 @@
 import { computed } from "../src/api/computed";
-import { effect } from "../src/api/effect";
-import { state } from "../src/api/state";
+import { signal } from "../src/api/signal";
 import { JSignalLike } from "../src/api/types";
 import { List } from "../src/control/list";
 import { createElement } from "../src/h/createElement";
 
-let msg = state("killer");
-let color = state("blue");
+let msg = signal("killer");
+let color = signal("blue");
 
 setTimeout(() => {
   msg.value = "kkkkk";
@@ -27,12 +26,12 @@ function Bpp() {
   });
 }
 
-const clickSign = state({
+const clickSign = signal({
   onClick: () => alert(),
 });
-const toggle = state(true);
+const toggle = signal(true);
 const events = computed(() => (toggle.value ? clickSign.value : {}));
-const list = state<number[]>([1, 2, 3, 4, 5]);
+const list = signal<number[]>([1, 2, 3, 4, 5]);
 
 setTimeout(() => {
   toggle.value = false;

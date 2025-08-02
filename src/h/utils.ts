@@ -41,7 +41,7 @@ export const getChildren = (propChildren: any) => {
         textNode.nodeValue = isJSignal(child) ? child.value : child;
       });
       arr.push(textNode);
-    } else {
+    } else if (el) {
       arr.push(el);
     }
   }

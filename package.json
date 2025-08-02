@@ -9,7 +9,8 @@
   "types": "dist/j20.d.ts",
   "typings": "dist/j20.d.ts",
   "dependencies": {
-    "signal-polyfill": "^0.1.1"
+    "@preact/signals-core": "^1.11.0",
+    "signal-compiler": "^0.0.1"
   },
   "scripts": {
     "dev": "vite example",
