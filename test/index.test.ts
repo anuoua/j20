@@ -4,18 +4,22 @@ import { signalCompiler } from "../src/index";
 import * as fs from 'node:fs'
 import { resolve } from 'node:path'
 import { config } from "./config";
+import transformJsxReact from "../src/transform-jsx-react";
 
 const pairs = fs.readdirSync(resolve(__dirname, './pairs/'));
 
 const trans = (code: string) => transform(code, {
-    presets: [["@babel/preset-react", {}]],
-    plugins: [
-      [
-        signalCompiler,
-        {...config},
-      ],
+  plugins: [
+    ["@babel/plugin-syntax-jsx"],
+    [transformJsxReact, {
+      runtime: 'automatic'
+    }],
+    [
+      signalCompiler,
+      { ...config },
     ],
-  })
+  ],
+})
 
 for (const pair of pairs) {
   const source = fs.readFileSync(resolve(__dirname, `./pairs/${pair}/source.js`), {

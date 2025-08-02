@@ -6,7 +6,6 @@ import type { PluginObj } from "@babel/core";
 import type { Config, GlobalState } from "./types";
 import { patternSignalDeclaration } from "./strategies/pattern-signal-declaration";
 import { functionAutoSignal } from "./strategies/function-auto-signal";
-import { jsxAutoSignal } from "./strategies/jsx-auto-signal";
 
 const defaultConfig: Config = {
   state: "new Signal.State",
@@ -42,7 +41,6 @@ export const signalCompiler = (
       : null,
     config.identifierSignalRead ? identifierSignalRead(babel) : null,
     config.functionAutoSignal ? functionAutoSignal(babel, config) : null,
-    config.jsxAutoSignal ? jsxAutoSignal(babel, config) : null,
   ].filter((i) => i) as babelCore.Visitor[];
 
   return {

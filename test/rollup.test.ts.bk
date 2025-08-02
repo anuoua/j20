@@ -9,26 +9,29 @@ import { config } from "./config";
 const pairs = fs.readdirSync(resolve(__dirname, './pairs/'));
 
 const trans = async (pair: string) => {
-      const inputOptions: InputOptions = {
-      input: resolve(__dirname, `./pairs/${pair}/source.js`),
-      treeshake: false,
-      plugins: [
-        signalCompilerRollup({
-          config: {...config}
-        }),
-      ],
+  const inputOptions: InputOptions = {
+    input: resolve(__dirname, `./pairs/${pair}/source.js`),
+    treeshake: false,
+    jsx: {
+      mode: "preserve",
+    },
+    plugins: [
+      signalCompilerRollup({
+        config: { ...config }
+      }),
+    ],
     //   external: ["test", "test2"],
-    };
-    const outputOptions: OutputOptions = {
-      file: "bundle.js",
-      format: "esm",
-    };
+  };
+  const outputOptions: OutputOptions = {
+    file: "bundle.js",
+    format: "esm",
+  };
 
-    const bundle = await rollup(inputOptions);
+  const bundle = await rollup(inputOptions);
 
-    const { output } = await bundle.generate(outputOptions);
+  const { output } = await bundle.generate(outputOptions);
 
-    return output?.[0]?.code;
+  return output?.[0]?.code;
 }
 
 for (const pair of pairs) {

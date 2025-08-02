@@ -6,5 +6,5 @@ export const config = {
   patternSignalDeclaration: true,
   identifierSignalRead: true,
   functionAutoSignal: true,
-  jsxAutoSignal: true,
+  jsxAutoSignal: false,
 }
