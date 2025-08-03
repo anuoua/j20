@@ -571,11 +571,15 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
 
       const wrap = t.callExpression(
         t.arrowFunctionExpression([], t.blockStatement([
-          t.variableDeclaration("const", [t.variableDeclarator(t.identifier("props"), args[1])]),
+          t.variableDeclaration("let", [t.variableDeclarator(t.identifier("props"))]),
           t.returnStatement(t.callExpression(
             t.identifier("computed"),
             [
-              t.arrowFunctionExpression([], t.identifier("props"))
+              t.arrowFunctionExpression([], t.conditionalExpression(
+                t.identifier('props'),
+                t.identifier('props'),
+                t.assignmentExpression("=", t.identifier('props'), args[1])
+              ))
             ]
           ))
         ])),
