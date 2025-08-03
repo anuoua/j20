@@ -497,6 +497,8 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
     // Development: React.jsxDEV(type, arguments, key, isStaticChildren, source, self)
     function buildJSXElementCall(path: NodePath<JSXElement>, file: PluginPass) {
       const openingPath = path.get("openingElement");
+      const isCompatTag = isCompatTagByOpeningPath(openingPath);
+      console.log(isCompatTag)
       const args: t.Expression[] = [getTag(openingPath)];
 
       const attribsArray = [];
@@ -542,7 +544,7 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
           attribsArray,
           //@ts-expect-error The children here contains JSXSpreadChild,
           // which will be thrown later
-          children,
+          isCompatTag ? children : [],
         );
       } else {
         // attributes should never be null
@@ -569,8 +571,13 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
         args.push(extracted.key);
       }
 
-      const wrap = t.callExpression(t.identifier('computed'), [
+      const wrap = isCompatTag ? t.callExpression(t.identifier('computed'), [
         t.arrowFunctionExpression([], args[1])
+      ]) : t.arrayExpression([
+        t.callExpression(t.identifier('computed'), [
+          t.arrowFunctionExpression([], args[1])
+        ]),
+        ...children
       ])
 
       return call(file, children.length > 1 ? "jsxs" : "jsx", [args[0], wrap]);
@@ -662,6 +669,22 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
         // @ts-expect-error JSXSpreadChild has been transformed in convertAttributeValue
         ...t.react.buildChildren(path.node),
       ]);
+    }
+
+    function isCompatTagByOpeningPath(openingPath: NodePath<JSXOpeningElement>) {
+      const tagExpr = convertJSXIdentifier(
+        openingPath.node.name,
+        openingPath.node,
+      );
+
+      let tagName: string;
+      if (t.isIdentifier(tagExpr)) {
+        tagName = tagExpr.name;
+      } else if (t.isStringLiteral(tagExpr)) {
+        tagName = tagExpr.value;
+      }
+
+      return !t.react.isCompatTag(tagName)
     }
 
     function getTag(openingPath: NodePath<JSXOpeningElement>) {
