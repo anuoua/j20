@@ -1,6 +1,6 @@
 const hello = 
 <App>
     <div style={$k} className="p-1" abc num={1} {...{ ...$a, ...$b }} key="id1">
-        <div>hello</div>
+        <div>{$hello}</div>
     </div>
 </App>;
