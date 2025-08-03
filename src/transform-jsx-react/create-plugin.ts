@@ -569,26 +569,9 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
         args.push(extracted.key);
       }
 
-      const wrap = t.callExpression(
-        t.arrowFunctionExpression([], t.blockStatement([
-          t.variableDeclaration("let", [t.variableDeclarator(t.identifier("props"))]),
-          t.returnStatement(t.callExpression(
-            t.identifier("computed"),
-            [
-              t.arrowFunctionExpression([], t.conditionalExpression(
-                t.identifier('props'),
-                t.identifier('props'),
-                t.assignmentExpression("=", t.identifier('props'), args[1])
-              ))
-            ]
-          ))
-        ])),
-        []
-      )
-
-      // const wrap = t.callExpression(t.identifier('computed'), [
-      //   t.arrowFunctionExpression([], args[1])
-      // ])
+      const wrap = t.callExpression(t.identifier('computed'), [
+        t.arrowFunctionExpression([], args[1])
+      ])
 
       return call(file, children.length > 1 ? "jsxs" : "jsx", [args[0], wrap]);
     }
