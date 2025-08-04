@@ -20,6 +20,7 @@ import type {
   ObjectExpression,
   Program,
 } from "@babel/types";
+import { convertJSXIdentifier, isCompatTagByOpeningPath } from "./utils";
 
 const DEFAULT = {
   importSource: "react",
@@ -373,37 +374,6 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
       return false;
     }
 
-    function convertJSXIdentifier(
-      node: t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName,
-      parent: t.JSXOpeningElement | t.JSXMemberExpression,
-    ): t.ThisExpression | t.StringLiteral | t.MemberExpression | t.Identifier {
-      if (t.isJSXIdentifier(node)) {
-        if (node.name === "this" && t.isReferenced(node, parent)) {
-          return t.thisExpression();
-        } else if (t.isValidIdentifier(node.name, false)) {
-          // @ts-expect-error cast AST type to Identifier
-          node.type = "Identifier";
-          return node as unknown as t.Identifier;
-        } else {
-          return t.stringLiteral(node.name);
-        }
-      } else if (t.isJSXMemberExpression(node)) {
-        return t.memberExpression(
-          convertJSXIdentifier(node.object, node),
-          convertJSXIdentifier(node.property, node),
-        );
-      } else if (t.isJSXNamespacedName(node)) {
-        /**
-         * If the flag "throwIfNamespace" is false
-         * print XMLNamespace like string literal
-         */
-        return t.stringLiteral(`${node.namespace.name}:${node.name.name}`);
-      }
-
-      // todo: this branch should be unreachable
-      return node;
-    }
-
     function convertAttributeValue(
       node: t.JSXAttribute["value"] | t.BooleanLiteral,
     ) {
@@ -498,7 +468,6 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
     function buildJSXElementCall(path: NodePath<JSXElement>, file: PluginPass) {
       const openingPath = path.get("openingElement");
       const isCompatTag = isCompatTagByOpeningPath(openingPath);
-      console.log(isCompatTag)
       const args: t.Expression[] = [getTag(openingPath)];
 
       const attribsArray = [];
@@ -669,22 +638,6 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
         // @ts-expect-error JSXSpreadChild has been transformed in convertAttributeValue
         ...t.react.buildChildren(path.node),
       ]);
-    }
-
-    function isCompatTagByOpeningPath(openingPath: NodePath<JSXOpeningElement>) {
-      const tagExpr = convertJSXIdentifier(
-        openingPath.node.name,
-        openingPath.node,
-      );
-
-      let tagName: string;
-      if (t.isIdentifier(tagExpr)) {
-        tagName = tagExpr.name;
-      } else if (t.isStringLiteral(tagExpr)) {
-        tagName = tagExpr.value;
-      }
-
-      return !t.react.isCompatTag(tagName)
     }
 
     function getTag(openingPath: NodePath<JSXOpeningElement>) {
