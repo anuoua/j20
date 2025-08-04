@@ -2,6 +2,7 @@ import * as babelCore from "@babel/core";
 import { isSignal } from "../utils/is-signal";
 import { autoImport } from "../utils/auto-import";
 import type { Config, GlobalState } from "../types";
+import { isCustomHook } from "../utils/is-custom-hook";
 
 export const identifierSignalDeclaration = (
   babel: typeof babelCore,
@@ -14,6 +15,10 @@ export const identifierSignalDeclaration = (
 
   const buildComputedAssignment = babel.template.expression(`
     ${config.computed}(() => %%EXPR%%)
+  `);
+
+  const buildFakeComputedAssignment = babel.template.expression(`
+    { get value() { return %%EXPR%% } }
   `);
 
   const buildImportSignal = babel.template.statement(`
@@ -43,7 +48,10 @@ export const identifierSignalDeclaration = (
               EXPR: declearation.init,
             });
           } else if (node.kind === "const" && confirmSignalToTransform) {
-            declearation.init = buildComputedAssignment({
+            const isCustomHookName = declearation.init && declearation.init.type === "CallExpression" && declearation.init.callee.type === "Identifier" && isCustomHook(declearation.init.callee.name)
+            declearation.init = isCustomHookName ? buildFakeComputedAssignment({
+              EXPR: declearation.init,
+            }) : buildComputedAssignment({
               EXPR: declearation.init,
             });
           }

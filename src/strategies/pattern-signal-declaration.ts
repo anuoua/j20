@@ -28,6 +28,10 @@ export const patternSignalDeclaration = (
     ${config.computed}(() => %%EXPR%%)
   `);
 
+  const buildFakeComputedAssignment = babel.template.expression(`
+    { get value() { return %%EXPR%% } }
+  `);
+
   return {
     ArrowFunctionExpression(path) {
       if (!path.parentPath.isVariableDeclarator()) return;
@@ -92,7 +96,11 @@ export const patternSignalDeclaration = (
 
               declearation.id = t.identifier(varName);
 
-              declearation.init = buildComputedAssignment({
+              const isCustomHookName = declearation.init && declearation.init.type === "CallExpression" && declearation.init.callee.type === "Identifier" && isCustomHook(declearation.init.callee.name)
+
+              declearation.init = isCustomHookName ? buildFakeComputedAssignment({
+                EXPR: declearation.init,
+              }) : buildComputedAssignment({
                 EXPR: declearation.init,
               });
 
@@ -145,9 +153,8 @@ const buildPattern = (
               if (t.isIdentifier(property.value.left)) {
                 const expression = buildPatternToMemberExpressionWithInit({
                   OBJECT: object,
-                  PROPERTY: `"${
-                    (property.value.left as Types.Identifier).name
-                  }"`,
+                  PROPERTY: `"${(property.value.left as Types.Identifier).name
+                    }"`,
                   INIT: property.value.right,
                 });
 
@@ -194,16 +201,16 @@ const buildPattern = (
             const insertNode = template.statement(`
               ${kind} %%VAR_NAME%% = (() => {
                 const { ${omitKeys
-                  .map((key, index) =>
-                    isSignal(key) ? `${key}: __${index}` : key
-                  )
-                  .join(",")}, ...__${omitKeys.length} } = %%INIT%%;
+                .map((key, index) =>
+                  isSignal(key) ? `${key}: __${index}` : key
+                )
+                .join(",")}, ...__${omitKeys.length} } = %%INIT%%;
                 return __${omitKeys.length};
               })()
             `)({
-              VAR_NAME: property.argument.name,
-              INIT: expression,
-            });
+                  VAR_NAME: property.argument.name,
+                  INIT: expression,
+                });
 
             insertHandler(insertNode);
           }
