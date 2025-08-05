@@ -7,4 +7,5 @@ export const config = {
   identifierSignalRead: true,
   functionAutoSignal: true,
   jsxAutoSignal: true,
+  identifierSignalAssign: true,
 }

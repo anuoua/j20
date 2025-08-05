@@ -7,6 +7,7 @@ import type { Config, GlobalState } from "./types";
 import { patternSignalDeclaration } from "./strategies/pattern-signal-declaration";
 import { functionAutoSignal } from "./strategies/function-auto-signal";
 import { jsxAutoSignal } from "./strategies/jsx-auto-signal";
+import { identifierSignalAssign } from "./strategies/identifier-signal-assign";
 
 const defaultConfig: Config = {
   state: "new Signal.State",
@@ -43,6 +44,7 @@ export const signalCompiler = (
     config.identifierSignalRead ? identifierSignalRead(babel) : null,
     config.functionAutoSignal ? functionAutoSignal(babel, config) : null,
     config.jsxAutoSignal ? jsxAutoSignal(babel) : null,
+    config.identifierSignalAssign ? identifierSignalAssign(babel) : null,
   ].filter((i) => i) as babelCore.Visitor[];
 
   return {

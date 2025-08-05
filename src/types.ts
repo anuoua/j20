@@ -12,4 +12,5 @@ export interface Config {
   identifierSignalRead?: boolean;
   functionAutoSignal?: boolean;
   jsxAutoSignal?: boolean;
+  identifierSignalAssign?: boolean;
 }
