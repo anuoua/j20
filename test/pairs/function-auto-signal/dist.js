@@ -23,16 +23,8 @@ function $useClip2($__1) {
   const $x = computed(() => $__1.value["x"]);
 }
 const $useClip3 = ($x, $y) => {};
-const $__2 = {
-  get value() {
-    return $useClip3(computed(() => $a.value + 1), computed(() => $b.value));
-  }
-};
+const $__2 = computed(() => $useClip3(computed(() => $a.value + 1), computed(() => $b.value)));
 const $k = computed(() => $__2.value["k"]);
-const $pg = {
-  get value() {
-    return $usePagination(computed(() => ({
-      ...$a.value
-    })));
-  }
-};
+const $pg = computed(() => $usePagination(computed(() => ({
+  ...$a.value
+}))));
