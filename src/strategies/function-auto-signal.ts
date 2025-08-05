@@ -23,5 +23,40 @@ export const functionAutoSignal = (
         });
       }
     },
+
+    FunctionDeclaration(path) {
+      if (
+        t.isIdentifier(path.node.id) &&
+        isCustomHook(path.node.id.name)
+      ) {
+        if (
+          path.node.body.type === 'BlockStatement'
+        ) {
+          for (const item of path.node.body.body) {
+            if (t.isReturnStatement(item)) {
+              item.argument = buildSignalWrap({ EXPR: item.argument });
+            }
+          }
+        }
+      }
+    },
+
+    ArrowFunctionExpression(path) {
+      if (
+        path.parent.type === "VariableDeclarator" &&
+        path.parent.id.type === "Identifier" &&
+        isCustomHook(path.parent.id.name)
+      ) {
+        if (t.isBlockStatement(path.node.body)) {
+          for (const item of path.node.body.body) {
+            if (t.isReturnStatement(item)) {
+              item.argument = buildSignalWrap({ EXPR: item.argument });
+            }
+          }
+        } else {
+          path.node.body = buildSignalWrap({ EXPR: path.node.body });
+        }
+      }
+    }
   };
 };
