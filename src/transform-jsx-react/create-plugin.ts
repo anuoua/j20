@@ -506,6 +506,19 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
 
       const children = t.react.buildChildren(path.node);
 
+      const extactChildren = [];
+
+      children.forEach((child, index) => {
+        if (t.isCallExpression(child) && t.isIdentifier(child.callee) && child.callee.name.includes('jsx')) {
+          const id = t.identifier(`child${index}`);
+          const extractChild = t.variableDeclaration('const', [
+            t.variableDeclarator(id, child)
+          ]);
+          extactChildren.push(extractChild);
+          children[index] = id;
+        }
+      });
+
       let attribs: t.ObjectExpression;
 
       if (attribsArray.length || children.length) {
@@ -513,7 +526,7 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
           attribsArray,
           //@ts-expect-error The children here contains JSXSpreadChild,
           // which will be thrown later
-          isCompatTag ? children : [],
+          children,
         );
       } else {
         // attributes should never be null
@@ -540,14 +553,24 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
         args.push(extracted.key);
       }
 
-      const wrap = isCompatTag ? t.callExpression(t.identifier('computed'), [
-        t.arrowFunctionExpression([], args[1])
-      ]) : t.arrayExpression([
-        t.callExpression(t.identifier('computed'), [
-          t.arrowFunctionExpression([], args[1])
-        ]),
-        ...children
-      ])
+      const wrap = template.expression(`
+        (() => {
+          %%extactChildren%%
+          return computed(() => (%%props%%));
+        })()
+      `)({
+        extactChildren,
+        props: args[1]
+      });
+
+      // const wrap = isCompatTag ? t.callExpression(t.identifier('computed'), [
+      //   t.arrowFunctionExpression([], args[1])
+      // ]) : t.arrayExpression([
+      //   t.callExpression(t.identifier('computed'), [
+      //     t.arrowFunctionExpression([], args[1])
+      //   ]),
+      //   ...children
+      // ])
 
       return call(file, children.length > 1 ? "jsxs" : "jsx", [args[0], wrap]);
     }
