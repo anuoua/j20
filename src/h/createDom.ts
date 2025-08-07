@@ -1,6 +1,7 @@
 import { effect } from "../api/effect";
 import { getEventName, isEvent } from "../utils";
 import { getChildren, getProps } from "./utils";
+import { untrackedReturn } from "../api/untracked-return";
 
 const update = (
   node: HTMLElement,
@@ -32,23 +33,23 @@ const add = (node: HTMLElement, key: string, newValue: any) => {
   }
 };
 
-export const createDom = (tag: string, props: Props) => {
+export const createDom = (tag: string, props: any) => {
+  const { children } = untrackedReturn(() => props.value);
+
   const node =
     tag === "fragment"
       ? (document.createDocumentFragment() as unknown as HTMLElement)
       : document.createElement(tag);
   let oldProps: any = {};
-  let children: any = null;
 
   effect(() => {
-    const newProps = getProps(props);
+    const newProps = props.value;
     const newKeys = Object.keys(newProps);
     const oldKeys = Object.keys(oldProps);
     const allKeys = new Set([...newKeys, ...oldKeys]);
 
     for (const key of allKeys) {
       if (key === "children") {
-        children = newProps.children;
         continue;
       }
       oldKeys.includes(key)
@@ -63,7 +64,7 @@ export const createDom = (tag: string, props: Props) => {
     oldProps = newProps;
   });
 
-  node.append(...getChildren(children.value));
+  node.append(...getChildren([].concat(children)));
 
   return node;
 };

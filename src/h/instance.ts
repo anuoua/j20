@@ -37,9 +37,14 @@ export const instanceCreate = <T extends () => any>(
 
   stack.push(instance);
 
-  const fragment = createElement("fragment", {
-    children: computed(() => runner()),
-  }) as unknown as HTMLElement;
+  const children = (() => {
+    let res = runner();
+    return Array.isArray(res) ? res : [res];
+  })();
+
+  const fragment = createElement("fragment", computed(() => ({
+    children,
+  }))) as unknown as HTMLElement;
 
   fragment.prepend(instance.range[0]);
   fragment.append(instance.range[1]);
@@ -65,8 +70,15 @@ export const instanceGetElements = (instance: Instance) => {
 };
 
 export const instanceDestroy = (
-  parentInstance: Instance,
+  parent: Instance,
   instance: Instance
 ) => {
-  instance.disposes.forEach((i) => i());
+  const stack = [instance];
+  while (stack.length) {
+    const instance = stack.pop()!;
+    instance.disposes.forEach((dispose) => dispose());
+    if (instance.children) {
+      stack.push(...instance.children);
+    }
+  }
 };

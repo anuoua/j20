@@ -1,5 +1,6 @@
+
 import { effect } from "../api/effect";
-import { JSignalLike } from "../api/types";
+import { signal } from '../api/signal'
 import {
   Instance,
   instanceCreate,
@@ -7,51 +8,53 @@ import {
   instanceGetElements,
   instanceDestroy,
 } from "../h/instance";
+import { untrackedReturn } from "../api/untracked-return";
+import { JSX } from "../../jsx";
 
 function insertAfter(parentNode: Node, newNode: Node, targetNode: Node) {
   parentNode?.insertBefore(newNode, targetNode.nextSibling);
 }
 
-const getTrait = (item: any, trait: ((item: any) => string) | undefined) =>
+const getTrait = (item: any, trait: ((item: any) => string | number) | undefined) =>
   trait ? trait(item) : item;
 
-const isSame = (a: any, b: any, trait: ((item: any) => string) | undefined) => {
+const isSame = (a: any, b: any, trait: ((item: any) => string | number) | undefined) => {
   return Object.is(getTrait(a, trait), getTrait(b, trait));
 };
 
-const ListItem = (props: {
-  value: {
-    item: JSignalLike<any>;
-    index: JSignalLike<number>;
-    create: (
-      $item: JSignalLike<any>,
-      $index: JSignalLike<number>
-    ) => [Instance, Node[]];
-  };
-}) => {
-  return props.value.create(props.value.item, props.value.index);
-};
+export interface ListProps<T> {
+  of: T[];
+  children: (i: T, index: number) => JSX.Element;
+  trait?: (item: T) => string | number;
+}
 
-export const List = (props: {
-  value: {
-    of: any;
-    children: JSignalLike<(a: any, b: any) => any>;
-    trait?: (item: any) => string;
-  };
-}) => {
+interface ListPropsInner<T> {
+  value: ListProps<T>;
+}
+
+interface ListItem<T> {
+  instance: Instance;
+  index: { value: number };
+  item: T;
+}
+
+export const List = <T>(p: ListProps<T>) => {
+
   let initialized = false;
 
   const currentInstance = getCurrentInstance()!;
 
-  let oldList: any[] = [];
-  let oldInstances: Instance[] = [];
+  let oldList: T[] = [];
+
+  let oldListItems: ListItem<T>[] = [];
 
   let initElements: Element[] = [];
 
   effect(() => {
-    const trait = props.value.trait;
-    const newList = props.value.of;
-    const newInstances: Instance[] = new Array(newList.length);
+    const props = (p as unknown as ListPropsInner<T>).value;
+    const trait = props.trait;
+    const newList = props.of;
+    const newListItems: ListItem<T>[] = new Array(newList.length);
 
     // 实现 diff 逻辑，参考 vue3
 
@@ -65,7 +68,7 @@ export const List = (props: {
     // (a b) d e
     while (i <= e1 && i <= e2) {
       if (isSame(oldList[i], newList[i], trait)) {
-        newInstances[i] = oldInstances[i];
+        newListItems[i] = oldListItems[i];
         i++;
       } else {
         break;
@@ -77,7 +80,7 @@ export const List = (props: {
     // d e (b c)
     while (i <= e1 && i <= e2) {
       if (isSame(oldList[e1], newList[e2], trait)) {
-        newInstances[e2] = oldInstances[e1];
+        newListItems[e2] = oldListItems[e1];
         e1--;
         e2--;
       } else {
@@ -95,14 +98,14 @@ export const List = (props: {
     if (i > e1) {
       if (i <= e2) {
         for (; i <= e2; i++) {
+          const newIndex = signal(i);
           const [newInstance, newInstanceFragment] = instanceCreate(() => {
-            const newChild = props.value.children.value(
+            const children = untrackedReturn(() => props.children);
+            const newChild = children(
               {
                 value: newList[i],
-              },
-              {
-                value: i,
-              }
+              } as T,
+              newIndex as unknown as number,
             );
             return newChild;
           }, currentInstance);
@@ -111,7 +114,7 @@ export const List = (props: {
             initElements.push(newInstanceFragment);
           } else {
             if (i > 0) {
-              const prev = oldInstances[i - 1];
+              const prev = oldListItems[i - 1].instance;
               const prevEl = prev.range[1];
               insertAfter(prevEl.parentNode!, newInstanceFragment, prevEl);
             } else {
@@ -123,7 +126,11 @@ export const List = (props: {
             }
           }
 
-          newInstances[i] = newInstance;
+          newListItems[i] = {
+            index: newIndex,
+            item: newList[i],
+            instance: newInstance,
+          };
         }
       }
     }
@@ -132,10 +139,10 @@ export const List = (props: {
     else if (i > e2) {
       while (i <= e1) {
         // remove elements
-        instanceGetElements(oldInstances[i]).forEach((el) => {
+        instanceGetElements(oldListItems[i].instance).forEach((el) => {
           el.parentNode?.removeChild(el);
         });
-        instanceDestroy(currentInstance, oldInstances[i]);
+        instanceDestroy(currentInstance, oldListItems[i].instance);
         i++;
       }
     }
@@ -145,104 +152,108 @@ export const List = (props: {
       // 创建一个 key -> index 的映射，用于快速查找旧列表中的项
       const s1 = i; // 旧列表开始索引
       const s2 = i; // 新列表开始索引
-      
+
       // 为新的未处理项创建 key -> index 映射
       const keyToNewIndexMap = new Map();
       for (let i = s2; i <= e2; i++) {
         keyToNewIndexMap.set(getTrait(newList[i], trait), i);
       }
-      
+
       // 需要处理的新项数量
       const toBePatched = e2 - s2 + 1;
       // 创建一个数组，存储新旧索引的映射关系
       const newIndexToOldIndexMap = new Array(toBePatched);
       for (let i = 0; i < toBePatched; i++) newIndexToOldIndexMap[i] = 0;
-      
+
       // 遍历旧列表中未处理的项，如果在新列表中存在则更新，否则删除
       let patched = 0;
       let moved = false;
       let maxNewIndexSoFar = 0;
-      
+
       for (let i = s1; i <= e1; i++) {
         if (patched >= toBePatched) {
           // 所有新项都已处理，剩余的旧项可以直接删除
-          instanceGetElements(oldInstances[i]).forEach((el) => {
+          instanceGetElements(oldListItems[i].instance).forEach((el) => {
             el.parentNode?.removeChild(el);
           });
-          instanceDestroy(currentInstance, oldInstances[i]);
+          instanceDestroy(currentInstance, oldListItems[i].instance);
           continue;
         }
-        
+
         const oldItem = oldList[i];
         const oldKey = getTrait(oldItem, trait);
         const newIndex = keyToNewIndexMap.get(oldKey);
-        
+
         if (newIndex === undefined) {
           // 在新列表中不存在，删除
-          instanceGetElements(oldInstances[i]).forEach((el) => {
+          instanceGetElements(oldListItems[i].instance).forEach((el) => {
             el.parentNode?.removeChild(el);
           });
-          instanceDestroy(currentInstance, oldInstances[i]);
+          instanceDestroy(currentInstance, oldListItems[i].instance);
         } else {
           // 在新列表中存在，更新映射关系
           // newIndex - s2 得到在 newIndexToOldIndexMap 中的位置
           // i + 1 避免与初始值 0 冲突
           newIndexToOldIndexMap[newIndex - s2] = i + 1;
-          
+
           // 检查是否需要移动
           if (newIndex >= maxNewIndexSoFar) {
             maxNewIndexSoFar = newIndex;
           } else {
             moved = true;
           }
-          
+
           // 复用实例
-          newInstances[newIndex] = oldInstances[i];
+          newListItems[newIndex] = oldListItems[i];
           patched++;
         }
       }
-      
+
       // 如果需要移动节点，使用最长递增子序列算法优化移动
       const increasingNewIndexSequence = moved
         ? getSequence(newIndexToOldIndexMap)
         : [];
-      
+
       // 从后向前遍历，确保插入顺序正确
       let j = increasingNewIndexSequence.length - 1;
-      
+
       for (let i = toBePatched - 1; i >= 0; i--) {
         const newIndex = s2 + i;
         const newItem = newList[newIndex];
-        
+
         // 确定锚点元素
         const anchor = newIndex + 1 < l2
-          ? newInstances[newIndex + 1].range[0]
+          ? newListItems[newIndex + 1].instance.range[0]
           : currentInstance.range[1];
-        
+
         if (newIndexToOldIndexMap[i] === 0) {
           // 创建新节点
+          const newIdx = signal(newIndex);
           const [newInstance, newInstanceFragment] = instanceCreate(() => {
-            const newChild = props.value.children.value(
+            const children = untrackedReturn(() => props.children);
+            const newChild = children(
               {
                 value: newItem,
-              },
-              {
-                value: newIndex,
-              }
+              } as T,
+              newIdx as unknown as number,
             );
             return newChild;
           }, currentInstance);
-          
+
           // 插入到 DOM
           anchor.parentNode?.insertBefore(newInstanceFragment, anchor);
-          newInstances[newIndex] = newInstance;
+          newListItems[newIndex] = {
+            index: newIdx,
+            item: newItem,
+            instance: newInstance,
+          };
         } else if (moved) {
           // 需要移动
           if (j < 0 || i !== increasingNewIndexSequence[j]) {
             // 移动节点
-            const nodeToMove = newInstances[newIndex];
-            const elementsToMove = instanceGetElements(nodeToMove);
-            
+            const nodeToMove = newListItems[newIndex];
+            const elementsToMove = instanceGetElements(nodeToMove.instance);
+
             // 将所有元素移动到锚点之前
             elementsToMove.forEach(el => {
               anchor.parentNode?.insertBefore(el, anchor);
@@ -256,7 +267,11 @@ export const List = (props: {
     }
 
     oldList = newList;
-    oldInstances = newInstances;
+    oldListItems = newListItems;
+    currentInstance.children = newListItems.map((item, index) => {
+      item.index.value = index;
+      return item.instance
+    });
   });
 
   initialized = true;

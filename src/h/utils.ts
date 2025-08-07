@@ -1,4 +1,5 @@
 import { effect } from "../api/effect";
+import { untrackedReturn } from "../api/untracked-return";
 import { isJSignal } from "../api/utils";
 
 export const getProp = (prop: Record<string, any>) => {
@@ -29,20 +30,26 @@ export const getProps = (props: Props) => {
   }
 };
 
-export const getChildren = (propChildren: any) => {
+export const getChildren = (propChildren: any[]) => {
   if (propChildren == null) return [];
   const arr: any[] = [];
-  const arrayChildren: any[] = [].concat(propChildren);
-  for (const child of arrayChildren) {
-    const el = isJSignal(child) ? child.value : child; // unwatch
-    if (typeof el === "string") {
-      let textNode = document.createTextNode("");
-      effect(() => {
-        textNode.nodeValue = isJSignal(child) ? child.value : child;
-      });
-      arr.push(textNode);
-    } else if (el) {
-      arr.push(el);
+  for (let i = 0; i < propChildren.length; i++) {
+    const child = propChildren[i];
+    if (isJSignal(child)) {
+      const el = untrackedReturn(() => child.value);
+
+      if (typeof el === 'number' || typeof el === 'string') {
+        let textNode = document.createTextNode("");
+        effect(() => {
+          textNode.nodeValue = child.value;
+        });
+        arr.push(textNode);
+      } else {
+        arr.push(el);
+      }
+
+    } else if (child != undefined) {
+      arr.push(child);
     }
   }
   return arr;

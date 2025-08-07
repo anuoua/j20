@@ -12,8 +12,8 @@ importers:
         specifier: ^1.11.0
         version: 1.11.0
       signal-compiler:
-        specifier: ^0.0.1
-        version: 0.0.1(@babel/core@7.28.0)
+        specifier: ^0.0.15
+        version: 0.0.15(@babel/core@7.28.0)
     devDependencies:
       '@rollup/plugin-node-resolve':
         specifier: ^15.1.0
@@ -314,9 +314,6 @@ packages:
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
 
-  '@types/babel-plugin-syntax-jsx@6.18.2':
-    resolution: {integrity: sha512-o2JDgZbRyyLuFAT8QKxtF3uPkT6CDaShykLD9h085xSxesX/1RRhvHbVTSAq8bKpjtqoKb9RddM1q1pDLpVQfg==}
-
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
 
@@ -392,9 +389,6 @@ packages:
 
   assertion-error@1.1.0:
     resolution: {integrity: sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==}
-
-  babel-plugin-syntax-jsx@6.18.0:
-    resolution: {integrity: sha512-qrPaCSo9c8RHNRHIotaufGbuOBN8rtdC4QrrFFc43vyWCCz7Kl7GL1PGaXtMGQZUXrkCjNEgxDfmAuAabr/rlw==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -699,8 +693,8 @@ packages:
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
 
-  signal-compiler@0.0.1:
-    resolution: {integrity: sha512-QvwU32o2YfN27KW6t8/F+QJrAZLf0pgbxlcTXdnoH+reOdr9ddSxNJiKtEldSNfaiVwTvJUYQDhbD2UnhyXdzg==}
+  signal-compiler@0.0.15:
+    resolution: {integrity: sha512-tv9cDB9bxfgeRnHe8eVqD6Ac1K7AdYE9mh9xk+Pq8gv4aLgSCfUKYpYUoMAHl0UUXZ4TP2NMxfiNyp5U37K9vQ==}
 
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
@@ -1108,8 +1102,6 @@ snapshots:
 
   '@sinclair/typebox@0.27.8': {}
 
-  '@types/babel-plugin-syntax-jsx@6.18.2': {}
-
   '@types/babel__core@7.20.5':
     dependencies:
       '@babel/parser': 7.28.0
@@ -1192,8 +1184,6 @@ snapshots:
   ansi-styles@6.2.1: {}
 
   assertion-error@1.1.0: {}
-
-  babel-plugin-syntax-jsx@6.18.0: {}
 
   balanced-match@1.0.2: {}
 
@@ -1491,16 +1481,14 @@ snapshots:
 
   siginfo@2.0.0: {}
 
-  signal-compiler@0.0.1(@babel/core@7.28.0):
+  signal-compiler@0.0.15(@babel/core@7.28.0):
     dependencies:
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-module-imports': 7.27.1
       '@babel/helper-plugin-utils': 7.27.1
       '@babel/plugin-syntax-jsx': 7.27.1(@babel/core@7.28.0)
       '@babel/types': 7.28.2
-      '@types/babel-plugin-syntax-jsx': 6.18.2
       '@types/babel__core': 7.20.5
-      babel-plugin-syntax-jsx: 6.18.0
     transitivePeerDependencies:
       - '@babel/core'
       - supports-color

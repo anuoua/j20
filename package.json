@@ -10,10 +10,10 @@
   "typings": "dist/j20.d.ts",
   "dependencies": {
     "@preact/signals-core": "^1.11.0",
-    "signal-compiler": "^0.0.1"
+    "signal-compiler": "^0.0.15"
   },
   "scripts": {
-    "dev": "vite example",
+    "dev": "vite example --config vite.confit.ts",
     "build": "rimraf build dist && tsc -p tsconfig.build.json && rollup -c rollup.config.mjs",
     "test:watch": "vitest",
     "test": "vitest --run --dom"
