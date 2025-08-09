@@ -459,7 +459,9 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
         return undefined;
       }
 
-      return t.objectProperty(t.identifier("children"), childrenNode);
+      return t.objectMethod('get', t.identifier("children"), [], t.blockStatement([
+        t.returnStatement(childrenNode)
+      ]))
     }
 
     // Builds JSX into:
@@ -511,11 +513,11 @@ You can set \`throwIfNamespace: false\` to bypass this warning.`,
       children.forEach((child, index) => {
         if (t.isCallExpression(child) && t.isIdentifier(child.callee) && child.callee.name.includes('jsx')) {
           const id = t.identifier(`child${index}`);
-          const extractChild = t.variableDeclaration('const', [
-            t.variableDeclarator(id, child)
+          const extractChild = t.variableDeclaration('let', [
+            t.variableDeclarator(id)
           ]);
           extactChildren.push(extractChild);
-          children[index] = id;
+          children[index] = t.logicalExpression("??", id, t.assignmentExpression("=", id, child));
         }
       });
 
