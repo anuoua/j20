@@ -3,11 +3,12 @@ import { effect } from "../src/api/effect";
 import { signal } from "../src/api/signal";
 import { List } from "../src/control/list";
 import { If } from "../src/control/if";
+import { creatRoot } from "../src/h/createRoot";
 
 console.log(computed, effect, signal);
 
 const TodoItem = ($props: any) => {
-  let $checked = false;
+  let $checked = true;
 
   return (
     <div style="display: flex; align-items: center; gap: 10px;">
@@ -17,10 +18,18 @@ const TodoItem = ($props: any) => {
         onChange={() => ($checked = !$checked)}
       ></input>
       <div>
-        <If of={$checked} else={$props.text}>
-          {(checked) => (
-            <span style="text-decoration: line-through;">{$props.text}</span>
-          )}
+        <If of={$checked}>
+          {(checked) =>
+            checked ? (
+              <span style="text-decoration: line-through;">
+                {$props.text} {checked.toString()}
+              </span>
+            ) : (
+              <span>
+                {$props.text} {checked.toString()}
+              </span>
+            )
+          }
         </If>
       </div>
       <button onClick={$props.onDelete}>delete</button>
@@ -28,16 +37,18 @@ const TodoItem = ($props: any) => {
   );
 };
 
-const App = ($props: { name: string; children: any }) => {
-  let $list = [
-    {
-      id: 1,
-      text: "1",
-    },
-  ];
+let arr = [];
+for (let i = 0; i < 10; i++) {
+  arr.push({
+    id: i,
+    text: `item ${i}`,
+  });
+}
 
-  const add = (e) => {
-    console.log(e.target.value);
+const App = () => {
+  let $list = arr;
+
+  const add = (e: Event & { target: HTMLInputElement }) => {
     $list = [
       ...$list,
       {
@@ -47,7 +58,7 @@ const App = ($props: { name: string; children: any }) => {
     ];
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: number) => {
     $list = $list.filter((item) => item.id !== id);
   };
 
@@ -58,7 +69,7 @@ const App = ($props: { name: string; children: any }) => {
         <List of={$list}>
           {($item) => (
             <TodoItem
-              text={$item.text}
+              text={<span style="color: red">{$item.text}</span>}
               onDelete={() => handleDelete($item.id)}
             />
           )}
@@ -68,4 +79,8 @@ const App = ($props: { name: string; children: any }) => {
   );
 };
 
-document.querySelector("#root")!.append(<App name="app">hao</App>);
+const root = creatRoot(() => <App />);
+
+console.log(root);
+
+document.querySelector("#root")!.append(root.element);

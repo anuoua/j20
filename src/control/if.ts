@@ -1,12 +1,11 @@
-import { JSX } from "../../jsx";
 import { computed } from "../api/computed"
+import { untrackedReturn } from "../api/untracked-return";
 import { createComponent } from "../h/createComponent";
 import { List } from "./list";
 
 export interface IfProps {
     of: any,
-    children: JSX.Element | ((t: true) => JSX.Element),
-    else: JSX.Element | ((t: false) => JSX.Element),
+    children: JSX.Element | ((t: boolean) => JSX.Element),
 }
 
 interface IfPropsInner {
@@ -14,26 +13,18 @@ interface IfPropsInner {
 }
 
 export const If = (p: IfProps) => {
-    const arr = computed(() => !(p as unknown as IfPropsInner).value.of ? [1] : [0]);
+    const arr = computed(() => !(p as unknown as IfPropsInner).value.of ? [0] : [1]);
 
     return createComponent(List, computed(() => ({
         of: arr.value,
         children: (bool: {
             value: 1 | 0
         }) => {
-            const props = (p as unknown as IfPropsInner).value;
-            if (bool.value) {
-                if (typeof props.children === "function") {
-                    return props.children(true);
-                } else {
-                    return props.children;
-                }
+            const props = untrackedReturn(() => (p as unknown as IfPropsInner).value);
+            if (typeof props.children === "function") {
+                return props.children(bool.value === 1);
             } else {
-                if (typeof props.else === "function") {
-                    return props.else(false);
-                } else {
-                    return props.else;
-                }
+                return props.children;
             }
         },
     })))

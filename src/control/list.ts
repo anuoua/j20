@@ -9,7 +9,6 @@ import {
   instanceDestroy,
 } from "../h/instance";
 import { untrackedReturn } from "../api/untracked-return";
-import { JSX } from "../../jsx";
 
 function insertAfter(parentNode: Node, newNode: Node, targetNode: Node) {
   parentNode?.insertBefore(newNode, targetNode.nextSibling);

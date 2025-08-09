@@ -6,4 +6,4 @@ export const h2 = (tag: any, props: any) => {
 
 export const jsx = h2;
 export const jsxs = h2;
-export const Fragment = ({ children }: { children: any }) => children;
+export const Fragment = ({ children }: { children: JSX.Element }) => children;

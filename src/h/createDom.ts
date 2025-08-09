@@ -2,6 +2,7 @@ import { effect } from "../api/effect";
 import { getEventName, isEvent } from "../utils";
 import { getChildren, getProps } from "./utils";
 import { untrackedReturn } from "../api/untracked-return";
+import { getCurrentInstance } from "./instance";
 
 const update = (
   node: HTMLElement,
@@ -20,6 +21,8 @@ const update = (
 const unset = (node: HTMLElement, key: string, oldValue: any) => {
   if (isEvent(key)) {
     node.removeEventListener(getEventName(key), oldValue);
+  } if (key === 'ref') {
+    oldValue.current = null;
   } else {
     node.removeAttribute(key);
   }
@@ -28,6 +31,12 @@ const unset = (node: HTMLElement, key: string, oldValue: any) => {
 const add = (node: HTMLElement, key: string, newValue: any) => {
   if (isEvent(key)) {
     node.addEventListener(getEventName(key), newValue);
+  } if (key === 'ref') {
+    const instance = getCurrentInstance();
+    instance?.disposes.push(() => {
+      newValue.current = null;
+    });
+    newValue.current = node;
   } else {
     node.setAttribute(key, newValue);
   }
