@@ -1,5 +1,7 @@
+import { computed as _computed, jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "source";
+const __child_cache = [];
 const $useClip = $__0 => {
-  const $rest = computed(() => (() => {
+  const $rest = _computed(() => (() => {
     const {
       x,
       y,
@@ -7,15 +9,15 @@ const $useClip = $__0 => {
     } = $__0.value;
     return __2;
   })());
-  const $y = computed(() => $__0.value["y"]);
-  const $x = computed(() => $__0.value["x"]);
-  return computed(() => ({
+  const $y = _computed(() => $__0.value["y"]);
+  const $x = _computed(() => $__0.value["x"]);
+  return _computed(() => ({
     $x: $x.value
   }));
 };
-const $useCount = () => computed(() => $k.value);
+const $useCount = () => _computed(() => $k.value);
 function $useClip2($__1) {
-  const $rest = computed(() => (() => {
+  const $rest = _computed(() => (() => {
     const {
       x,
       y,
@@ -23,15 +25,15 @@ function $useClip2($__1) {
     } = $__1.value;
     return __2;
   })());
-  const $y = computed(() => $__1.value["y"]);
-  const $x = computed(() => $__1.value["x"]);
-  return computed(() => ({
+  const $y = _computed(() => $__1.value["y"]);
+  const $x = _computed(() => $__1.value["x"]);
+  return _computed(() => ({
     $x: $x.value
   }));
 }
 const $useClip3 = ($x, $y) => {};
-const $__2 = $useClip3(computed(() => $a.value + 1), computed(() => $b.value));
-const $k = computed(() => $__2.value["k"]);
-const $pg = computed(() => $usePagination(computed(() => ({
+const $__2 = $useClip3(_computed(() => $a.value + 1), _computed(() => $b.value));
+const $k = _computed(() => $__2.value["k"]);
+const $pg = _computed(() => $usePagination(_computed(() => ({
   ...$a.value
 }))));

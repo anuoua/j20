@@ -1,3 +1,5 @@
+// @ts-ignore
+import jsx from "@babel/plugin-syntax-jsx";
 import * as babelCore from "@babel/core";
 import { identifierSignalDeclaration } from "./strategies/identifier-signal-declaration";
 import { identifierSignalRead } from "./strategies/identifier-signal-read";
@@ -6,18 +8,19 @@ import type { PluginObj } from "@babel/core";
 import type { Config, GlobalState } from "./types";
 import { patternSignalDeclaration } from "./strategies/pattern-signal-declaration";
 import { functionAutoSignal } from "./strategies/function-auto-signal";
-import { jsxAutoSignal } from "./strategies/jsx-auto-signal";
+import { jsxTransform } from "./strategies/jsx-transform";
 import { identifierSignalAssign } from "./strategies/identifier-signal-assign";
+import { autoImport } from "./strategies/add-source";
 
 const defaultConfig: Config = {
-  state: "new Signal.State",
-  computed: "new Signal.Computed",
-  polyfill: true,
+  autoImport: true,
+  importSource: "j20",
   identifierSignalDeclaration: true,
   patternSignalDeclaration: true,
   identifierSignalRead: true,
   functionAutoSignal: true,
-  jsxAutoSignal: true,
+  jsxTransform: true,
+  identifierSignalAssign: true,
 };
 
 export const signalCompiler = (
@@ -34,7 +37,7 @@ export const signalCompiler = (
     ...config,
   };
 
-  const strategies = [
+  const enterStrategies = [
     config.identifierSignalDeclaration
       ? identifierSignalDeclaration(babel, config, globalState)
       : null,
@@ -43,12 +46,17 @@ export const signalCompiler = (
       : null,
     config.identifierSignalRead ? identifierSignalRead(babel) : null,
     config.functionAutoSignal ? functionAutoSignal(babel, config) : null,
-    config.jsxAutoSignal ? jsxAutoSignal(babel) : null,
     config.identifierSignalAssign ? identifierSignalAssign(babel) : null,
+    config.autoImport ? autoImport(babel, config) : null,
+  ].filter((i) => i) as babelCore.Visitor[];
+
+  const exitStrategies = [
+    config.jsxTransform ? jsxTransform(babel) : null,
   ].filter((i) => i) as babelCore.Visitor[];
 
   return {
     name: "signal-compiler",
-    visitor: composeVisitors(...strategies),
+    inherits: jsx,
+    visitor: composeVisitors(enterStrategies, exitStrategies),
   };
 };

@@ -1,36 +1,28 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-const hello = /*#__PURE__*/_jsx(App, (() => {
-  let child0;
-  return computed(() => ({
-    get children() {
-      return child0 ?? (child0 = /*#__PURE__*/_jsxs("div", (() => {
-        let child0;
-        let child1;
-        return computed(() => ({
-          style: $k.value,
-          className: "p-1",
-          abc: true,
-          num: 1,
-          ...$a.value,
-          ...$b.value,
-          key: "id1",
+import { computed, jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from 'source';
+const __child_cache = [];
+const App = () => {};
+App.Item = () => {};
+const hello = _jsxs(App, computed(() => ({
+  get children() {
+    return ["text", __child_cache[3] ?? (__child_cache[3] = _jsxs(`<div className="p-1" abc num="1" key="id1">`, computed(() => ({
+      get style() {
+        return $k.value;
+      },
+      ...{
+        ...$a.value,
+        ...$b.value
+      },
+      get children() {
+        return [__child_cache[1] ?? (__child_cache[1] = _jsx(`<div>`, computed(() => ({
           get children() {
-            return [child0 ?? (child0 = /*#__PURE__*/_jsx("div", (() => {
-              return computed(() => ({
-                get children() {
-                  return computed(() => $hello.value);
-                }
-              }));
-            })())), child1 ?? (child1 = /*#__PURE__*/_jsx("div", (() => {
-              return computed(() => ({
-                get children() {
-                  return computed(() => $hello.value);
-                }
-              }));
-            })())), computed(() => $hello.value)];
+            return $hello.value;
           }
-        }));
-      })()));
-    }
-  }));
-})());
+        })))), __child_cache[2] ?? (__child_cache[2] = _jsx(`<div>`, computed(() => ({
+          get children() {
+            return $hello.value;
+          }
+        })))), $hello.value, ...$s.value];
+      }
+    })))), __child_cache[4] ?? (__child_cache[4] = jsx(_Fragment)), __child_cache[5] ?? (__child_cache[5] = jsx(App.Item))];
+  }
+})));

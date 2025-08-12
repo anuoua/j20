@@ -1,6 +1,5 @@
 import * as babelCore from "@babel/core";
 import { isSignal } from "../utils/is-signal";
-import { autoImport } from "../utils/auto-import";
 import type { Config, GlobalState } from "../types";
 
 export const identifierSignalDeclaration = (
@@ -9,15 +8,11 @@ export const identifierSignalDeclaration = (
   globalState: GlobalState
 ): babelCore.Visitor => {
   const buildStateAssignment = babel.template.expression(`
-    ${config.state}(%%EXPR%%)
+    signal(%%EXPR%%)
   `);
 
   const buildComputedAssignment = babel.template.expression(`
-    ${config.computed}(() => %%EXPR%%)
-  `);
-
-  const buildImportSignal = babel.template.statement(`
-    import { Signal } from 'signal-polyfill'
+    %%COMPUTED%%(() => %%EXPR%%)
   `);
 
   const { types: t } = babel;
@@ -25,8 +20,6 @@ export const identifierSignalDeclaration = (
   return {
     VariableDeclaration(path) {
       const { node } = path;
-
-      autoImport(path, config, globalState);
 
       node.declarations.forEach((declearation) => {
         if (t.isIdentifier(declearation.id)) {
@@ -44,6 +37,7 @@ export const identifierSignalDeclaration = (
             });
           } else if (node.kind === "const" && confirmSignalToTransform) {
             declearation.init = buildComputedAssignment({
+              COMPUTED: t.identifier(path.scope.getData("computedVarName")),
               EXPR: declearation.init,
             });
           }

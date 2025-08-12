@@ -4,13 +4,12 @@ export interface GlobalState {
 }
 
 export interface Config {
-  polyfill?: boolean;
-  state?: string;
-  computed?: string;
+  autoImport?: boolean;
+  importSource: string;
   identifierSignalDeclaration?: boolean;
   patternSignalDeclaration?: boolean;
   identifierSignalRead?: boolean;
   functionAutoSignal?: boolean;
-  jsxAutoSignal?: boolean;
+  jsxTransform?: boolean;
   identifierSignalAssign?: boolean;
 }

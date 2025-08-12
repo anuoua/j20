@@ -9,7 +9,7 @@ export const functionAutoSignal = (
   const { types: t, template } = babel;
 
   const buildSignalWrap = template.expression(`
-    ${config.computed}(() => %%EXPR%%)
+    %%COMPUTED%%(() => %%EXPR%%)
   `);
 
   return {
@@ -19,7 +19,10 @@ export const functionAutoSignal = (
         isCustomHook(path.node.callee.name)
       ) {
         path.node.arguments.forEach((argument, index) => {
-          path.node.arguments[index] = buildSignalWrap({ EXPR: argument });
+          path.node.arguments[index] = buildSignalWrap({
+            COMPUTED: t.identifier(path.scope.getData("computedVarName")),
+            EXPR: argument,
+          });
         });
       }
     },
@@ -34,7 +37,10 @@ export const functionAutoSignal = (
         ) {
           for (const item of path.node.body.body) {
             if (t.isReturnStatement(item)) {
-              item.argument = buildSignalWrap({ EXPR: item.argument });
+              item.argument = buildSignalWrap({
+                COMPUTED: t.identifier(path.scope.getData("computedVarName")),
+                EXPR: item.argument,
+              });
             }
           }
         }
@@ -50,11 +56,17 @@ export const functionAutoSignal = (
         if (t.isBlockStatement(path.node.body)) {
           for (const item of path.node.body.body) {
             if (t.isReturnStatement(item)) {
-              item.argument = buildSignalWrap({ EXPR: item.argument });
+              item.argument = buildSignalWrap({
+                COMPUTED: t.identifier(path.scope.getData("computedVarName")),
+                EXPR: item.argument,
+              });
             }
           }
         } else {
-          path.node.body = buildSignalWrap({ EXPR: path.node.body });
+          path.node.body = buildSignalWrap({
+            COMPUTED: t.identifier(path.scope.getData("computedVarName")),
+            EXPR: path.node.body,
+          });
         }
       }
     }

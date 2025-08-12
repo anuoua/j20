@@ -25,7 +25,7 @@ export const patternSignalDeclaration = (
   globalState: GlobalState
 ): babelCore.Visitor => {
   const buildComputedAssignment = template.expression(`
-    ${config.computed}(() => %%EXPR%%)
+    %%COMPUTED%%(() => %%EXPR%%)
   `);
 
   return {
@@ -101,6 +101,7 @@ export const patternSignalDeclaration = (
                 // nothing
               } else {
                 declearation.init = buildComputedAssignment({
+                  COMPUTED: t.identifier(path.scope.getData("computedVarName")),
                   EXPR: declearation.init,
                 });
               }

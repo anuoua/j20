@@ -1,11 +1,5 @@
-export const config = {
-  state: "signal",
-  computed: "computed",
-  polyfill: false,
-  identifierSignalDeclaration: true,
-  patternSignalDeclaration: true,
-  identifierSignalRead: true,
-  functionAutoSignal: true,
-  jsxAutoSignal: true,
-  identifierSignalAssign: true,
+import { Config } from "../src/types";
+
+export const config: Config = {
+  importSource: "source",
 }
