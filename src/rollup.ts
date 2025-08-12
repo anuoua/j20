@@ -4,7 +4,6 @@ import { createFilter } from "@rollup/pluginutils";
 import type { FilterPattern } from "@rollup/pluginutils";
 import { signalCompiler } from ".";
 import { Config } from "./types";
-import transformJsxReact from "./transform-jsx-react";
 
 export interface ReassignOptions {
   include?: FilterPattern;
@@ -30,10 +29,6 @@ export function signalCompilerRollup(options: ReassignOptions): Plugin {
       const result = babelCore.transform(code, {
         plugins: [
           ["@babel/plugin-syntax-jsx"],
-          [transformJsxReact, {
-            runtime: 'automatic',
-            ...options.jsx
-          }],
           [
             signalCompiler,
             { ...options.config },
