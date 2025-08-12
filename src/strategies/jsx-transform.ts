@@ -50,7 +50,7 @@ export const jsxTransform = (
                     break;
                 }
                 case "JSXMemberExpression": {
-                    isCompatTag = true;
+                    isCompatTag = false;
                     tagName = buildJSXMemberExpressionTagName(name as any);
                     break;
                 }
@@ -60,7 +60,7 @@ export const jsxTransform = (
             }
 
             const children: babelCore.types.Expression[] = [];
-            let childCacheCount = path.scope.getData("childCacheCount") ?? path.scope.setData("childCacheCount", 0);
+            path.scope.getData("childCacheCount") ?? path.scope.setData("childCacheCount", 0);
 
             for (const child of path.get('children')) {
                 switch (child.node.type) {
@@ -157,10 +157,11 @@ export const jsxTransform = (
                 : '';
 
             let jsx: babelCore.types.Expression;
+            const elStr = isCompatTag ? `\`<${tagName}${primitiveAttrsStr ? ` ${primitiveAttrsStr}` : ''}>\`` : tagName;
             if (children.length > 0) {
                 const multiple = children.length > 1;
                 jsx = template.expression(`
-                    ${multiple ? path.scope.getData("jsxsVarName") : path.scope.getData("jsxVarName")}(${isCompatTag ? `\`<${tagName}${primitiveAttrsStr ? ` ${primitiveAttrsStr}` : ''}>\`` : tagName}, computed(() => ({
+                    ${multiple ? path.scope.getData("jsxsVarName") : path.scope.getData("jsxVarName")}(${elStr}, computed(() => ({
                         ${attrsStr ? `${attrsStr},` : ''}
                         get children() { return %%CHILDREN%% }
                     })))
@@ -169,7 +170,7 @@ export const jsxTransform = (
                 })
             } else {
                 jsx = template.expression(`
-                    ${path.scope.getData("jsxVarName")}(${tagName})
+                    ${path.scope.getData("jsxVarName")}(${elStr})
                 `)();
             }
 
