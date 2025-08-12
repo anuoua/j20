@@ -4,7 +4,7 @@
   "types": "./dist/types.d.ts",
   "typings": "./dist/types.d.ts",
   "license": "MIT",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "test": "vitest --disableConsoleIntercept"
