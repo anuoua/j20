@@ -8,7 +8,6 @@ export const jsxTransform = (
 
     return {
         Program(path) {
-            console.log(path.isReferencedIdentifier(t.identifier("__child_cache")))
             if (!path.scope.getBinding("__child_cache")) {
                 const index = path.node.body.findLastIndex(i => i.type === "ImportDeclaration");
                 if (index === -1) {
@@ -170,7 +169,7 @@ export const jsxTransform = (
                 })
             } else {
                 jsx = template.expression(`
-                    jsx(${tagName})
+                    ${path.scope.getData("jsxVarName")}(${tagName})
                 `)();
             }
 

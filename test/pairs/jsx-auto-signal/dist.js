@@ -23,6 +23,6 @@ const hello = _jsxs(App, computed(() => ({
           }
         })))), $hello.value, ...$s.value];
       }
-    })))), __child_cache[4] ?? (__child_cache[4] = jsx(_Fragment)), __child_cache[5] ?? (__child_cache[5] = jsx(App.Item))];
+    })))), __child_cache[4] ?? (__child_cache[4] = _jsx(_Fragment)), __child_cache[5] ?? (__child_cache[5] = _jsx(App.Item))];
   }
 })));
