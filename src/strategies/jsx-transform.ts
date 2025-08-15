@@ -30,12 +30,12 @@ export const jsxTransform = (
             exit(path) {
                 path.replaceWith(t.jsxElement(
                     t.jsxOpeningElement(
-                        t.jsxIdentifier(path.scope.getData("fragmentVarName")),
+                        t.jsxIdentifier(path.state.fragmentVarName),
                         [],
                         false
                     ),
                     t.jsxClosingElement(
-                        t.jsxIdentifier(path.scope.getData("fragmentVarName")),
+                        t.jsxIdentifier(path.state.fragmentVarName),
                     ),
                     path.node.children,
                     false
@@ -67,7 +67,7 @@ export const jsxTransform = (
                 }
 
                 const children: T.Expression[] = [];
-                path.scope.getData("childCacheCount") ?? path.scope.setData("childCacheCount", 0);
+                path.state.childCacheCount ?? (path.state.childCacheCount = 0);
 
                 for (const child of path.get('children')) {
                     switch (child.node.type) {
@@ -89,10 +89,10 @@ export const jsxTransform = (
                             break;
                         }
                         default: {
-                            path.scope.setData("childCacheCount", path.scope.getData("childCacheCount") + 1);
+                            path.state.childCacheCount = path.state.childCacheCount + 1;
                             const childCache = t.memberExpression(
                                 t.identifier('__child_cache'),
-                                t.numericLiteral(path.scope.getData("childCacheCount")),
+                                t.numericLiteral(path.state.childCacheCount),
                                 true
                             );
                             children.push(t.logicalExpression("??", childCache, t.assignmentExpression("=", t.cloneNode(childCache, true), child.node)));
@@ -175,7 +175,7 @@ export const jsxTransform = (
                 if (children.length > 0) {
                     const multiple = children.length > 1;
                     jsx = template.expression(`
-                    ${multiple ? path.scope.getData("jsxsVarName") : path.scope.getData("jsxVarName")}(%%TAG%%, computed(() => ({
+                    ${multiple ? path.state.jsxsVarName : path.state.jsxVarName}(%%TAG%%, computed(() => ({
                         ${attrsStr ? `${attrsStr},` : ''}
                         get children() { return %%CHILDREN%% }
                     })))
@@ -185,7 +185,7 @@ export const jsxTransform = (
                     })
                 } else {
                     jsx = template.expression(`
-                        ${path.scope.getData("jsxVarName")}(%%TAG%%)
+                        ${path.state.jsxVarName}(%%TAG%%)
                     `)({
                         TAG: elStr,
                     });
@@ -228,20 +228,20 @@ const addTemplate = (path: babelCore.NodePath<T.JSXElement>, templateContent: st
 
     const lastIndex = lastTemplateVariableIndex === -1 ? lastImportIndex === -1 ? 0 : lastImportIndex : lastTemplateVariableIndex;
 
-    path.scope.setData("templateCount", (path.scope.getData("templateCount") ?? 0) + 1);
+    path.state.templateCount = (path.state.templateCount ?? 0) + 1;
 
-    const isExist = path.scope.getData("templateMap")?.[templateContent] != undefined;
+    const isExist = path.state.templateMap?.[templateContent] != undefined;
 
     if (!isExist) {
-        path.scope.setData("templateMap", {
-            ...path.scope.getData("templateMap"),
-            [templateContent]: path.scope.getData("templateCount")
-        });
+        path.state.templateMap = {
+            ...path.state.templateMap,
+            [templateContent]: path.state.templateCount
+        }
     }
 
     const templateStatement = isExist ?
-        template.statement(`const __tmpl${path.scope.getData("templateCount")} = __tmpl${path.scope.getData("templateCount") - 1}`)() as T.VariableDeclaration :
-        template.statement(`const __tmpl${path.scope.getData("templateCount")} = ${path.scope.getData("templateVarName")}(${templateContent})`)() as T.VariableDeclaration;
+        template.statement(`const __tmpl${path.state.templateCount} = __tmpl${path.state.templateCount - 1}`)() as T.VariableDeclaration :
+        template.statement(`const __tmpl${path.state.templateCount} = ${path.state.templateVarName}(${templateContent})`)() as T.VariableDeclaration;
 
     if (lastIndex === -1) {
         programPath.node.body.unshift(

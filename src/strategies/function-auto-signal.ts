@@ -20,7 +20,7 @@ export const functionAutoSignal = (
       ) {
         path.node.arguments.forEach((argument, index) => {
           path.node.arguments[index] = buildSignalWrap({
-            COMPUTED: t.identifier(path.scope.getData("computedVarName")),
+            COMPUTED: t.identifier(path.state.computedVarName),
             EXPR: argument,
           });
         });
@@ -38,7 +38,7 @@ export const functionAutoSignal = (
           for (const item of path.node.body.body) {
             if (t.isReturnStatement(item)) {
               item.argument = buildSignalWrap({
-                COMPUTED: t.identifier(path.scope.getData("computedVarName")),
+                COMPUTED: t.identifier(path.state.computedVarName),
                 EXPR: item.argument,
               });
             }
@@ -57,14 +57,14 @@ export const functionAutoSignal = (
           for (const item of path.node.body.body) {
             if (t.isReturnStatement(item)) {
               item.argument = buildSignalWrap({
-                COMPUTED: t.identifier(path.scope.getData("computedVarName")),
+                COMPUTED: t.identifier(path.state.computedVarName),
                 EXPR: item.argument,
               });
             }
           }
         } else {
           path.node.body = buildSignalWrap({
-            COMPUTED: t.identifier(path.scope.getData("computedVarName")),
+            COMPUTED: t.identifier(path.state.computedVarName),
             EXPR: path.node.body,
           });
         }

@@ -101,7 +101,7 @@ export const patternSignalDeclaration = (
                 // nothing
               } else {
                 declearation.init = buildComputedAssignment({
-                  COMPUTED: t.identifier(path.scope.getData("computedVarName")),
+                  COMPUTED: t.identifier(path.state.computedVarName),
                   EXPR: declearation.init,
                 });
               }

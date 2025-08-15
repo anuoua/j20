@@ -10,49 +10,51 @@ export const autoImport = (
 
     return {
         Program(path) {
+            path.state = {};
+
             if (!path.scope.getBinding("computed")) {
                 const id = addNamed(path, 'computed', config.importSource, {
                     nameHint: 'computed',
                 });
-                path.scope.setData("computedVarName", id.name);
+                path.state.computedVarName = id.name;
             } else {
-                path.scope.setData("computedVarName", "computed");
+                path.state.computedVarName = "computed";
             }
 
             if (!path.scope.getBinding('jsx')) {
                 const id = addNamed(path, 'jsx', config.importSource, {
                     nameHint: 'jsx',
                 });
-                path.scope.setData("jsxVarName", id.name);
+                path.state.jsxVarName = id.name;
             } else {
-                path.scope.setData("jsxVarName", "jsx");
+                path.state.jsxVarName = "jsx";
             }
 
             if (!path.scope.getBinding('jsxs')) {
                 const id = addNamed(path, 'jsxs', config.importSource, {
                     nameHint: 'jsxs',
                 });
-                path.scope.setData("jsxsVarName", id.name);
+                path.state.jsxsVarName = id.name;
             } else {
-                path.scope.setData("jsxsVarName", "jsxs");
+                path.state.jsxsVarName = "jsxs";
             }
 
             if (!path.scope.getBinding('Fragment')) {
                 const id = addNamed(path, 'Fragment', config.importSource, {
                     nameHint: 'Fragment',
                 });
-                path.scope.setData("fragmentVarName", id.name);
+                path.state.fragmentVarName = id.name;
             } else {
-                path.scope.setData("fragmentVarName", "Fragment");
+                path.state.fragmentVarName = "Fragment";
             }
 
             if (!path.scope.getBinding("template")) {
                 const id = addNamed(path, 'template', config.importSource, {
                     nameHint: 'template',
                 });
-                path.scope.setData("templateVarName", id.name);
+                path.state.templateVarName = id.name;
             } else {
-                path.scope.setData("templateVarName", "template");
+                path.state.templateVarName = "template";
             }
         }
     };

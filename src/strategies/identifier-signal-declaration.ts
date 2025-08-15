@@ -37,7 +37,7 @@ export const identifierSignalDeclaration = (
             });
           } else if (node.kind === "const" && confirmSignalToTransform) {
             declearation.init = buildComputedAssignment({
-              COMPUTED: t.identifier(path.scope.getData("computedVarName")),
+              COMPUTED: t.identifier(path.state.computedVarName),
               EXPR: declearation.init,
             });
           }
