@@ -37,7 +37,7 @@ export const signalCompiler = (
     ...config,
   };
 
-  const enterStrategies = [
+  const strategies = [
     config.identifierSignalDeclaration
       ? identifierSignalDeclaration(babel, config, globalState)
       : null,
@@ -48,15 +48,12 @@ export const signalCompiler = (
     config.functionAutoSignal ? functionAutoSignal(babel, config) : null,
     config.identifierSignalAssign ? identifierSignalAssign(babel) : null,
     config.autoImport ? autoImport(babel, config) : null,
-  ].filter((i) => i) as babelCore.Visitor[];
-
-  const exitStrategies = [
-    config.jsxTransform ? jsxTransform(babel) : null,
+    config.jsxTransform ? jsxTransform() : null,
   ].filter((i) => i) as babelCore.Visitor[];
 
   return {
     name: "signal-compiler",
     inherits: jsx,
-    visitor: composeVisitors(enterStrategies, exitStrategies),
+    visitor: composeVisitors(strategies),
   };
 };

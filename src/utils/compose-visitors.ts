@@ -1,63 +1,34 @@
 import type { Visitor } from "@babel/core";
 
-export const composeVisitors = (enterVisitors: Visitor[], exitVisitors: Visitor[]) => {
-  const enterVisitorStore: {
+export const composeVisitors = (visitors: Visitor[]) => {
+  const visitorStore: {
     [K in keyof Visitor]: Visitor[K][];
   } = {};
 
-  enterVisitors.forEach((v) => {
+  visitors.forEach((v) => {
     Object.keys(v).forEach((k) => {
       const key = k as keyof Visitor;
-      if (key in enterVisitorStore) {
+      if (key in visitorStore) {
         // @ts-expect-error
-        enterVisitorStore[key].push(v[key]);
+        visitorStore[key].push(v[key]);
       } else {
         // @ts-expect-error
-        enterVisitorStore[key] = [v[key]];
-      }
-    });
-  });
-
-  const exitVisitorStore: {
-    [K in keyof Visitor]: Visitor[K][];
-  } = {};
-
-  exitVisitors.forEach((v) => {
-    Object.keys(v).forEach((k) => {
-      const key = k as keyof Visitor;
-      if (key in exitVisitorStore) {
-        // @ts-expect-error
-        exitVisitorStore[key].push(v[key]);
-      } else {
-        // @ts-expect-error
-        exitVisitorStore[key] = [v[key]];
+        visitorStore[key] = [v[key]];
       }
     });
   });
 
   const visitor: Visitor = {};
 
-  Object.keys(enterVisitorStore).forEach((k) => {
+  Object.keys(visitorStore).forEach((k) => {
     const key = k as keyof Visitor;
     // @ts-expect-error
     visitor[key] = {
       // @ts-expect-error
-      enter: (...args) => enterVisitorStore[key].forEach((i) => i(...args))
-    };
-  });
-
-  Object.keys(exitVisitorStore).forEach((k) => {
-    const key = k as keyof Visitor;
-
-    if (visitor[key]) {
+      enter: (...args) => visitorStore[key].forEach((i) => i.enter ? i.enter(...args) : (typeof i === "function" ? i(...args) : null)),
       // @ts-expect-error
-      visitor[key].exit = (...args) => exitVisitorStore[key].forEach((i) => i(...args));
-    } else {
-      visitor[key] = {
-        // @ts-expect-error
-        exit: (...args) => exitVisitorStore[key].forEach((i) => i(...args))
-      };
-    }
+      exit: (...args) => visitorStore[key].forEach((i) => i.exit ? i.exit(...args) : null),
+    };
   });
 
   return visitor;

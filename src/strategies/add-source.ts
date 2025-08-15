@@ -45,6 +45,15 @@ export const autoImport = (
             } else {
                 path.scope.setData("fragmentVarName", "Fragment");
             }
+
+            if (!path.scope.getBinding("template")) {
+                const id = addNamed(path, 'template', config.importSource, {
+                    nameHint: 'template',
+                });
+                path.scope.setData("templateVarName", id.name);
+            } else {
+                path.scope.setData("templateVarName", "template");
+            }
         }
     };
 };
