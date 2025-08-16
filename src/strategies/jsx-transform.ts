@@ -164,13 +164,13 @@ export const jsxTransform = (
                     : '';
 
                 let jsx: T.Expression;
-                let elStr: any;
+                let jsxTag: any;
                 if (isCompatTag) {
                     const temp = `\`<${tagName}${primitiveAttrsStr ? ` ${primitiveAttrsStr}` : ''}>\``;
                     const id = addTemplate(path, temp);
-                    elStr = t.callExpression(id, []);
+                    jsxTag = t.callExpression(id, []);
                 } else {
-                    elStr = t.identifier(tagName);
+                    jsxTag = t.identifier(tagName);
                 }
                 if (children.length > 0) {
                     const multiple = children.length > 1;
@@ -181,13 +181,13 @@ export const jsxTransform = (
                     })))
                 `)({
                         CHILDREN: multiple ? t.arrayExpression(children) : children[0],
-                        TAG: elStr,
+                        TAG: jsxTag,
                     })
                 } else {
                     jsx = template.expression(`
-                        ${path.state.jsxVarName}(%%TAG%%)
+                        ${path.state.jsxVarName}(%%TAG%%${attrsStr ? `,computed(() => ({${attrsStr}}))` : ""})
                     `)({
-                        TAG: elStr,
+                        TAG: jsxTag,
                     });
                 }
 
@@ -230,7 +230,9 @@ const addTemplate = (path: babelCore.NodePath<T.JSXElement>, templateContent: st
 
     path.state.templateCount = (path.state.templateCount ?? 0) + 1;
 
-    const isExist = path.state.templateMap?.[templateContent] != undefined;
+    const existTemplateCount = path.state.templateMap?.[templateContent];
+
+    const isExist = existTemplateCount != undefined;
 
     if (!isExist) {
         path.state.templateMap = {
@@ -240,7 +242,7 @@ const addTemplate = (path: babelCore.NodePath<T.JSXElement>, templateContent: st
     }
 
     const templateStatement = isExist ?
-        template.statement(`const __tmpl${path.state.templateCount} = __tmpl${path.state.templateCount - 1}`)() as T.VariableDeclaration :
+        template.statement(`const __tmpl${path.state.templateCount} = __tmpl${existTemplateCount}`)() as T.VariableDeclaration :
         template.statement(`const __tmpl${path.state.templateCount} = ${path.state.templateVarName}(${templateContent})`)() as T.VariableDeclaration;
 
     if (lastIndex === -1) {
