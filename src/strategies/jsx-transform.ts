@@ -9,23 +9,6 @@ export const jsxTransform = (
 ): babelCore.Visitor => {
 
     return {
-        Program: {
-            exit(path) {
-                if (!path.scope.getBinding("__child_cache")) {
-                    const index = path.node.body.findLastIndex(i => i.type === "ImportDeclaration");
-                    if (index === -1) {
-                        path.node.body.unshift(template.statement`
-                        const __child_cache = [];
-                    `());
-                    } else {
-                        path.node.body.splice(index + 1, 0, template.statement`
-                        const __child_cache = [];
-                    `());
-                    }
-                }
-            }
-        },
-
         JSXFragment: {
             exit(path) {
                 path.replaceWith(t.jsxElement(
@@ -67,7 +50,6 @@ export const jsxTransform = (
                 }
 
                 const children: T.Expression[] = [];
-                path.state.childCacheCount ?? (path.state.childCacheCount = 0);
 
                 for (const child of path.get('children')) {
                     switch (child.node.type) {
@@ -89,13 +71,7 @@ export const jsxTransform = (
                             break;
                         }
                         default: {
-                            path.state.childCacheCount = path.state.childCacheCount + 1;
-                            const childCache = t.memberExpression(
-                                t.identifier('__child_cache'),
-                                t.numericLiteral(path.state.childCacheCount),
-                                true
-                            );
-                            children.push(t.logicalExpression("??", childCache, t.assignmentExpression("=", t.cloneNode(childCache, true), child.node)));
+                            children.push(child.node);
                             break;
                         }
                     }

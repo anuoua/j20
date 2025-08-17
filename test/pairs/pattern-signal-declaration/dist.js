@@ -1,5 +1,4 @@
 import { computed as _computed, jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment, template as _template } from "source";
-const __child_cache = [];
 let $__0 = _computed(() => ({}));
 let $p = signal(($__0.value["a"] ?? 3)["p"]);
 let $cc = signal((($__0.value["a"] ?? 3)["$ddd"] ?? 8)["c"]["1"]);
