@@ -7,6 +7,7 @@ const __tmpl5 = _template(`<svg xmlns="http://www.w3.org/2000/svg" width="24" he
 const __tmpl6 = _template(`<div>`);
 const __tmpl7 = __tmpl6;
 const __tmpl8 = _template(`<div className="p-1" abc num="1" key="id1">`);
+const __tmpl9 = _template(`<input>`);
 const App = () => {};
 App.Item = () => {};
 const hello = _jsxs(App, undefined, () => [_jsxs(__tmpl5(), undefined, () => [_jsx(__tmpl1(true)), _jsx(__tmpl2(true)), _jsx(__tmpl3(true)), _jsx(__tmpl4(true))]), _jsxs(_Fragment, undefined, () => ["text", _jsxs(__tmpl8(), () => ({
@@ -17,4 +18,8 @@ const hello = _jsxs(App, undefined, () => [_jsxs(__tmpl5(), undefined, () => [_j
     ...$a.value,
     ...$b.value
   }
-}), () => [_jsx(__tmpl6(), undefined, () => $hello.value), _jsx(__tmpl7(), undefined, () => $hello.value), $hello.value, ...$s.value])]), _jsx(App.Item, undefined, () => () => {})]);
+}), () => [_jsx(__tmpl6(), undefined, () => $hello.value), _jsx(__tmpl7(), undefined, () => $hello.value), $hello.value, ...$s.value]), _jsx(__tmpl9(), () => ({
+  get onChange() {
+    return add;
+  }
+}))]), _jsx(App.Item)]);

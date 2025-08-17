@@ -28,8 +28,7 @@ const hello =
             {$hello}
             {...$s}
         </div>
+        <input onChange={add}></input>
     </>
-    <App.Item>
-        {() => {}}
-    </App.Item>
+    <App.Item></App.Item>
 </App>;

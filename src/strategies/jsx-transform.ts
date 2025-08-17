@@ -244,7 +244,7 @@ export const jsxTransform = (
                     })
                 } else {
                     jsx = template.expression(`
-                        ${path.state.jsxVarName}(%%TAG%%${attrsStr ? `,computed(() => ({${attrsStr}}))` : ""})
+                        ${path.state.jsxVarName}(%%TAG%%${attrsStr ? `,() => ({${attrsStr}})` : ""})
                     `)({
                         TAG: jsxTag,
                     });
