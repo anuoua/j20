@@ -1,4 +1,4 @@
-import { computed } from "../src";
+import { computed, Fragment } from "../src";
 import { effect } from "../src";
 import { signal } from "../src";
 import { List } from "../src/control/list";
@@ -46,7 +46,7 @@ for (let i = 0; i < 10000; i++) {
 }
 
 const App = () => {
-  let $list = arr;
+  let $list = [...arr];
 
   const add = (e: Event & { target: HTMLInputElement }) => {
     $list = [
@@ -62,25 +62,33 @@ const App = () => {
     $list = $list.filter((item) => item.id !== id);
   };
 
+  const handleSwitch = () => {
+    $list = $list.length ? [] : [...arr];
+  };
+
   return (
     <div>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="lucide lucide-aarrow-down-icon lucide-a-arrow-down"
-      >
-        <path d="m14 12 4 4 4-4" />
-        <path d="M18 16V7" />
-        <path d="m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16" />
-        <path d="M3.304 13h6.392" />
-      </svg>
+      <Fragment>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-aarrow-down-icon lucide-a-arrow-down"
+        >
+          <path d="m14 12 4 4 4-4" />
+          <path d="M18 16V7" />
+          <path d="m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16" />
+          <path d="M3.304 13h6.392" />
+        </svg>
+      </Fragment>
+
+      <button onClick={handleSwitch}>切换</button>
 
       <input onChange={add}></input>
       <div>

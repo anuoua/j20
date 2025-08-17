@@ -6,7 +6,7 @@ export const h2 = (tag: any, props: any = { value: {} }) => {
 
 export const jsx = h2;
 export const jsxs = h2;
-export const Fragment = ({ children }: { children: JSX.Element }) => children;
+export const Fragment = (props: { children: JSX.Element }) => (props as any).value.children;
 
 export const template = (template: string) => {
     let dom: any;

@@ -113,8 +113,8 @@ export const List = <T>(p: ListProps<T>) => {
             initElements.push(newInstanceFragment);
           } else {
             if (i > 0) {
-              const prev = oldListItems[i - 1].instance;
-              const prevEl = prev.range[1];
+              const prev = newListItems[i - 1]?.instance;
+              const prevEl = prev?.range[1] ?? currentInstance.range[0];
               insertAfter(prevEl.parentNode!, newInstanceFragment, prevEl);
             } else {
               const parentNode = currentInstance.range[0].parentNode;
