@@ -4,6 +4,76 @@ import * as g from '@babel/generator'
 
 const { types: t, template } = babelCore;
 
+const svgTags = [
+    "animate",
+    "animateMotion",
+    "animateTransform",
+    "circle",
+    "clipPath",
+    "defs",
+    "desc",
+    "ellipse",
+    "feBlend",
+    "feColorMatrix",
+    "feComponentTransfer",
+    "feComposite",
+    "feConvolveMatrix",
+    "feDiffuseLighting",
+    "feDisplacementMap",
+    "feDistantLight",
+    "feDropShadow",
+    "feFlood",
+    "feFuncA",
+    "feFuncB",
+    "feFuncG",
+    "feFuncR",
+    "feGaussianBlur",
+    "feImage",
+    "feMerge",
+    "feMergeNode",
+    "feMorphology",
+    "feOffset",
+    "fePointLight",
+    "feSpecularLighting",
+    "feSpotLight",
+    "feTile",
+    "feTurbulence",
+    "filter",
+    "foreignObject",
+    "g",
+    "image",
+    "line",
+    "linearGradient",
+    "marker",
+    "mask",
+    "metadata",
+    "mpath",
+    "path",
+    "pattern",
+    "polygon",
+    "polyline",
+    "radialGradient",
+    "rect",
+    "script",
+    "set",
+    "stop",
+    // "svg",
+    "switch",
+    "symbol",
+    "text",
+    "textPath",
+    "tspan",
+    "use",
+    "view",
+]
+
+const conflictSvgTags = [
+    "title",
+    "script",
+    "style",
+    "a",
+]
+
 export const jsxTransform = (
     // babel: typeof babelCore
 ): babelCore.Visitor => {
@@ -46,6 +116,24 @@ export const jsxTransform = (
                     }
                     case "JSXNamespacedName": {
                         throw new Error("JSXNamespacedName is not supported");
+                    }
+                }
+
+                let isSvg = false;
+
+                console.log(name.node)
+
+                if (name.node.type === "JSXIdentifier") {
+                    if (svgTags.includes(name.node.name)) {
+                        isSvg = true;
+                    }
+                    if (
+                        conflictSvgTags.includes(name.node.name)
+                        && path.parent.type === "JSXElement"
+                        && path.parent.openingElement.name.type === "JSXIdentifier"
+                        && path.parent.openingElement.name.name === "svg"
+                    ) {
+                        isSvg = true;
                     }
                 }
 
@@ -144,7 +232,7 @@ export const jsxTransform = (
                 if (isCompatTag) {
                     const temp = `\`<${tagName}${primitiveAttrsStr ? ` ${primitiveAttrsStr}` : ''}>\``;
                     const id = addTemplate(path, temp);
-                    jsxTag = t.callExpression(id, []);
+                    jsxTag = t.callExpression(id, isSvg ? [t.booleanLiteral(true)] : []);
                 } else {
                     jsxTag = t.identifier(tagName);
                 }
