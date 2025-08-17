@@ -29,5 +29,7 @@ const hello =
             {...$s}
         </div>
     </>
-    <App.Item></App.Item>
+    <App.Item>
+        {() => {}}
+    </App.Item>
 </App>;

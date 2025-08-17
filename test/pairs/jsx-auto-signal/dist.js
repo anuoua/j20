@@ -9,35 +9,12 @@ const __tmpl7 = __tmpl6;
 const __tmpl8 = _template(`<div className="p-1" abc num="1" key="id1">`);
 const App = () => {};
 App.Item = () => {};
-const hello = _jsxs(App, computed(() => ({
-  get children() {
-    return [_jsxs(__tmpl5(), computed(() => ({
-      get children() {
-        return [_jsx(__tmpl1(true)), _jsx(__tmpl2(true)), _jsx(__tmpl3(true)), _jsx(__tmpl4(true))];
-      }
-    }))), _jsxs(_Fragment, computed(() => ({
-      get children() {
-        return ["text", _jsxs(__tmpl8(), computed(() => ({
-          get style() {
-            return $k.value;
-          },
-          ...{
-            ...$a.value,
-            ...$b.value
-          },
-          get children() {
-            return [_jsx(__tmpl6(), computed(() => ({
-              get children() {
-                return $hello.value;
-              }
-            }))), _jsx(__tmpl7(), computed(() => ({
-              get children() {
-                return $hello.value;
-              }
-            }))), $hello.value, ...$s.value];
-          }
-        })))];
-      }
-    }))), _jsx(App.Item)];
+const hello = _jsxs(App, undefined, () => [_jsxs(__tmpl5(), undefined, () => [_jsx(__tmpl1(true)), _jsx(__tmpl2(true)), _jsx(__tmpl3(true)), _jsx(__tmpl4(true))]), _jsxs(_Fragment, undefined, () => ["text", _jsxs(__tmpl8(), () => ({
+  get style() {
+    return $k.value;
+  },
+  ...{
+    ...$a.value,
+    ...$b.value
   }
-})));
+}), () => [_jsx(__tmpl6(), undefined, () => $hello.value), _jsx(__tmpl7(), undefined, () => $hello.value), $hello.value, ...$s.value])]), _jsx(App.Item, undefined, () => () => {})]);
