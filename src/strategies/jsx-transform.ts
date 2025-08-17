@@ -121,8 +121,6 @@ export const jsxTransform = (
 
                 let isSvg = false;
 
-                console.log(name.node)
-
                 if (name.node.type === "JSXIdentifier") {
                     if (svgTags.includes(name.node.name)) {
                         isSvg = true;
