@@ -12,6 +12,15 @@ export const autoImport = (
         Program(path) {
             path.state = {};
 
+            if (!path.scope.getBinding("signal")) {
+                const id = addNamed(path, 'signal', config.importSource, {
+                    nameHint: 'signal',
+                });
+                path.state.signalVarName = id.name;
+            } else {
+                path.state.signalVarName = "signal";
+            }
+
             if (!path.scope.getBinding("computed")) {
                 const id = addNamed(path, 'computed', config.importSource, {
                     nameHint: 'computed',

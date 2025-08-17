@@ -1,8 +1,8 @@
-import { computed as _computed, jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment, template as _template } from "source";
+import { signal as _signal, computed as _computed, jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment, template as _template } from "source";
 let $__0 = _computed(() => ({}));
-let $p = signal(($__0.value["a"] ?? 3)["p"]);
-let $cc = signal((($__0.value["a"] ?? 3)["$ddd"] ?? 8)["c"]["1"]);
-let $bb = signal((($__0.value["a"] ?? 3)["$ddd"] ?? 8)["b"]["0"]);
+let $p = _signal(($__0.value["a"] ?? 3)["p"]);
+let $cc = _signal((($__0.value["a"] ?? 3)["$ddd"] ?? 8)["c"]["1"]);
+let $bb = _signal((($__0.value["a"] ?? 3)["$ddd"] ?? 8)["b"]["0"]);
 const $__1 = _computed(() => ({}));
 const $rest2 = _computed(() => (() => {
   const {

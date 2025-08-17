@@ -1,4 +1,4 @@
-import { computed, jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment, template as _template } from 'source';
+import { computed, signal as _signal, jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment, template as _template } from 'source';
 const __tmpl1 = _template(`<path d="m14 12 4 4 4-4">`);
 const __tmpl2 = _template(`<path d="M18 16V7">`);
 const __tmpl3 = _template(`<path d="m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16">`);

@@ -8,7 +8,7 @@ export const identifierSignalDeclaration = (
   globalState: GlobalState
 ): babelCore.Visitor => {
   const buildStateAssignment = babel.template.expression(`
-    signal(%%EXPR%%)
+    %%SIGNAL%%(%%EXPR%%)
   `);
 
   const buildComputedAssignment = babel.template.expression(`
@@ -33,6 +33,7 @@ export const identifierSignalDeclaration = (
 
           if (node.kind === "let" && confirmSignalToTransform) {
             declearation.init = buildStateAssignment({
+              SIGNAL: t.identifier(path.state.signalVarName),
               EXPR: declearation.init,
             });
           } else if (node.kind === "const" && confirmSignalToTransform) {
