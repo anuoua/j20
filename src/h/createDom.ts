@@ -1,11 +1,10 @@
 import { effect } from "../api/effect";
 import { getEventName, isEvent } from "../utils";
-import { getChildren, getProps } from "./utils";
-import { untrackedReturn } from "../api/untracked-return";
+import { getChildren } from "./utils";
 import { getCurrentInstance } from "./instance";
 
 const update = (
-  node: HTMLElement,
+  node: HTMLElement | SVGElement,
   key: string,
   oldValue: any,
   newValue: any
@@ -18,20 +17,20 @@ const update = (
   }
 };
 
-const unset = (node: HTMLElement, key: string, oldValue: any) => {
+const unset = (node: HTMLElement | SVGElement, key: string, oldValue: any) => {
   if (isEvent(key)) {
     node.removeEventListener(getEventName(key), oldValue);
-  } if (key === 'ref') {
+  } else if (key === 'ref') {
     oldValue.current = null;
   } else {
     node.removeAttribute(key);
   }
 };
 
-const add = (node: HTMLElement, key: string, newValue: any) => {
+const add = (node: HTMLElement | SVGElement, key: string, newValue: any) => {
   if (isEvent(key)) {
     node.addEventListener(getEventName(key), newValue);
-  } if (key === 'ref') {
+  } else if (key === 'ref') {
     const instance = getCurrentInstance();
     instance?.disposes.push(() => {
       newValue.current = null;
@@ -42,17 +41,13 @@ const add = (node: HTMLElement, key: string, newValue: any) => {
   }
 };
 
-export const createDom = (tag: string, props: any) => {
-  const { children } = untrackedReturn(() => props.value);
-
-  const node =
-    tag === "fragment"
-      ? (document.createDocumentFragment() as unknown as HTMLElement)
-      : document.createElement(tag);
+export const createDom = (tag: HTMLElement | SVGElement, props: any) => {
+  const node = tag;
   let oldProps: any = {};
 
   effect(() => {
-    const newProps = props.value;
+    const newProps = { ...props.value };
+
     const newKeys = Object.keys(newProps);
     const oldKeys = Object.keys(oldProps);
     const allKeys = new Set([...newKeys, ...oldKeys]);
@@ -73,7 +68,7 @@ export const createDom = (tag: string, props: any) => {
     oldProps = newProps;
   });
 
-  node.append(...getChildren([].concat(children)));
+  node.append(...getChildren([].concat(oldProps.children)));
 
   return node;
 };

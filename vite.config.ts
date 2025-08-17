@@ -8,15 +8,7 @@ export default defineConfig({
     plugins: [signalCompilerRollup({
         include: "example/**/*.{js,jsx,ts,tsx}",
         config: {
-            state: "signal",
-            computed: "computed",
-            polyfill: false,
-            identifierSignalDeclaration: true,
-            patternSignalDeclaration: true,
-            identifierSignalRead: true,
-            functionAutoSignal: true,
-            jsxAutoSignal: true,
-            identifierSignalAssign: true
+            importSource: "../src"
         },
         jsx: {
             importSource: "../src"

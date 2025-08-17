@@ -1,6 +1,7 @@
 import { computed } from "../api/computed";
 import { createElement } from "./createElement";
 import { generateId } from "../utils";
+import { createDom } from "./createDom";
 
 export interface Instance {
   parent?: Instance;
@@ -42,7 +43,7 @@ export const instanceCreate = <T extends () => any>(
     return Array.isArray(res) ? res : [res];
   })();
 
-  const fragment = createElement("fragment", computed(() => ({
+  const fragment = createDom(document.createDocumentFragment(), computed(() => ({
     children,
   }))) as unknown as HTMLElement;
 
