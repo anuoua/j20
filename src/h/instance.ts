@@ -43,9 +43,7 @@ export const instanceCreate = <T extends () => any>(
     return Array.isArray(res) ? res : [res];
   })();
 
-  const fragment = createDom(document.createDocumentFragment(), computed(() => ({
-    children,
-  }))) as unknown as HTMLElement;
+  const fragment = createDom(document.createDocumentFragment() as unknown as HTMLElement, undefined, () => children) as unknown as HTMLElement;
 
   fragment.prepend(instance.range[0]);
   fragment.append(instance.range[1]);

@@ -41,21 +41,19 @@ const add = (node: HTMLElement | SVGElement, key: string, newValue: any) => {
   }
 };
 
-export const createDom = (tag: HTMLElement | SVGElement, props: any) => {
+export const createDom = (tag: HTMLElement | SVGElement, props: undefined | (() => any), children: undefined | (() => any)) => {
   const node = tag;
+
   let oldProps: any = {};
 
-  effect(() => {
-    const newProps = { ...props.value };
+  props && effect(() => {
+    const newProps = { ...props() };
 
     const newKeys = Object.keys(newProps);
     const oldKeys = Object.keys(oldProps);
     const allKeys = new Set([...newKeys, ...oldKeys]);
 
     for (const key of allKeys) {
-      if (key === "children") {
-        continue;
-      }
       oldKeys.includes(key)
         ? newKeys.includes(key)
           ? Object.is(oldProps[key], newProps[key])
@@ -68,7 +66,7 @@ export const createDom = (tag: HTMLElement | SVGElement, props: any) => {
     oldProps = newProps;
   });
 
-  node.append(...getChildren([].concat(oldProps.children)));
+  children && node.append(...getChildren([].concat(children())));
 
   return node;
 };

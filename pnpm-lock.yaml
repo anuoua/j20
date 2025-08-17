@@ -12,8 +12,8 @@ importers:
         specifier: ^1.11.0
         version: 1.11.0
       signal-compiler:
-        specifier: ^0.0.25
-        version: 0.0.25(@babel/core@7.28.0)
+        specifier: ^0.0.27
+        version: 0.0.27(@babel/core@7.28.0)
     devDependencies:
       '@rollup/plugin-node-resolve':
         specifier: ^15.1.0
@@ -693,8 +693,8 @@ packages:
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
 
-  signal-compiler@0.0.25:
-    resolution: {integrity: sha512-Ftg4G9OuFqriXs01Zr2GqXTux3NW30lvgeqtU5sNnUdgLuiHh/jad9hXzb8Kuhb4FiFsTV1qzelXHx4sdiPxuQ==}
+  signal-compiler@0.0.27:
+    resolution: {integrity: sha512-rPaHxR1duWhxxmpuV+JqoqicmR/1p5RcGIfMeWqZ6Hekt5q8lKIHslbcpDuGdbrbdirS5G/m5k+I0YLZcKgzmA==}
 
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
@@ -1481,7 +1481,7 @@ snapshots:
 
   siginfo@2.0.0: {}
 
-  signal-compiler@0.0.25(@babel/core@7.28.0):
+  signal-compiler@0.0.27(@babel/core@7.28.0):
     dependencies:
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-module-imports': 7.27.1

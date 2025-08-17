@@ -1,7 +1,7 @@
 import { createElement } from "./h/createElement";
 
-export const h2 = (tag: any, props: any = { value: {} }) => {
-    return createElement(tag, props);
+export const h2 = (tag: any, props: any, children: any) => {
+    return createElement(tag, props, children);
 };
 
 export const jsx = h2;
