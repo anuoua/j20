@@ -15,25 +15,29 @@ const hello = _jsxs(App, computed(() => ({
       get children() {
         return [_jsx(__tmpl1(true)), _jsx(__tmpl2(true)), _jsx(__tmpl3(true)), _jsx(__tmpl4(true))];
       }
-    }))), "text", _jsxs(__tmpl8(), computed(() => ({
-      get style() {
-        return $k.value;
-      },
-      ...{
-        ...$a.value,
-        ...$b.value
-      },
+    }))), _jsxs(_Fragment, computed(() => ({
       get children() {
-        return [_jsx(__tmpl6(), computed(() => ({
+        return ["text", _jsxs(__tmpl8(), computed(() => ({
+          get style() {
+            return $k.value;
+          },
+          ...{
+            ...$a.value,
+            ...$b.value
+          },
           get children() {
-            return $hello.value;
+            return [_jsx(__tmpl6(), computed(() => ({
+              get children() {
+                return $hello.value;
+              }
+            }))), _jsx(__tmpl7(), computed(() => ({
+              get children() {
+                return $hello.value;
+              }
+            }))), $hello.value, ...$s.value];
           }
-        }))), _jsx(__tmpl7(), computed(() => ({
-          get children() {
-            return $hello.value;
-          }
-        }))), $hello.value, ...$s.value];
+        })))];
       }
-    }))), _jsx(_Fragment), _jsx(App.Item)];
+    }))), _jsx(App.Item)];
   }
 })));

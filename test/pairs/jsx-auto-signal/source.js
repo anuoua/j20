@@ -20,13 +20,14 @@ const hello =
         <path d="m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16" />
         <path d="M3.304 13h6.392" />
     </svg>
-    text
-    <div style={$k} className="p-1" abc num={1} {...{ ...$a, ...$b }} key="id1">
-        <div>{$hello}</div>
-        <div>{$hello}</div>
-        {$hello}
-        {...$s}
-    </div>
-    <></>
+    <>
+        text
+        <div style={$k} className="p-1" abc num={1} {...{ ...$a, ...$b }} key="id1">
+            <div>{$hello}</div>
+            <div>{$hello}</div>
+            {$hello}
+            {...$s}
+        </div>
+    </>
     <App.Item></App.Item>
 </App>;

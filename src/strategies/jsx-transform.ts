@@ -80,7 +80,7 @@ export const jsxTransform = (
 
     return {
         JSXFragment: {
-            exit(path) {
+            enter(path) {
                 path.replaceWith(t.jsxElement(
                     t.jsxOpeningElement(
                         t.jsxIdentifier(path.state.fragmentVarName),
