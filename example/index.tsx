@@ -1,6 +1,6 @@
 import { Fragment } from "../src";
-import { For } from "../src/control/For";
-import { If } from "../src/control/if";
+import { For } from "../src";
+import { If } from "../src";
 import { creatRoot } from "../src";
 import { Dynamic } from "../src/control/Dynamic";
 import { Case, Default, Switch } from "../src/control/Switch";
