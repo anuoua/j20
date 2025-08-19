@@ -1,3 +1,3 @@
 type Props = Record<string, any> | Record<string, any>[];
 
-type FC = (props: any) => any;
+type FC = { isLogic?: boolean } & ((props: any) => any);

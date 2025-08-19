@@ -1,7 +1,7 @@
 import { computed } from "../api/computed"
 import { untrackedReturn } from "../api/untracked-return";
 import { createComponent } from "../h/createComponent";
-import { List } from "./list";
+import { For } from "./For";
 
 export interface IfProps {
     of: any,
@@ -15,7 +15,7 @@ interface IfPropsInner {
 export const If = (p: IfProps) => {
     const arr = computed(() => !(p as unknown as IfPropsInner).value.of ? [0] : [1]);
 
-    return createComponent(List, () => ({
+    return createComponent(For, () => ({
         of: arr.value,
     }), () => (bool: {
         value: 1 | 0

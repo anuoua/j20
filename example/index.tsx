@@ -1,11 +1,9 @@
-import { computed, Fragment } from "../src";
-import { effect } from "../src";
-import { signal } from "../src";
-import { List } from "../src/control/list";
+import { Fragment } from "../src";
+import { For } from "../src/control/For";
 import { If } from "../src/control/if";
 import { creatRoot } from "../src";
-
-console.log(computed, effect, signal);
+import { Dynamic } from "../src/control/Dynamic";
+import { Case, Default, Switch } from "../src/control/Switch";
 
 const TodoItem = ($props: any) => {
   let $checked = true;
@@ -38,7 +36,7 @@ const TodoItem = ($props: any) => {
 };
 
 let arr = [];
-for (let i = 0; i < 10000; i++) {
+for (let i = 0; i < 10; i++) {
   arr.push({
     id: Math.random(),
     text: `item ${i}`,
@@ -49,13 +47,15 @@ const App = () => {
   let $list = [...arr];
 
   const add = (e: Event & { target: HTMLInputElement }) => {
-    $list = [
-      ...$list,
-      {
-        id: Math.random(),
-        text: e.target.value,
-      },
-    ];
+    document.startViewTransition(() => {
+      $list = [
+        ...$list,
+        {
+          id: Math.random(),
+          text: e.target.value,
+        },
+      ];
+    });
   };
 
   const handleDelete = (id: number) => {
@@ -65,6 +65,17 @@ const App = () => {
   const handleSwitch = () => {
     $list = $list.length ? [] : [...arr];
   };
+
+  let $el = <div>hellooooo</div>;
+  let $enable = false;
+
+  setTimeout(() => {
+    $el = <div>world</div>;
+    $enable = !$enable;
+    setTimeout(() => {
+      $enable = !$enable;
+    }, 1000);
+  }, 1000);
 
   return (
     <div>
@@ -90,16 +101,30 @@ const App = () => {
 
       <button onClick={handleSwitch}>切换</button>
 
+      <Dynamic>{$el}</Dynamic>
+
+      <Switch>
+        <Case of={$enable}>
+          <div>1</div>
+        </Case>
+        <Case of={!$enable}>
+          <div>2</div>
+        </Case>
+        <Default>
+          <div>3</div>
+        </Default>
+      </Switch>
+
       <input onChange={add}></input>
       <div>
-        <List of={$list}>
+        <For of={$list}>
           {($item) => (
             <TodoItem
               text={<span style="color: red">{$item.text}</span>}
               onDelete={() => handleDelete($item.id)}
             />
           )}
-        </List>
+        </For>
       </div>
     </div>
   );

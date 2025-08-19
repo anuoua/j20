@@ -10,7 +10,7 @@
   "typings": "dist/j20.d.ts",
   "dependencies": {
     "@preact/signals-core": "^1.11.0",
-    "signal-compiler": "^0.0.27"
+    "signal-compiler": "^0.0.28"
   },
   "scripts": {
     "dev": "vite example --config vite.config.ts",

@@ -37,7 +37,7 @@ interface ListItem<T> {
   item: T;
 }
 
-export const List = <T>(p: ListProps<T>) => {
+export const For = <T>(p: ListProps<T>) => {
 
   let initialized = false;
 

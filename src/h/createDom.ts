@@ -1,6 +1,5 @@
 import { effect } from "../api/effect";
-import { getEventName, isEvent } from "../utils";
-import { getChildren } from "./utils";
+import { getChildren, getEventName, isEvent } from "./utils";
 import { getCurrentInstance } from "./instance";
 
 const update = (

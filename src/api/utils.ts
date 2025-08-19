@@ -1,1 +1,1 @@
-export const isJSignal = (a: any) => a?.brand === Symbol.for("preact-signals");
+export const isSignal = (a: any) => a?.brand === Symbol.for("preact-signals");

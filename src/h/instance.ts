@@ -1,7 +1,5 @@
-import { computed } from "../api/computed";
-import { createElement } from "./createElement";
-import { generateId } from "../utils";
 import { createDom } from "./createDom";
+import { generateId } from "./utils";
 
 export interface Instance {
   parent?: Instance;
