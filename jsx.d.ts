@@ -28,10 +28,17 @@ declare global {
       (): Element;
     }
 
-    type Element = Node | ArrayElement | (string & {}) | number | boolean | null | undefined;
+    type Element =
+      | Node
+      | ArrayElement
+      | (string & {})
+      | number
+      | boolean
+      | null
+      | undefined;
     // END - difference between `jsx.d.ts` and `jsx-h.d.ts`
 
-    interface ArrayElement extends Array<Element> { }
+    interface ArrayElement extends Array<Element> {}
 
     interface ElementClass {
       // empty, libs can define requirements downstream
@@ -50,14 +57,14 @@ declare global {
         e: E & {
           currentTarget: T;
           target: DOMElement;
-        }
+        },
       ): void;
     }
 
     interface BoundEventHandler<
       T,
       E extends Event,
-      EHandler extends EventHandler<T, any> = EventHandler<T, E>
+      EHandler extends EventHandler<T, any> = EventHandler<T, E>,
     > {
       0: (data: any, ...e: Parameters<EHandler>) => void;
       1: any;
@@ -65,28 +72,34 @@ declare global {
     type EventHandlerUnion<
       T,
       E extends Event,
-      EHandler extends EventHandler<T, any> = EventHandler<T, E>
+      EHandler extends EventHandler<T, any> = EventHandler<T, E>,
     > = EHandler | BoundEventHandler<T, E, EHandler>;
 
-    interface EventHandlerWithOptions<T, E extends Event, EHandler = EventHandler<T, E>>
-      extends AddEventListenerOptions {
+    interface EventHandlerWithOptions<
+      T,
+      E extends Event,
+      EHandler = EventHandler<T, E>,
+    > extends AddEventListenerOptions {
       handleEvent: EHandler;
     }
 
     type EventHandlerWithOptionsUnion<
       T,
       E extends Event,
-      EHandler extends EventHandler<T, any> = EventHandler<T, E>
+      EHandler extends EventHandler<T, any> = EventHandler<T, E>,
     > = EHandler | EventHandlerWithOptions<T, E, EHandler>;
 
     interface InputEventHandler<T, E extends InputEvent> {
       (
         e: E & {
           currentTarget: T;
-          target: T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-          ? T
-          : DOMElement;
-        }
+          target: T extends
+            | HTMLInputElement
+            | HTMLSelectElement
+            | HTMLTextAreaElement
+            ? T
+            : DOMElement;
+        },
       ): void;
     }
     type InputEventHandlerUnion<T, E extends InputEvent> = EventHandlerUnion<
@@ -99,10 +112,13 @@ declare global {
       (
         e: E & {
           currentTarget: T;
-          target: T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-          ? T
-          : DOMElement;
-        }
+          target: T extends
+            | HTMLInputElement
+            | HTMLSelectElement
+            | HTMLTextAreaElement
+            ? T
+            : DOMElement;
+        },
       ): void;
     }
     type ChangeEventHandlerUnion<T, E extends Event> = EventHandlerUnion<
@@ -115,10 +131,13 @@ declare global {
       (
         e: E & {
           currentTarget: T;
-          target: T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-          ? T
-          : DOMElement;
-        }
+          target: T extends
+            | HTMLInputElement
+            | HTMLSelectElement
+            | HTMLTextAreaElement
+            ? T
+            : DOMElement;
+        },
       ): void;
     }
     type FocusEventHandlerUnion<T, E extends FocusEvent> = EventHandlerUnion<
@@ -140,41 +159,41 @@ declare global {
     interface CustomAttributes<T> {
       ref?: { current: T | null } | ((el: T) => void) | undefined;
       classList?:
-      | {
-        [k: string]: boolean | undefined;
-      }
-      | undefined;
+        | {
+            [k: string]: boolean | undefined;
+          }
+        | undefined;
       $ServerOnly?: boolean | undefined;
     }
     type Accessor<T> = () => T;
-    interface Directives { }
+    interface Directives {}
     interface DirectiveFunctions {
       [x: string]: (el: DOMElement, accessor: Accessor<any>) => void;
     }
-    interface ExplicitProperties { }
-    interface ExplicitAttributes { }
-    interface ExplicitBoolAttributes { }
-    interface CustomEvents { }
+    interface ExplicitProperties {}
+    interface ExplicitAttributes {}
+    interface ExplicitBoolAttributes {}
+    interface CustomEvents {}
     /** @deprecated Replaced by CustomEvents */
-    interface CustomCaptureEvents { }
+    interface CustomCaptureEvents {}
     type DirectiveAttributes = {
       [Key in keyof Directives as `use:${Key}`]?: Directives[Key];
     };
     type DirectiveFunctionAttributes<T> = {
       [K in keyof DirectiveFunctions as string extends K
-      ? never
-      : `use:${K}`]?: DirectiveFunctions[K] extends (
+        ? never
+        : `use:${K}`]?: DirectiveFunctions[K] extends (
         el: infer E, // will be unknown if not provided
         ...rest: infer R // use rest so that we can check whether it's provided or not
       ) => void
-      ? T extends E // everything extends unknown if E is unknown
-      ? R extends [infer A] // check if has accessor provided
-      ? A extends Accessor<infer V>
-      ? V // it's an accessor
-      : never // it isn't, type error
-      : true // no accessor provided
-      : never // T is the wrong element
-      : never; // it isn't a function
+        ? T extends E // everything extends unknown if E is unknown
+          ? R extends [infer A] // check if has accessor provided
+            ? A extends Accessor<infer V>
+              ? V // it's an accessor
+              : never // it isn't, type error
+            : true // no accessor provided
+          : never // T is the wrong element
+        : never; // it isn't a function
     };
     type PropAttributes = {
       [Key in keyof ExplicitProperties as `prop:${Key}`]?: ExplicitProperties[Key];
@@ -186,7 +205,10 @@ declare global {
       [Key in keyof ExplicitBoolAttributes as `bool:${Key}`]?: ExplicitBoolAttributes[Key];
     };
     type OnAttributes<T> = {
-      [Key in keyof CustomEvents as `on:${Key}`]?: EventHandlerWithOptionsUnion<T, CustomEvents[Key]>;
+      [Key in keyof CustomEvents as `on:${Key}`]?: EventHandlerWithOptionsUnion<
+        T,
+        CustomEvents[Key]
+      >;
     };
     type OnCaptureAttributes<T> = {
       [Key in keyof CustomCaptureEvents as `oncapture:${Key}`]?: EventHandler<
@@ -200,7 +222,9 @@ declare global {
       onFullscreenChange?: EventHandlerUnion<T, Event> | undefined;
       onFullscreenError?: EventHandlerUnion<T, Event> | undefined;
 
-      "on:fullscreenchange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      "on:fullscreenchange"?:
+        | EventHandlerWithOptionsUnion<T, Event>
+        | undefined;
       "on:fullscreenerror"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
 
       onfullscreenchange?: EventHandlerUnion<T, Event> | undefined;
@@ -225,9 +249,13 @@ declare global {
       // TODO `PageSwapEvent` is currently undefined on TS
       onPageSwap?: EventHandlerUnion<T, Event> | undefined;
       onPopstate?: EventHandlerUnion<T, PopStateEvent> | undefined;
-      onRejectionHandled?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+      onRejectionHandled?:
+        | EventHandlerUnion<T, PromiseRejectionEvent>
+        | undefined;
       onStorage?: EventHandlerUnion<T, StorageEvent> | undefined;
-      onUnhandledRejection?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+      onUnhandledRejection?:
+        | EventHandlerUnion<T, PromiseRejectionEvent>
+        | undefined;
       onUnload?: EventHandlerUnion<T, Event> | undefined;
 
       onafterprint?: EventHandlerUnion<T, Event> | undefined;
@@ -248,32 +276,56 @@ declare global {
       // TODO `PageSwapEvent` is currently undefined in TS
       onpageswap?: EventHandlerUnion<T, Event> | undefined;
       onpopstate?: EventHandlerUnion<T, PopStateEvent> | undefined;
-      onrejectionhandled?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+      onrejectionhandled?:
+        | EventHandlerUnion<T, PromiseRejectionEvent>
+        | undefined;
       onstorage?: EventHandlerUnion<T, StorageEvent> | undefined;
-      onunhandledrejection?: EventHandlerUnion<T, PromiseRejectionEvent> | undefined;
+      onunhandledrejection?:
+        | EventHandlerUnion<T, PromiseRejectionEvent>
+        | undefined;
       onunload?: EventHandlerUnion<T, Event> | undefined;
 
       "on:afterprint"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:beforeprint"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:beforeunload"?: EventHandlerWithOptionsUnion<T, BeforeUnloadEvent> | undefined;
-      "on:gamepadconnected"?: EventHandlerWithOptionsUnion<T, GamepadEvent> | undefined;
-      "on:gamepaddisconnected"?: EventHandlerWithOptionsUnion<T, GamepadEvent> | undefined;
-      "on:hashchange"?: EventHandlerWithOptionsUnion<T, HashChangeEvent> | undefined;
+      "on:beforeunload"?:
+        | EventHandlerWithOptionsUnion<T, BeforeUnloadEvent>
+        | undefined;
+      "on:gamepadconnected"?:
+        | EventHandlerWithOptionsUnion<T, GamepadEvent>
+        | undefined;
+      "on:gamepaddisconnected"?:
+        | EventHandlerWithOptionsUnion<T, GamepadEvent>
+        | undefined;
+      "on:hashchange"?:
+        | EventHandlerWithOptionsUnion<T, HashChangeEvent>
+        | undefined;
       "on:languagechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:message"?: EventHandlerWithOptionsUnion<T, MessageEvent> | undefined;
-      "on:messageerror"?: EventHandlerWithOptionsUnion<T, MessageEvent> | undefined;
+      "on:messageerror"?:
+        | EventHandlerWithOptionsUnion<T, MessageEvent>
+        | undefined;
       "on:offline"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:online"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:pagehide"?: EventHandlerWithOptionsUnion<T, PageTransitionEvent> | undefined;
+      "on:pagehide"?:
+        | EventHandlerWithOptionsUnion<T, PageTransitionEvent>
+        | undefined;
       // TODO `PageRevealEvent` is currently undefined in TS
       "on:pagereveal"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:pageshow"?: EventHandlerWithOptionsUnion<T, PageTransitionEvent> | undefined;
+      "on:pageshow"?:
+        | EventHandlerWithOptionsUnion<T, PageTransitionEvent>
+        | undefined;
       // TODO `PageSwapEvent` is currently undefined in TS
       "on:pageswap"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:popstate"?: EventHandlerWithOptionsUnion<T, PopStateEvent> | undefined;
-      "on:rejectionhandled"?: EventHandlerWithOptionsUnion<T, PromiseRejectionEvent> | undefined;
+      "on:popstate"?:
+        | EventHandlerWithOptionsUnion<T, PopStateEvent>
+        | undefined;
+      "on:rejectionhandled"?:
+        | EventHandlerWithOptionsUnion<T, PromiseRejectionEvent>
+        | undefined;
       "on:storage"?: EventHandlerWithOptionsUnion<T, StorageEvent> | undefined;
-      "on:unhandledrejection"?: EventHandlerWithOptionsUnion<T, PromiseRejectionEvent> | undefined;
+      "on:unhandledrejection"?:
+        | EventHandlerWithOptionsUnion<T, PromiseRejectionEvent>
+        | undefined;
       "on:unload"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     }
 
@@ -353,7 +405,9 @@ declare global {
       onResize?: EventHandlerUnion<T, UIEvent> | undefined;
       onScroll?: EventHandlerUnion<T, Event> | undefined;
       onScrollEnd?: EventHandlerUnion<T, Event> | undefined;
-      onSecurityPolicyViolation?: EventHandlerUnion<T, SecurityPolicyViolationEvent> | undefined;
+      onSecurityPolicyViolation?:
+        | EventHandlerUnion<T, SecurityPolicyViolationEvent>
+        | undefined;
       onSeeked?: EventHandlerUnion<T, Event> | undefined;
       onSeeking?: EventHandlerUnion<T, Event> | undefined;
       onSelect?: EventHandlerUnion<T, Event> | undefined;
@@ -453,7 +507,9 @@ declare global {
       onresize?: EventHandlerUnion<T, UIEvent> | undefined;
       onscroll?: EventHandlerUnion<T, Event> | undefined;
       onscrollend?: EventHandlerUnion<T, Event> | undefined;
-      onsecuritypolicyviolation?: EventHandlerUnion<T, SecurityPolicyViolationEvent> | undefined;
+      onsecuritypolicyviolation?:
+        | EventHandlerUnion<T, SecurityPolicyViolationEvent>
+        | undefined;
       onseeked?: EventHandlerUnion<T, Event> | undefined;
       onseeking?: EventHandlerUnion<T, Event> | undefined;
       onselect?: EventHandlerUnion<T, Event> | undefined;
@@ -479,29 +535,57 @@ declare global {
 
     interface CustomEventHandlersNamespaced<T> {
       "on:abort"?: EventHandlerWithOptionsUnion<T, UIEvent> | undefined;
-      "on:animationcancel"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
-      "on:animationend"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
-      "on:animationiteration"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
-      "on:animationstart"?: EventHandlerWithOptionsUnion<T, AnimationEvent> | undefined;
+      "on:animationcancel"?:
+        | EventHandlerWithOptionsUnion<T, AnimationEvent>
+        | undefined;
+      "on:animationend"?:
+        | EventHandlerWithOptionsUnion<T, AnimationEvent>
+        | undefined;
+      "on:animationiteration"?:
+        | EventHandlerWithOptionsUnion<T, AnimationEvent>
+        | undefined;
+      "on:animationstart"?:
+        | EventHandlerWithOptionsUnion<T, AnimationEvent>
+        | undefined;
       "on:auxclick"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
       "on:beforeinput"?:
-      | EventHandlerWithOptionsUnion<T, InputEvent, InputEventHandler<T, InputEvent>>
-      | undefined;
-      "on:beforetoggle"?: EventHandlerWithOptionsUnion<T, ToggleEvent> | undefined;
+        | EventHandlerWithOptionsUnion<
+            T,
+            InputEvent,
+            InputEventHandler<T, InputEvent>
+          >
+        | undefined;
+      "on:beforetoggle"?:
+        | EventHandlerWithOptionsUnion<T, ToggleEvent>
+        | undefined;
       "on:blur"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
-      | undefined;
+        | EventHandlerWithOptionsUnion<
+            T,
+            FocusEvent,
+            FocusEventHandler<T, FocusEvent>
+          >
+        | undefined;
       "on:cancel"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:canplay"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:canplaythrough"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:change"?: EventHandlerWithOptionsUnion<T, Event, ChangeEventHandler<T, Event>> | undefined;
+      "on:change"?:
+        | EventHandlerWithOptionsUnion<T, Event, ChangeEventHandler<T, Event>>
+        | undefined;
       "on:click"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
       // TODO `CommandEvent` is currently undefined in TS
       "on:command"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:compositionend"?: EventHandlerWithOptionsUnion<T, CompositionEvent> | undefined;
-      "on:compositionstart"?: EventHandlerWithOptionsUnion<T, CompositionEvent> | undefined;
-      "on:compositionupdate"?: EventHandlerWithOptionsUnion<T, CompositionEvent> | undefined;
-      "on:contextmenu"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+      "on:compositionend"?:
+        | EventHandlerWithOptionsUnion<T, CompositionEvent>
+        | undefined;
+      "on:compositionstart"?:
+        | EventHandlerWithOptionsUnion<T, CompositionEvent>
+        | undefined;
+      "on:compositionupdate"?:
+        | EventHandlerWithOptionsUnion<T, CompositionEvent>
+        | undefined;
+      "on:contextmenu"?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
       "on:copy"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
       "on:cuechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:cut"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
@@ -519,27 +603,49 @@ declare global {
       "on:ended"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:error"?: EventHandlerWithOptionsUnion<T, ErrorEvent> | undefined;
       "on:focus"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
-      | undefined;
+        | EventHandlerWithOptionsUnion<
+            T,
+            FocusEvent,
+            FocusEventHandler<T, FocusEvent>
+          >
+        | undefined;
       "on:focusin"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
-      | undefined;
+        | EventHandlerWithOptionsUnion<
+            T,
+            FocusEvent,
+            FocusEventHandler<T, FocusEvent>
+          >
+        | undefined;
       "on:focusout"?:
-      | EventHandlerWithOptionsUnion<T, FocusEvent, FocusEventHandler<T, FocusEvent>>
-      | undefined;
-      "on:gotpointercapture"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+        | EventHandlerWithOptionsUnion<
+            T,
+            FocusEvent,
+            FocusEventHandler<T, FocusEvent>
+          >
+        | undefined;
+      "on:gotpointercapture"?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
       "on:input"?:
-      | EventHandlerWithOptionsUnion<T, InputEvent, InputEventHandler<T, InputEvent>>
-      | undefined;
+        | EventHandlerWithOptionsUnion<
+            T,
+            InputEvent,
+            InputEventHandler<T, InputEvent>
+          >
+        | undefined;
       "on:invalid"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:keydown"?: EventHandlerWithOptionsUnion<T, KeyboardEvent> | undefined;
-      "on:keypress"?: EventHandlerWithOptionsUnion<T, KeyboardEvent> | undefined;
+      "on:keypress"?:
+        | EventHandlerWithOptionsUnion<T, KeyboardEvent>
+        | undefined;
       "on:keyup"?: EventHandlerWithOptionsUnion<T, KeyboardEvent> | undefined;
       "on:load"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:loadeddata"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:loadedmetadata"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:loadstart"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:lostpointercapture"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
+      "on:lostpointercapture"?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
       "on:mousedown"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
       "on:mouseenter"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
       "on:mouseleave"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
@@ -551,23 +657,41 @@ declare global {
       "on:pause"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:play"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:playing"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:pointercancel"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-      "on:pointerdown"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-      "on:pointerenter"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-      "on:pointerleave"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-      "on:pointermove"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-      "on:pointerout"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-      "on:pointerover"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-      "on:pointerup"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-      "on:progress"?: EventHandlerWithOptionsUnion<T, ProgressEvent> | undefined;
+      "on:pointercancel"?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
+      "on:pointerdown"?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
+      "on:pointerenter"?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
+      "on:pointerleave"?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
+      "on:pointermove"?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
+      "on:pointerout"?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
+      "on:pointerover"?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
+      "on:pointerup"?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
+      "on:progress"?:
+        | EventHandlerWithOptionsUnion<T, ProgressEvent>
+        | undefined;
       "on:ratechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:reset"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:resize"?: EventHandlerWithOptionsUnion<T, UIEvent> | undefined;
       "on:scroll"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:scrollend"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:securitypolicyviolation"?:
-      | EventHandlerWithOptionsUnion<T, SecurityPolicyViolationEvent>
-      | undefined;
+        | EventHandlerWithOptionsUnion<T, SecurityPolicyViolationEvent>
+        | undefined;
       "on:seeked"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:seeking"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:select"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
@@ -578,14 +702,24 @@ declare global {
       "on:suspend"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:timeupdate"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:toggle"?: EventHandlerWithOptionsUnion<T, ToggleEvent> | undefined;
-      "on:touchcancel"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
+      "on:touchcancel"?:
+        | EventHandlerWithOptionsUnion<T, TouchEvent>
+        | undefined;
       "on:touchend"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
       "on:touchmove"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
       "on:touchstart"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
-      "on:transitioncancel"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
-      "on:transitionend"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
-      "on:transitionrun"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
-      "on:transitionstart"?: EventHandlerWithOptionsUnion<T, TransitionEvent> | undefined;
+      "on:transitioncancel"?:
+        | EventHandlerWithOptionsUnion<T, TransitionEvent>
+        | undefined;
+      "on:transitionend"?:
+        | EventHandlerWithOptionsUnion<T, TransitionEvent>
+        | undefined;
+      "on:transitionrun"?:
+        | EventHandlerWithOptionsUnion<T, TransitionEvent>
+        | undefined;
+      "on:transitionstart"?:
+        | EventHandlerWithOptionsUnion<T, TransitionEvent>
+        | undefined;
       "on:volumechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:waiting"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:wheel"?: EventHandlerWithOptionsUnion<T, WheelEvent> | undefined;
@@ -593,16 +727,16 @@ declare global {
 
     interface DOMAttributes<T>
       extends CustomAttributes<T>,
-      DirectiveAttributes,
-      DirectiveFunctionAttributes<T>,
-      PropAttributes,
-      AttrAttributes,
-      BoolAttributes,
-      OnAttributes<T>,
-      OnCaptureAttributes<T>,
-      CustomEventHandlersCamelCase<T>,
-      CustomEventHandlersLowerCase<T>,
-      CustomEventHandlersNamespaced<T> {
+        DirectiveAttributes,
+        DirectiveFunctionAttributes<T>,
+        PropAttributes,
+        AttrAttributes,
+        BoolAttributes,
+        OnAttributes<T>,
+        OnCaptureAttributes<T>,
+        CustomEventHandlersCamelCase<T>,
+        CustomEventHandlersLowerCase<T>,
+        CustomEventHandlersNamespaced<T> {
       children?: Element | undefined;
       innerHTML?: string;
       innerText?: string | number;
@@ -614,9 +748,18 @@ declare global {
       [key: `-${string}`]: string | number | undefined;
     }
 
-    type HTMLAutocapitalize = "off" | "none" | "on" | "sentences" | "words" | "characters";
+    type HTMLAutocapitalize =
+      | "off"
+      | "none"
+      | "on"
+      | "sentences"
+      | "words"
+      | "characters";
     type HTMLDir = "ltr" | "rtl" | "auto";
-    type HTMLFormEncType = "application/x-www-form-urlencoded" | "multipart/form-data" | "text/plain";
+    type HTMLFormEncType =
+      | "application/x-www-form-urlencoded"
+      | "multipart/form-data"
+      | "text/plain";
     type HTMLFormMethod = "post" | "get" | "dialog";
     type HTMLCrossorigin = "anonymous" | "use-credentials" | "";
     type HTMLReferrerPolicy =
@@ -742,15 +885,15 @@ declare global {
        * elements.
        */
       "aria-current"?:
-      | boolean
-      | "false"
-      | "true"
-      | "page"
-      | "step"
-      | "location"
-      | "date"
-      | "time"
-      | undefined;
+        | boolean
+        | "false"
+        | "true"
+        | "page"
+        | "step"
+        | "location"
+        | "date"
+        | "time"
+        | undefined;
       /**
        * Identifies the element (or elements) that describes the object.
        *
@@ -782,7 +925,14 @@ declare global {
        *
        * @deprecated In ARIA 1.1
        */
-      "aria-dropeffect"?: "none" | "copy" | "execute" | "link" | "move" | "popup" | undefined;
+      "aria-dropeffect"?:
+        | "none"
+        | "copy"
+        | "execute"
+        | "link"
+        | "move"
+        | "popup"
+        | undefined;
       /**
        * Identifies the element that provides an error message for the object.
        *
@@ -811,15 +961,15 @@ declare global {
        * that can be triggered by an element.
        */
       "aria-haspopup"?:
-      | boolean
-      | "false"
-      | "true"
-      | "menu"
-      | "listbox"
-      | "tree"
-      | "grid"
-      | "dialog"
-      | undefined;
+        | boolean
+        | "false"
+        | "true"
+        | "menu"
+        | "listbox"
+        | "tree"
+        | "grid"
+        | "dialog"
+        | undefined;
       /**
        * Indicates whether the element is exposed to an accessibility API.
        *
@@ -831,7 +981,13 @@ declare global {
        *
        * @see aria-errormessage.
        */
-      "aria-invalid"?: boolean | "false" | "true" | "grammar" | "spelling" | undefined;
+      "aria-invalid"?:
+        | boolean
+        | "false"
+        | "true"
+        | "grammar"
+        | "spelling"
+        | undefined;
       /**
        * Indicates keyboard shortcuts that an author has implemented to activate or give focus to an
        * element.
@@ -907,17 +1063,17 @@ declare global {
        * @see aria-atomic.
        */
       "aria-relevant"?:
-      | "additions"
-      | "additions removals"
-      | "additions text"
-      | "all"
-      | "removals"
-      | "removals additions"
-      | "removals text"
-      | "text"
-      | "text additions"
-      | "text removals"
-      | undefined;
+        | "additions"
+        | "additions removals"
+        | "additions text"
+        | "all"
+        | "removals"
+        | "removals additions"
+        | "removals text"
+        | "text"
+        | "text additions"
+        | "text removals"
+        | undefined;
       /** Indicates that user input is required on the element before a form may be submitted. */
       "aria-required"?: boolean | "false" | "true" | undefined;
       /** Defines a human-readable, author-localized description for the role of an element. */
@@ -971,77 +1127,77 @@ declare global {
       /** Defines the human readable text alternative of aria-valuenow for a range widget. */
       "aria-valuetext"?: string | undefined;
       role?:
-      | "alert"
-      | "alertdialog"
-      | "application"
-      | "article"
-      | "banner"
-      | "button"
-      | "cell"
-      | "checkbox"
-      | "columnheader"
-      | "combobox"
-      | "complementary"
-      | "contentinfo"
-      | "definition"
-      | "dialog"
-      | "directory"
-      | "document"
-      | "feed"
-      | "figure"
-      | "form"
-      | "grid"
-      | "gridcell"
-      | "group"
-      | "heading"
-      | "img"
-      | "link"
-      | "list"
-      | "listbox"
-      | "listitem"
-      | "log"
-      | "main"
-      | "marquee"
-      | "math"
-      | "menu"
-      | "menubar"
-      | "menuitem"
-      | "menuitemcheckbox"
-      | "menuitemradio"
-      | "meter"
-      | "navigation"
-      | "none"
-      | "note"
-      | "option"
-      | "presentation"
-      | "progressbar"
-      | "radio"
-      | "radiogroup"
-      | "region"
-      | "row"
-      | "rowgroup"
-      | "rowheader"
-      | "scrollbar"
-      | "search"
-      | "searchbox"
-      | "separator"
-      | "slider"
-      | "spinbutton"
-      | "status"
-      | "switch"
-      | "tab"
-      | "table"
-      | "tablist"
-      | "tabpanel"
-      | "term"
-      | "textbox"
-      | "timer"
-      | "toolbar"
-      | "tooltip"
-      | "tree"
-      | "treegrid"
-      | "treeitem"
-      | undefined;
+        | "alert"
+        | "alertdialog"
+        | "application"
+        | "article"
+        | "banner"
+        | "button"
+        | "cell"
+        | "checkbox"
+        | "columnheader"
+        | "combobox"
+        | "complementary"
+        | "contentinfo"
+        | "definition"
+        | "dialog"
+        | "directory"
+        | "document"
+        | "feed"
+        | "figure"
+        | "form"
+        | "grid"
+        | "gridcell"
+        | "group"
+        | "heading"
+        | "img"
+        | "link"
+        | "list"
+        | "listbox"
+        | "listitem"
+        | "log"
+        | "main"
+        | "marquee"
+        | "math"
+        | "menu"
+        | "menubar"
+        | "menuitem"
+        | "menuitemcheckbox"
+        | "menuitemradio"
+        | "meter"
+        | "navigation"
+        | "none"
+        | "note"
+        | "option"
+        | "presentation"
+        | "progressbar"
+        | "radio"
+        | "radiogroup"
+        | "region"
+        | "row"
+        | "rowgroup"
+        | "rowheader"
+        | "scrollbar"
+        | "search"
+        | "searchbox"
+        | "separator"
+        | "slider"
+        | "spinbutton"
+        | "status"
+        | "switch"
+        | "tab"
+        | "table"
+        | "tablist"
+        | "tabpanel"
+        | "term"
+        | "textbox"
+        | "timer"
+        | "toolbar"
+        | "tooltip"
+        | "tree"
+        | "treegrid"
+        | "treeitem"
+        | undefined;
     }
 
     // TODO: Should we allow this?
@@ -1059,7 +1215,13 @@ declare global {
       autocapitalize?: HTMLAutocapitalize | undefined;
       class?: string | undefined;
       color?: string | undefined;
-      contenteditable?: "true" | "false" | boolean | "plaintext-only" | "inherit" | undefined;
+      contenteditable?:
+        | "true"
+        | "false"
+        | boolean
+        | "plaintext-only"
+        | "inherit"
+        | undefined;
       contextmenu?: string | undefined;
       datatype?: string | undefined;
       dir?: HTMLDir | undefined;
@@ -1070,15 +1232,15 @@ declare global {
       inert?: boolean | undefined;
       inlist?: any | undefined;
       inputmode?:
-      | "decimal"
-      | "email"
-      | "none"
-      | "numeric"
-      | "search"
-      | "tel"
-      | "text"
-      | "url"
-      | undefined;
+        | "decimal"
+        | "email"
+        | "none"
+        | "numeric"
+        | "search"
+        | "tel"
+        | "text"
+        | "url"
+        | undefined;
       is?: string | undefined;
       itemid?: string | undefined;
       itemprop?: string | undefined;
@@ -1106,15 +1268,15 @@ declare global {
       contextMenu?: string | undefined;
       exportParts?: string | undefined;
       inputMode?:
-      | "none"
-      | "text"
-      | "tel"
-      | "url"
-      | "email"
-      | "numeric"
-      | "decimal"
-      | "search"
-      | undefined;
+        | "none"
+        | "text"
+        | "tel"
+        | "url"
+        | "email"
+        | "numeric"
+        | "decimal"
+        | "search"
+        | undefined;
       itemId?: string | undefined;
       itemProp?: string | undefined;
       itemRef?: string | undefined;
@@ -1129,7 +1291,13 @@ declare global {
       ping?: string | undefined;
       referrerpolicy?: HTMLReferrerPolicy | undefined;
       rel?: string | undefined;
-      target?: "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined;
+      target?:
+        | "_self"
+        | "_blank"
+        | "_parent"
+        | "_top"
+        | (string & {})
+        | undefined;
       type?: string | undefined;
 
       /** @experimental */
@@ -1148,7 +1316,7 @@ declare global {
       /** @deprecated */
       shape?: "rect" | "circle" | "poly" | "default" | undefined;
     }
-    interface AudioHTMLAttributes<T> extends MediaHTMLAttributes<T> { }
+    interface AudioHTMLAttributes<T> extends MediaHTMLAttributes<T> {}
     interface AreaHTMLAttributes<T> extends HTMLAttributes<T> {
       alt?: string | undefined;
       coords?: string | undefined;
@@ -1158,7 +1326,13 @@ declare global {
       referrerpolicy?: HTMLReferrerPolicy | undefined;
       rel?: string | undefined;
       shape?: "rect" | "circle" | "poly" | "default" | undefined;
-      target?: "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined;
+      target?:
+        | "_self"
+        | "_blank"
+        | "_parent"
+        | "_top"
+        | (string & {})
+        | undefined;
 
       /** @experimental */
       attributionsrc?: string | undefined;
@@ -1170,15 +1344,21 @@ declare global {
     }
     interface BaseHTMLAttributes<T> extends HTMLAttributes<T> {
       href?: string | undefined;
-      target?: "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined;
+      target?:
+        | "_self"
+        | "_blank"
+        | "_parent"
+        | "_top"
+        | (string & {})
+        | undefined;
     }
     interface BlockquoteHTMLAttributes<T> extends HTMLAttributes<T> {
       cite?: string | undefined;
     }
     interface BodyHTMLAttributes<T>
       extends HTMLAttributes<T>,
-      WindowEventMap<T>,
-      ElementEventMap<T> { }
+        WindowEventMap<T>,
+        ElementEventMap<T> {}
     interface ButtonHTMLAttributes<T> extends HTMLAttributes<T> {
       autofocus?: boolean | undefined;
       disabled?: boolean | undefined;
@@ -1187,7 +1367,13 @@ declare global {
       formenctype?: HTMLFormEncType | undefined;
       formmethod?: HTMLFormMethod | undefined;
       formnovalidate?: boolean | undefined;
-      formtarget?: "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined;
+      formtarget?:
+        | "_self"
+        | "_blank"
+        | "_parent"
+        | "_top"
+        | (string & {})
+        | undefined;
       name?: string | undefined;
       popovertarget?: string | undefined;
       popovertargetaction?: "hide" | "show" | "toggle" | undefined;
@@ -1196,13 +1382,13 @@ declare global {
 
       /** @experimental */
       command?:
-      | "show-modal"
-      | "close"
-      | "show-popover"
-      | "hide-popover"
-      | "toggle-popover"
-      | (string & {})
-      | undefined;
+        | "show-modal"
+        | "close"
+        | "show-popover"
+        | "hide-popover"
+        | "toggle-popover"
+        | (string & {})
+        | undefined;
       /** @experimental */
       commandfor?: string | undefined;
 
@@ -1320,10 +1506,18 @@ declare global {
       name?: string | undefined;
       novalidate?: boolean | undefined;
       rel?: string | undefined;
-      target?: "_self" | "_blank" | "_parent" | "_top" | (string & {}) | undefined;
+      target?:
+        | "_self"
+        | "_blank"
+        | "_parent"
+        | "_top"
+        | (string & {})
+        | undefined;
 
       onFormData?: EventHandlerUnion<T, FormDataEvent> | undefined;
-      "on:formdata"?: EventHandlerWithOptionsUnion<T, FormDataEvent> | undefined;
+      "on:formdata"?:
+        | EventHandlerWithOptionsUnion<T, FormDataEvent>
+        | undefined;
       onformdata?: EventHandlerUnion<T, FormDataEvent> | undefined;
 
       noValidate?: boolean | undefined;
@@ -1431,70 +1625,70 @@ declare global {
       accept?: string | undefined;
       alt?: string | undefined;
       autocomplete?:
-      | "additional-name"
-      | "address-level1"
-      | "address-level2"
-      | "address-level3"
-      | "address-level4"
-      | "address-line1"
-      | "address-line2"
-      | "address-line3"
-      | "bday"
-      | "bday-day"
-      | "bday-month"
-      | "bday-year"
-      | "billing"
-      | "cc-additional-name"
-      | "cc-csc"
-      | "cc-exp"
-      | "cc-exp-month"
-      | "cc-exp-year"
-      | "cc-family-name"
-      | "cc-given-name"
-      | "cc-name"
-      | "cc-number"
-      | "cc-type"
-      | "country"
-      | "country-name"
-      | "current-password"
-      | "email"
-      | "family-name"
-      | "fax"
-      | "given-name"
-      | "home"
-      | "honorific-prefix"
-      | "honorific-suffix"
-      | "impp"
-      | "language"
-      | "mobile"
-      | "name"
-      | "new-password"
-      | "nickname"
-      | "off"
-      | "on"
-      | "organization"
-      | "organization-title"
-      | "pager"
-      | "photo"
-      | "postal-code"
-      | "sex"
-      | "shipping"
-      | "street-address"
-      | "tel"
-      | "tel-area-code"
-      | "tel-country-code"
-      | "tel-extension"
-      | "tel-local"
-      | "tel-local-prefix"
-      | "tel-local-suffix"
-      | "tel-national"
-      | "transaction-amount"
-      | "transaction-currency"
-      | "url"
-      | "username"
-      | "work"
-      | (string & {})
-      | undefined;
+        | "additional-name"
+        | "address-level1"
+        | "address-level2"
+        | "address-level3"
+        | "address-level4"
+        | "address-line1"
+        | "address-line2"
+        | "address-line3"
+        | "bday"
+        | "bday-day"
+        | "bday-month"
+        | "bday-year"
+        | "billing"
+        | "cc-additional-name"
+        | "cc-csc"
+        | "cc-exp"
+        | "cc-exp-month"
+        | "cc-exp-year"
+        | "cc-family-name"
+        | "cc-given-name"
+        | "cc-name"
+        | "cc-number"
+        | "cc-type"
+        | "country"
+        | "country-name"
+        | "current-password"
+        | "email"
+        | "family-name"
+        | "fax"
+        | "given-name"
+        | "home"
+        | "honorific-prefix"
+        | "honorific-suffix"
+        | "impp"
+        | "language"
+        | "mobile"
+        | "name"
+        | "new-password"
+        | "nickname"
+        | "off"
+        | "on"
+        | "organization"
+        | "organization-title"
+        | "pager"
+        | "photo"
+        | "postal-code"
+        | "sex"
+        | "shipping"
+        | "street-address"
+        | "tel"
+        | "tel-area-code"
+        | "tel-country-code"
+        | "tel-extension"
+        | "tel-local"
+        | "tel-local-prefix"
+        | "tel-local-suffix"
+        | "tel-national"
+        | "transaction-amount"
+        | "transaction-currency"
+        | "url"
+        | "username"
+        | "work"
+        | (string & {})
+        | undefined;
       autocorrect?: "on" | "off" | undefined;
       autofocus?: boolean | undefined;
       capture?: "user" | "environment" | undefined;
@@ -1502,7 +1696,15 @@ declare global {
       crossorigin?: HTMLCrossorigin | undefined;
       dirname?: string | undefined;
       disabled?: boolean | undefined;
-      enterkeyhint?: "enter" | "done" | "go" | "next" | "previous" | "search" | "send" | undefined;
+      enterkeyhint?:
+        | "enter"
+        | "done"
+        | "go"
+        | "next"
+        | "previous"
+        | "search"
+        | "send"
+        | undefined;
       form?: string | undefined;
       formaction?: string | SerializableAttributeValue | undefined;
       formenctype?: HTMLFormEncType | undefined;
@@ -1529,30 +1731,30 @@ declare global {
       src?: string | undefined;
       step?: number | string | undefined;
       type?:
-      | "button"
-      | "checkbox"
-      | "color"
-      | "date"
-      | "datetime-local"
-      | "email"
-      | "file"
-      | "hidden"
-      | "image"
-      | "month"
-      | "number"
-      | "password"
-      | "radio"
-      | "range"
-      | "reset"
-      | "search"
-      | "submit"
-      | "tel"
-      | "text"
-      | "time"
-      | "url"
-      | "week"
-      | (string & {})
-      | undefined;
+        | "button"
+        | "checkbox"
+        | "color"
+        | "date"
+        | "datetime-local"
+        | "email"
+        | "file"
+        | "hidden"
+        | "image"
+        | "month"
+        | "number"
+        | "password"
+        | "radio"
+        | "range"
+        | "reset"
+        | "search"
+        | "submit"
+        | "tel"
+        | "text"
+        | "time"
+        | "url"
+        | "week"
+        | (string & {})
+        | undefined;
       value?: string | string[] | number | undefined;
       width?: number | string | undefined;
 
@@ -1636,16 +1838,18 @@ declare global {
     interface MapHTMLAttributes<T> extends HTMLAttributes<T> {
       name?: string | undefined;
     }
-    interface MediaHTMLAttributes<T> extends HTMLAttributes<T>, ElementEventMap<T> {
+    interface MediaHTMLAttributes<T>
+      extends HTMLAttributes<T>,
+        ElementEventMap<T> {
       autoplay?: boolean | undefined;
       controls?: boolean | undefined;
       controlslist?:
-      | "nodownload"
-      | "nofullscreen"
-      | "noplaybackrate"
-      | "noremoteplayback"
-      | (string & {})
-      | undefined;
+        | "nodownload"
+        | "nofullscreen"
+        | "noplaybackrate"
+        | "noremoteplayback"
+        | (string & {})
+        | undefined;
       crossorigin?: HTMLCrossorigin | undefined;
       disableremoteplayback?: boolean | undefined;
       loop?: boolean | undefined;
@@ -1654,7 +1858,9 @@ declare global {
       src?: string | undefined;
 
       onEncrypted?: EventHandlerUnion<T, MediaEncryptedEvent> | undefined;
-      "on:encrypted"?: EventHandlerWithOptionsUnion<T, MediaEncryptedEvent> | undefined;
+      "on:encrypted"?:
+        | EventHandlerWithOptionsUnion<T, MediaEncryptedEvent>
+        | undefined;
       onencrypted?: EventHandlerUnion<T, MediaEncryptedEvent> | undefined;
 
       onWaitingForKey?: EventHandlerUnion<T, Event> | undefined;
@@ -1677,12 +1883,12 @@ declare global {
     }
     interface MetaHTMLAttributes<T> extends HTMLAttributes<T> {
       "http-equiv"?:
-      | "content-security-policy"
-      | "content-type"
-      | "default-style"
-      | "x-ua-compatible"
-      | "refresh"
-      | undefined;
+        | "content-security-policy"
+        | "content-type"
+        | "default-style"
+        | "x-ua-compatible"
+        | "refresh"
+        | undefined;
       charset?: string | undefined;
       content?: string | undefined;
       media?: string | undefined;
@@ -1791,7 +1997,12 @@ declare global {
       nonce?: string | undefined;
       referrerpolicy?: HTMLReferrerPolicy | undefined;
       src?: string | undefined;
-      type?: "importmap" | "module" | "speculationrules" | (string & {}) | undefined;
+      type?:
+        | "importmap"
+        | "module"
+        | "speculationrules"
+        | (string & {})
+        | undefined;
 
       /** @experimental */
       attributionsrc?: string | undefined;
@@ -1884,76 +2095,84 @@ declare global {
     }
     interface TextareaHTMLAttributes<T> extends HTMLAttributes<T> {
       autocomplete?:
-      | "additional-name"
-      | "address-level1"
-      | "address-level2"
-      | "address-level3"
-      | "address-level4"
-      | "address-line1"
-      | "address-line2"
-      | "address-line3"
-      | "bday"
-      | "bday-day"
-      | "bday-month"
-      | "bday-year"
-      | "billing"
-      | "cc-additional-name"
-      | "cc-csc"
-      | "cc-exp"
-      | "cc-exp-month"
-      | "cc-exp-year"
-      | "cc-family-name"
-      | "cc-given-name"
-      | "cc-name"
-      | "cc-number"
-      | "cc-type"
-      | "country"
-      | "country-name"
-      | "current-password"
-      | "email"
-      | "family-name"
-      | "fax"
-      | "given-name"
-      | "home"
-      | "honorific-prefix"
-      | "honorific-suffix"
-      | "impp"
-      | "language"
-      | "mobile"
-      | "name"
-      | "new-password"
-      | "nickname"
-      | "off"
-      | "on"
-      | "organization"
-      | "organization-title"
-      | "pager"
-      | "photo"
-      | "postal-code"
-      | "sex"
-      | "shipping"
-      | "street-address"
-      | "tel"
-      | "tel-area-code"
-      | "tel-country-code"
-      | "tel-extension"
-      | "tel-local"
-      | "tel-local-prefix"
-      | "tel-local-suffix"
-      | "tel-national"
-      | "transaction-amount"
-      | "transaction-currency"
-      | "url"
-      | "username"
-      | "work"
-      | (string & {})
-      | undefined;
+        | "additional-name"
+        | "address-level1"
+        | "address-level2"
+        | "address-level3"
+        | "address-level4"
+        | "address-line1"
+        | "address-line2"
+        | "address-line3"
+        | "bday"
+        | "bday-day"
+        | "bday-month"
+        | "bday-year"
+        | "billing"
+        | "cc-additional-name"
+        | "cc-csc"
+        | "cc-exp"
+        | "cc-exp-month"
+        | "cc-exp-year"
+        | "cc-family-name"
+        | "cc-given-name"
+        | "cc-name"
+        | "cc-number"
+        | "cc-type"
+        | "country"
+        | "country-name"
+        | "current-password"
+        | "email"
+        | "family-name"
+        | "fax"
+        | "given-name"
+        | "home"
+        | "honorific-prefix"
+        | "honorific-suffix"
+        | "impp"
+        | "language"
+        | "mobile"
+        | "name"
+        | "new-password"
+        | "nickname"
+        | "off"
+        | "on"
+        | "organization"
+        | "organization-title"
+        | "pager"
+        | "photo"
+        | "postal-code"
+        | "sex"
+        | "shipping"
+        | "street-address"
+        | "tel"
+        | "tel-area-code"
+        | "tel-country-code"
+        | "tel-extension"
+        | "tel-local"
+        | "tel-local-prefix"
+        | "tel-local-suffix"
+        | "tel-national"
+        | "transaction-amount"
+        | "transaction-currency"
+        | "url"
+        | "username"
+        | "work"
+        | (string & {})
+        | undefined;
       autocorrect?: "on" | "off" | undefined;
       autofocus?: boolean | undefined;
       cols?: number | string | undefined;
       dirname?: string | undefined;
       disabled?: boolean | undefined;
-      enterkeyhint?: "enter" | "done" | "go" | "next" | "previous" | "search" | "send" | undefined;
+      enterkeyhint?:
+        | "enter"
+        | "done"
+        | "go"
+        | "next"
+        | "previous"
+        | "search"
+        | "send"
+        | undefined;
       form?: string | undefined;
       maxlength?: number | string | undefined;
       minlength?: number | string | undefined;
@@ -2006,17 +2225,17 @@ declare global {
     interface TrackHTMLAttributes<T> extends HTMLAttributes<T> {
       default?: boolean | undefined;
       kind?:
-      | "alternative"
-      | "descriptions"
-      | "main"
-      | "main-desc"
-      | "translation"
-      | "commentary"
-      | "subtitles"
-      | "captions"
-      | "chapters"
-      | "metadata"
-      | undefined;
+        | "alternative"
+        | "descriptions"
+        | "main"
+        | "main-desc"
+        | "translation"
+        | "commentary"
+        | "subtitles"
+        | "captions"
+        | "chapters"
+        | "metadata"
+        | undefined;
       label?: string | undefined;
       src?: string | undefined;
       srclang?: string | undefined;
@@ -2032,13 +2251,25 @@ declare global {
       poster?: string | undefined;
       width?: number | string | undefined;
 
-      onEnterPictureInPicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
-      "on:enterpictureinpicture"?: EventHandlerWithOptionsUnion<T, PictureInPictureEvent> | undefined;
-      onenterpictureinpicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
+      onEnterPictureInPicture?:
+        | EventHandlerUnion<T, PictureInPictureEvent>
+        | undefined;
+      "on:enterpictureinpicture"?:
+        | EventHandlerWithOptionsUnion<T, PictureInPictureEvent>
+        | undefined;
+      onenterpictureinpicture?:
+        | EventHandlerUnion<T, PictureInPictureEvent>
+        | undefined;
 
-      onLeavePictureInPicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
-      "on:leavepictureinpicture"?: EventHandlerWithOptionsUnion<T, PictureInPictureEvent> | undefined;
-      onleavepictureinpicture?: EventHandlerUnion<T, PictureInPictureEvent> | undefined;
+      onLeavePictureInPicture?:
+        | EventHandlerUnion<T, PictureInPictureEvent>
+        | undefined;
+      "on:leavepictureinpicture"?:
+        | EventHandlerWithOptionsUnion<T, PictureInPictureEvent>
+        | undefined;
+      onleavepictureinpicture?:
+        | EventHandlerUnion<T, PictureInPictureEvent>
+        | undefined;
     }
 
     interface WebViewHTMLAttributes<T> extends HTMLAttributes<T> {
@@ -2182,39 +2413,54 @@ declare global {
     }
     interface PresentationSVGAttributes {
       "alignment-baseline"?:
-      | "auto"
-      | "baseline"
-      | "before-edge"
-      | "text-before-edge"
-      | "middle"
-      | "central"
-      | "after-edge"
-      | "text-after-edge"
-      | "ideographic"
-      | "alphabetic"
-      | "hanging"
-      | "mathematical"
-      | "inherit"
-      | undefined;
+        | "auto"
+        | "baseline"
+        | "before-edge"
+        | "text-before-edge"
+        | "middle"
+        | "central"
+        | "after-edge"
+        | "text-after-edge"
+        | "ideographic"
+        | "alphabetic"
+        | "hanging"
+        | "mathematical"
+        | "inherit"
+        | undefined;
       "baseline-shift"?: number | string | undefined;
       "clip-path"?: string | undefined;
       "clip-rule"?: "nonzero" | "evenodd" | "inherit" | undefined;
-      "color-interpolation"?: "auto" | "sRGB" | "linearRGB" | "inherit" | undefined;
-      "color-interpolation-filters"?: "auto" | "sRGB" | "linearRGB" | "inherit" | undefined;
+      "color-interpolation"?:
+        | "auto"
+        | "sRGB"
+        | "linearRGB"
+        | "inherit"
+        | undefined;
+      "color-interpolation-filters"?:
+        | "auto"
+        | "sRGB"
+        | "linearRGB"
+        | "inherit"
+        | undefined;
       "color-profile"?: string | undefined;
-      "color-rendering"?: "auto" | "optimizeSpeed" | "optimizeQuality" | "inherit" | undefined;
+      "color-rendering"?:
+        | "auto"
+        | "optimizeSpeed"
+        | "optimizeQuality"
+        | "inherit"
+        | undefined;
       "dominant-baseline"?:
-      | "auto"
-      | "text-bottom"
-      | "alphabetic"
-      | "ideographic"
-      | "middle"
-      | "central"
-      | "mathematical"
-      | "hanging"
-      | "text-top"
-      | "inherit"
-      | undefined;
+        | "auto"
+        | "text-bottom"
+        | "alphabetic"
+        | "ideographic"
+        | "middle"
+        | "central"
+        | "mathematical"
+        | "hanging"
+        | "text-top"
+        | "inherit"
+        | undefined;
       "enable-background"?: string | undefined;
       "fill-opacity"?: number | string | "inherit" | undefined;
       "fill-rule"?: "nonzero" | "evenodd" | "inherit" | undefined;
@@ -2229,61 +2475,81 @@ declare global {
       "font-weight"?: number | string | undefined;
       "glyph-orientation-horizontal"?: string | undefined;
       "glyph-orientation-vertical"?: string | undefined;
-      "image-rendering"?: "auto" | "optimizeQuality" | "optimizeSpeed" | "inherit" | undefined;
+      "image-rendering"?:
+        | "auto"
+        | "optimizeQuality"
+        | "optimizeSpeed"
+        | "inherit"
+        | undefined;
       "letter-spacing"?: number | string | undefined;
       "lighting-color"?: string | undefined;
       "marker-end"?: string | undefined;
       "marker-mid"?: string | undefined;
       "marker-start"?: string | undefined;
       "pointer-events"?:
-      | "bounding-box"
-      | "visiblePainted"
-      | "visibleFill"
-      | "visibleStroke"
-      | "visible"
-      | "painted"
-      | "color"
-      | "fill"
-      | "stroke"
-      | "all"
-      | "none"
-      | "inherit"
-      | undefined;
+        | "bounding-box"
+        | "visiblePainted"
+        | "visibleFill"
+        | "visibleStroke"
+        | "visible"
+        | "painted"
+        | "color"
+        | "fill"
+        | "stroke"
+        | "all"
+        | "none"
+        | "inherit"
+        | undefined;
       "shape-rendering"?:
-      | "auto"
-      | "optimizeSpeed"
-      | "crispEdges"
-      | "geometricPrecision"
-      | "inherit"
-      | undefined;
+        | "auto"
+        | "optimizeSpeed"
+        | "crispEdges"
+        | "geometricPrecision"
+        | "inherit"
+        | undefined;
       "stop-color"?: string | undefined;
       "stop-opacity"?: number | string | "inherit" | undefined;
       "stroke-dasharray"?: string | undefined;
       "stroke-dashoffset"?: number | string | undefined;
       "stroke-linecap"?: "butt" | "round" | "square" | "inherit" | undefined;
-      "stroke-linejoin"?: "arcs" | "bevel" | "miter" | "miter-clip" | "round" | "inherit" | undefined;
+      "stroke-linejoin"?:
+        | "arcs"
+        | "bevel"
+        | "miter"
+        | "miter-clip"
+        | "round"
+        | "inherit"
+        | undefined;
       "stroke-miterlimit"?: number | string | "inherit" | undefined;
       "stroke-opacity"?: number | string | "inherit" | undefined;
       "stroke-width"?: number | string | undefined;
       "text-anchor"?: "start" | "middle" | "end" | "inherit" | undefined;
       "text-decoration"?:
-      | "none"
-      | "underline"
-      | "overline"
-      | "line-through"
-      | "blink"
-      | "inherit"
-      | undefined;
+        | "none"
+        | "underline"
+        | "overline"
+        | "line-through"
+        | "blink"
+        | "inherit"
+        | undefined;
       "text-rendering"?:
-      | "auto"
-      | "optimizeSpeed"
-      | "optimizeLegibility"
-      | "geometricPrecision"
-      | "inherit"
-      | undefined;
+        | "auto"
+        | "optimizeSpeed"
+        | "optimizeLegibility"
+        | "geometricPrecision"
+        | "inherit"
+        | undefined;
       "unicode-bidi"?: string | undefined;
       "word-spacing"?: number | string | undefined;
-      "writing-mode"?: "lr-tb" | "rl-tb" | "tb-rl" | "lr" | "rl" | "tb" | "inherit" | undefined;
+      "writing-mode"?:
+        | "lr-tb"
+        | "rl-tb"
+        | "tb-rl"
+        | "lr"
+        | "rl"
+        | "tb"
+        | "inherit"
+        | undefined;
       clip?: string | undefined;
       color?: string | undefined;
       cursor?: string | undefined;
@@ -2294,32 +2560,38 @@ declare global {
       kerning?: string | undefined;
       mask?: string | undefined;
       opacity?: number | string | "inherit" | undefined;
-      overflow?: "visible" | "hidden" | "scroll" | "auto" | "inherit" | undefined;
+      overflow?:
+        | "visible"
+        | "hidden"
+        | "scroll"
+        | "auto"
+        | "inherit"
+        | undefined;
       pathLength?: string | number | undefined;
       stroke?: string | undefined;
       visibility?: "visible" | "hidden" | "collapse" | "inherit" | undefined;
     }
     interface AnimationElementSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      ExternalResourceSVGAttributes,
-      ConditionalProcessingSVGAttributes { }
+        ExternalResourceSVGAttributes,
+        ConditionalProcessingSVGAttributes {}
     interface ContainerElementSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      ShapeElementSVGAttributes<T>,
-      Pick<
-        PresentationSVGAttributes,
-        | "clip-path"
-        | "mask"
-        | "cursor"
-        | "opacity"
-        | "filter"
-        | "enable-background"
-        | "color-interpolation"
-        | "color-rendering"
-      > { }
+        ShapeElementSVGAttributes<T>,
+        Pick<
+          PresentationSVGAttributes,
+          | "clip-path"
+          | "mask"
+          | "cursor"
+          | "opacity"
+          | "filter"
+          | "enable-background"
+          | "color-interpolation"
+          | "color-rendering"
+        > {}
     interface FilterPrimitiveElementSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      Pick<PresentationSVGAttributes, "color-interpolation-filters"> {
+        Pick<PresentationSVGAttributes, "color-interpolation-filters"> {
       height?: number | string | undefined;
       result?: string | undefined;
       width?: number | string | undefined;
@@ -2339,8 +2611,8 @@ declare global {
     }
     interface GradientElementSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes {
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes {
       gradientTransform?: string | undefined;
       gradientUnits?: SVGUnits | undefined;
       href?: string | undefined;
@@ -2348,78 +2620,78 @@ declare global {
     }
     interface GraphicsElementSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      Pick<
-        PresentationSVGAttributes,
-        | "clip-rule"
-        | "mask"
-        | "pointer-events"
-        | "cursor"
-        | "opacity"
-        | "filter"
-        | "display"
-        | "visibility"
-        | "color-interpolation"
-        | "color-rendering"
-      > { }
-    interface LightSourceElementSVGAttributes<T> extends CoreSVGAttributes<T> { }
+        Pick<
+          PresentationSVGAttributes,
+          | "clip-rule"
+          | "mask"
+          | "pointer-events"
+          | "cursor"
+          | "opacity"
+          | "filter"
+          | "display"
+          | "visibility"
+          | "color-interpolation"
+          | "color-rendering"
+        > {}
+    interface LightSourceElementSVGAttributes<T> extends CoreSVGAttributes<T> {}
     interface NewViewportSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      Pick<PresentationSVGAttributes, "overflow" | "clip"> {
+        Pick<PresentationSVGAttributes, "overflow" | "clip"> {
       viewBox?: string | undefined;
     }
     interface ShapeElementSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      Pick<
-        PresentationSVGAttributes,
-        | "color"
-        | "fill"
-        | "fill-rule"
-        | "fill-opacity"
-        | "stroke"
-        | "stroke-width"
-        | "stroke-linecap"
-        | "stroke-linejoin"
-        | "stroke-miterlimit"
-        | "stroke-dasharray"
-        | "stroke-dashoffset"
-        | "stroke-opacity"
-        | "shape-rendering"
-        | "pathLength"
-      > { }
+        Pick<
+          PresentationSVGAttributes,
+          | "color"
+          | "fill"
+          | "fill-rule"
+          | "fill-opacity"
+          | "stroke"
+          | "stroke-width"
+          | "stroke-linecap"
+          | "stroke-linejoin"
+          | "stroke-miterlimit"
+          | "stroke-dasharray"
+          | "stroke-dashoffset"
+          | "stroke-opacity"
+          | "shape-rendering"
+          | "pathLength"
+        > {}
     interface TextContentElementSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      Pick<
-        PresentationSVGAttributes,
-        | "font-family"
-        | "font-style"
-        | "font-variant"
-        | "font-weight"
-        | "font-stretch"
-        | "font-size"
-        | "font-size-adjust"
-        | "kerning"
-        | "letter-spacing"
-        | "word-spacing"
-        | "text-decoration"
-        | "glyph-orientation-horizontal"
-        | "glyph-orientation-vertical"
-        | "direction"
-        | "unicode-bidi"
-        | "text-anchor"
-        | "dominant-baseline"
-        | "color"
-        | "fill"
-        | "fill-rule"
-        | "fill-opacity"
-        | "stroke"
-        | "stroke-width"
-        | "stroke-linecap"
-        | "stroke-linejoin"
-        | "stroke-miterlimit"
-        | "stroke-dasharray"
-        | "stroke-dashoffset"
-        | "stroke-opacity"
-      > { }
+        Pick<
+          PresentationSVGAttributes,
+          | "font-family"
+          | "font-style"
+          | "font-variant"
+          | "font-weight"
+          | "font-stretch"
+          | "font-size"
+          | "font-size-adjust"
+          | "kerning"
+          | "letter-spacing"
+          | "word-spacing"
+          | "text-decoration"
+          | "glyph-orientation-horizontal"
+          | "glyph-orientation-vertical"
+          | "direction"
+          | "unicode-bidi"
+          | "text-anchor"
+          | "dominant-baseline"
+          | "color"
+          | "fill"
+          | "fill-rule"
+          | "fill-opacity"
+          | "stroke"
+          | "stroke-width"
+          | "stroke-linecap"
+          | "stroke-linejoin"
+          | "stroke-miterlimit"
+          | "stroke-dasharray"
+          | "stroke-dashoffset"
+          | "stroke-opacity"
+        > {}
     interface ZoomAndPanSVGAttributes {
       /**
        * @deprecated
@@ -2429,16 +2701,19 @@ declare global {
     }
     interface AnimateSVGAttributes<T>
       extends AnimationElementSVGAttributes<T>,
-      AnimationAttributeTargetSVGAttributes,
-      AnimationTimingSVGAttributes,
-      AnimationValueSVGAttributes,
-      AnimationAdditionSVGAttributes,
-      Pick<PresentationSVGAttributes, "color-interpolation" | "color-rendering"> { }
+        AnimationAttributeTargetSVGAttributes,
+        AnimationTimingSVGAttributes,
+        AnimationValueSVGAttributes,
+        AnimationAdditionSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "color-interpolation" | "color-rendering"
+        > {}
     interface AnimateMotionSVGAttributes<T>
       extends AnimationElementSVGAttributes<T>,
-      AnimationTimingSVGAttributes,
-      AnimationValueSVGAttributes,
-      AnimationAdditionSVGAttributes {
+        AnimationTimingSVGAttributes,
+        AnimationValueSVGAttributes,
+        AnimationAdditionSVGAttributes {
       keyPoints?: string | undefined;
       origin?: "default" | undefined;
       path?: string | undefined;
@@ -2446,47 +2721,49 @@ declare global {
     }
     interface AnimateTransformSVGAttributes<T>
       extends AnimationElementSVGAttributes<T>,
-      AnimationAttributeTargetSVGAttributes,
-      AnimationTimingSVGAttributes,
-      AnimationValueSVGAttributes,
-      AnimationAdditionSVGAttributes {
+        AnimationAttributeTargetSVGAttributes,
+        AnimationTimingSVGAttributes,
+        AnimationValueSVGAttributes,
+        AnimationAdditionSVGAttributes {
       type?: "translate" | "scale" | "rotate" | "skewX" | "skewY" | undefined;
     }
     interface CircleSVGAttributes<T>
       extends GraphicsElementSVGAttributes<T>,
-      ShapeElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path"> {
+        ShapeElementSVGAttributes<T>,
+        ConditionalProcessingSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<PresentationSVGAttributes, "clip-path"> {
       cx?: number | string | undefined;
       cy?: number | string | undefined;
       r?: number | string | undefined;
     }
     interface ClipPathSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path"> {
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<PresentationSVGAttributes, "clip-path"> {
       clipPathUnits?: SVGUnits | undefined;
     }
     interface DefsSVGAttributes<T>
       extends ContainerElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes { }
-    interface DescSVGAttributes<T> extends CoreSVGAttributes<T>, StylableSVGAttributes { }
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes {}
+    interface DescSVGAttributes<T>
+      extends CoreSVGAttributes<T>,
+        StylableSVGAttributes {}
     interface EllipseSVGAttributes<T>
       extends GraphicsElementSVGAttributes<T>,
-      ShapeElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path"> {
+        ShapeElementSVGAttributes<T>,
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<PresentationSVGAttributes, "clip-path"> {
       cx?: number | string | undefined;
       cy?: number | string | undefined;
       rx?: number | string | undefined;
@@ -2494,35 +2771,53 @@ declare global {
     }
     interface FeBlendSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      DoubleInputFilterSVGAttributes,
-      StylableSVGAttributes {
-      mode?: "normal" | "multiply" | "screen" | "darken" | "lighten" | undefined;
+        DoubleInputFilterSVGAttributes,
+        StylableSVGAttributes {
+      mode?:
+        | "normal"
+        | "multiply"
+        | "screen"
+        | "darken"
+        | "lighten"
+        | undefined;
     }
     interface FeColorMatrixSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      SingleInputFilterSVGAttributes,
-      StylableSVGAttributes {
-      type?: "matrix" | "saturate" | "hueRotate" | "luminanceToAlpha" | undefined;
+        SingleInputFilterSVGAttributes,
+        StylableSVGAttributes {
+      type?:
+        | "matrix"
+        | "saturate"
+        | "hueRotate"
+        | "luminanceToAlpha"
+        | undefined;
       values?: string | undefined;
     }
     interface FeComponentTransferSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      SingleInputFilterSVGAttributes,
-      StylableSVGAttributes { }
+        SingleInputFilterSVGAttributes,
+        StylableSVGAttributes {}
     interface FeCompositeSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      DoubleInputFilterSVGAttributes,
-      StylableSVGAttributes {
+        DoubleInputFilterSVGAttributes,
+        StylableSVGAttributes {
       k1?: number | string | undefined;
       k2?: number | string | undefined;
       k3?: number | string | undefined;
       k4?: number | string | undefined;
-      operator?: "over" | "in" | "out" | "atop" | "xor" | "arithmetic" | undefined;
+      operator?:
+        | "over"
+        | "in"
+        | "out"
+        | "atop"
+        | "xor"
+        | "arithmetic"
+        | undefined;
     }
     interface FeConvolveMatrixSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      SingleInputFilterSVGAttributes,
-      StylableSVGAttributes {
+        SingleInputFilterSVGAttributes,
+        StylableSVGAttributes {
       bias?: number | string | undefined;
       divisor?: number | string | undefined;
       edgeMode?: "duplicate" | "wrap" | "none" | undefined;
@@ -2535,38 +2830,45 @@ declare global {
     }
     interface FeDiffuseLightingSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      SingleInputFilterSVGAttributes,
-      StylableSVGAttributes,
-      Pick<PresentationSVGAttributes, "color" | "lighting-color"> {
+        SingleInputFilterSVGAttributes,
+        StylableSVGAttributes,
+        Pick<PresentationSVGAttributes, "color" | "lighting-color"> {
       diffuseConstant?: number | string | undefined;
       kernelUnitLength?: number | string | undefined;
       surfaceScale?: number | string | undefined;
     }
     interface FeDisplacementMapSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      DoubleInputFilterSVGAttributes,
-      StylableSVGAttributes {
+        DoubleInputFilterSVGAttributes,
+        StylableSVGAttributes {
       scale?: number | string | undefined;
       xChannelSelector?: "R" | "G" | "B" | "A" | undefined;
       yChannelSelector?: "R" | "G" | "B" | "A" | undefined;
     }
-    interface FeDistantLightSVGAttributes<T> extends LightSourceElementSVGAttributes<T> {
+    interface FeDistantLightSVGAttributes<T>
+      extends LightSourceElementSVGAttributes<T> {
       azimuth?: number | string | undefined;
       elevation?: number | string | undefined;
     }
     interface FeDropShadowSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      FilterPrimitiveElementSVGAttributes<T>,
-      StylableSVGAttributes,
-      Pick<PresentationSVGAttributes, "color" | "flood-color" | "flood-opacity"> {
+        FilterPrimitiveElementSVGAttributes<T>,
+        StylableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "color" | "flood-color" | "flood-opacity"
+        > {
       dx?: number | string | undefined;
       dy?: number | string | undefined;
       stdDeviation?: number | string | undefined;
     }
     interface FeFloodSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      StylableSVGAttributes,
-      Pick<PresentationSVGAttributes, "color" | "flood-color" | "flood-opacity"> { }
+        StylableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "color" | "flood-color" | "flood-opacity"
+        > {}
     interface FeFuncSVGAttributes<T> extends CoreSVGAttributes<T> {
       amplitude?: number | string | undefined;
       exponent?: number | string | undefined;
@@ -2578,53 +2880,55 @@ declare global {
     }
     interface FeGaussianBlurSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      SingleInputFilterSVGAttributes,
-      StylableSVGAttributes {
+        SingleInputFilterSVGAttributes,
+        StylableSVGAttributes {
       stdDeviation?: number | string | undefined;
     }
     interface FeImageSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes {
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes {
       href?: string | undefined;
       preserveAspectRatio?: SVGPreserveAspectRatio | undefined;
     }
     interface FeMergeSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      StylableSVGAttributes { }
+        StylableSVGAttributes {}
     interface FeMergeNodeSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      SingleInputFilterSVGAttributes { }
+        SingleInputFilterSVGAttributes {}
     interface FeMorphologySVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      SingleInputFilterSVGAttributes,
-      StylableSVGAttributes {
+        SingleInputFilterSVGAttributes,
+        StylableSVGAttributes {
       operator?: "erode" | "dilate" | undefined;
       radius?: number | string | undefined;
     }
     interface FeOffsetSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      SingleInputFilterSVGAttributes,
-      StylableSVGAttributes {
+        SingleInputFilterSVGAttributes,
+        StylableSVGAttributes {
       dx?: number | string | undefined;
       dy?: number | string | undefined;
     }
-    interface FePointLightSVGAttributes<T> extends LightSourceElementSVGAttributes<T> {
+    interface FePointLightSVGAttributes<T>
+      extends LightSourceElementSVGAttributes<T> {
       x?: number | string | undefined;
       y?: number | string | undefined;
       z?: number | string | undefined;
     }
     interface FeSpecularLightingSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      SingleInputFilterSVGAttributes,
-      StylableSVGAttributes,
-      Pick<PresentationSVGAttributes, "color" | "lighting-color"> {
+        SingleInputFilterSVGAttributes,
+        StylableSVGAttributes,
+        Pick<PresentationSVGAttributes, "color" | "lighting-color"> {
       kernelUnitLength?: number | string | undefined;
       specularConstant?: string | undefined;
       specularExponent?: string | undefined;
       surfaceScale?: string | undefined;
     }
-    interface FeSpotLightSVGAttributes<T> extends LightSourceElementSVGAttributes<T> {
+    interface FeSpotLightSVGAttributes<T>
+      extends LightSourceElementSVGAttributes<T> {
       limitingConeAngle?: number | string | undefined;
       pointsAtX?: number | string | undefined;
       pointsAtY?: number | string | undefined;
@@ -2636,11 +2940,11 @@ declare global {
     }
     interface FeTileSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      SingleInputFilterSVGAttributes,
-      StylableSVGAttributes { }
+        SingleInputFilterSVGAttributes,
+        StylableSVGAttributes {}
     interface FeTurbulanceSVGAttributes<T>
       extends FilterPrimitiveElementSVGAttributes<T>,
-      StylableSVGAttributes {
+        StylableSVGAttributes {
       baseFrequency?: number | string | undefined;
       numOctaves?: number | string | undefined;
       seed?: number | string | undefined;
@@ -2649,8 +2953,8 @@ declare global {
     }
     interface FilterSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes {
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes {
       filterRes?: number | string | undefined;
       filterUnits?: SVGUnits | undefined;
       height?: number | string | undefined;
@@ -2661,11 +2965,11 @@ declare global {
     }
     interface ForeignObjectSVGAttributes<T>
       extends NewViewportSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "display" | "visibility"> {
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<PresentationSVGAttributes, "display" | "visibility"> {
       height?: number | string | undefined;
       width?: number | string | undefined;
       x?: number | string | undefined;
@@ -2673,18 +2977,24 @@ declare global {
     }
     interface GSVGAttributes<T>
       extends ContainerElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "display" | "visibility"> { }
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "clip-path" | "display" | "visibility"
+        > {}
     interface ImageSVGAttributes<T>
       extends NewViewportSVGAttributes<T>,
-      GraphicsElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "color-profile" | "image-rendering"> {
+        GraphicsElementSVGAttributes<T>,
+        ConditionalProcessingSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "clip-path" | "color-profile" | "image-rendering"
+        > {
       height?: number | string | undefined;
       href?: string | undefined;
       preserveAspectRatio?: ImagePreserveAspectRatio | undefined;
@@ -2694,18 +3004,22 @@ declare global {
     }
     interface LineSVGAttributes<T>
       extends GraphicsElementSVGAttributes<T>,
-      ShapeElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+        ShapeElementSVGAttributes<T>,
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+        > {
       x1?: number | string | undefined;
       x2?: number | string | undefined;
       y1?: number | string | undefined;
       y2?: number | string | undefined;
     }
-    interface LinearGradientSVGAttributes<T> extends GradientElementSVGAttributes<T> {
+    interface LinearGradientSVGAttributes<T>
+      extends GradientElementSVGAttributes<T> {
       x1?: number | string | undefined;
       x2?: number | string | undefined;
       y1?: number | string | undefined;
@@ -2713,10 +3027,10 @@ declare global {
     }
     interface MarkerSVGAttributes<T>
       extends ContainerElementSVGAttributes<T>,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      FitToViewBoxSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "overflow" | "clip"> {
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        FitToViewBoxSVGAttributes,
+        Pick<PresentationSVGAttributes, "clip-path" | "overflow" | "clip"> {
       markerHeight?: number | string | undefined;
       markerUnits?: "strokeWidth" | "userSpaceOnUse" | undefined;
       markerWidth?: number | string | undefined;
@@ -2726,10 +3040,10 @@ declare global {
     }
     interface MaskSVGAttributes<T>
       extends Omit<ContainerElementSVGAttributes<T>, "opacity" | "filter">,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path"> {
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        Pick<PresentationSVGAttributes, "clip-path"> {
       height?: number | string | undefined;
       maskContentUnits?: SVGUnits | undefined;
       maskUnits?: SVGUnits | undefined;
@@ -2737,26 +3051,29 @@ declare global {
       x?: number | string | undefined;
       y?: number | string | undefined;
     }
-    interface MetadataSVGAttributes<T> extends CoreSVGAttributes<T> { }
-    interface MPathSVGAttributes<T> extends CoreSVGAttributes<T> { }
+    interface MetadataSVGAttributes<T> extends CoreSVGAttributes<T> {}
+    interface MPathSVGAttributes<T> extends CoreSVGAttributes<T> {}
     interface PathSVGAttributes<T>
       extends GraphicsElementSVGAttributes<T>,
-      ShapeElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+        ShapeElementSVGAttributes<T>,
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+        > {
       d?: string | undefined;
       pathLength?: number | string | undefined;
     }
     interface PatternSVGAttributes<T>
       extends ContainerElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      FitToViewBoxSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "overflow" | "clip"> {
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        FitToViewBoxSVGAttributes,
+        Pick<PresentationSVGAttributes, "clip-path" | "overflow" | "clip"> {
       height?: number | string | undefined;
       href?: string | undefined;
       patternContentUnits?: SVGUnits | undefined;
@@ -2768,25 +3085,32 @@ declare global {
     }
     interface PolygonSVGAttributes<T>
       extends GraphicsElementSVGAttributes<T>,
-      ShapeElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+        ShapeElementSVGAttributes<T>,
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+        > {
       points?: string | undefined;
     }
     interface PolylineSVGAttributes<T>
       extends GraphicsElementSVGAttributes<T>,
-      ShapeElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "marker-start" | "marker-mid" | "marker-end"> {
+        ShapeElementSVGAttributes<T>,
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "clip-path" | "marker-start" | "marker-mid" | "marker-end"
+        > {
       points?: string | undefined;
     }
-    interface RadialGradientSVGAttributes<T> extends GradientElementSVGAttributes<T> {
+    interface RadialGradientSVGAttributes<T>
+      extends GradientElementSVGAttributes<T> {
       cx?: number | string | undefined;
       cy?: number | string | undefined;
       fx?: number | string | undefined;
@@ -2795,12 +3119,12 @@ declare global {
     }
     interface RectSVGAttributes<T>
       extends GraphicsElementSVGAttributes<T>,
-      ShapeElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path"> {
+        ShapeElementSVGAttributes<T>,
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<PresentationSVGAttributes, "clip-path"> {
       height?: number | string | undefined;
       rx?: number | string | undefined;
       ry?: number | string | undefined;
@@ -2810,25 +3134,28 @@ declare global {
     }
     interface SetSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      StylableSVGAttributes,
-      AnimationTimingSVGAttributes { }
+        StylableSVGAttributes,
+        AnimationTimingSVGAttributes {}
     interface StopSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      StylableSVGAttributes,
-      Pick<PresentationSVGAttributes, "color" | "stop-color" | "stop-opacity"> {
+        StylableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "color" | "stop-color" | "stop-opacity"
+        > {
       offset?: number | string | undefined;
     }
     interface SvgSVGAttributes<T>
       extends ContainerElementSVGAttributes<T>,
-      NewViewportSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      FitToViewBoxSVGAttributes,
-      ZoomAndPanSVGAttributes,
-      PresentationSVGAttributes,
-      WindowEventMap<T>,
-      ElementEventMap<T> {
+        NewViewportSVGAttributes<T>,
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        FitToViewBoxSVGAttributes,
+        ZoomAndPanSVGAttributes,
+        PresentationSVGAttributes,
+        WindowEventMap<T>,
+        ElementEventMap<T> {
       "xmlns:xlink"?: string | undefined;
       contentScriptType?: string | undefined;
       contentStyleType?: string | undefined;
@@ -2845,18 +3172,18 @@ declare global {
     }
     interface SwitchSVGAttributes<T>
       extends ContainerElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "display" | "visibility"> { }
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<PresentationSVGAttributes, "display" | "visibility"> {}
     interface SymbolSVGAttributes<T>
       extends ContainerElementSVGAttributes<T>,
-      NewViewportSVGAttributes<T>,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      FitToViewBoxSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path"> {
+        NewViewportSVGAttributes<T>,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        FitToViewBoxSVGAttributes,
+        Pick<PresentationSVGAttributes, "clip-path"> {
       height?: number | string | undefined;
       preserveAspectRatio?: SVGPreserveAspectRatio | undefined;
       refX?: number | string | undefined;
@@ -2868,12 +3195,15 @@ declare global {
     }
     interface TextSVGAttributes<T>
       extends TextContentElementSVGAttributes<T>,
-      GraphicsElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      TransformableSVGAttributes,
-      Pick<PresentationSVGAttributes, "clip-path" | "writing-mode" | "text-rendering"> {
+        GraphicsElementSVGAttributes<T>,
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        TransformableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "clip-path" | "writing-mode" | "text-rendering"
+        > {
       dx?: number | string | undefined;
       dy?: number | string | undefined;
       lengthAdjust?: "spacing" | "spacingAndGlyphs" | undefined;
@@ -2884,13 +3214,13 @@ declare global {
     }
     interface TextPathSVGAttributes<T>
       extends TextContentElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      Pick<
-        PresentationSVGAttributes,
-        "alignment-baseline" | "baseline-shift" | "display" | "visibility"
-      > {
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "alignment-baseline" | "baseline-shift" | "display" | "visibility"
+        > {
       href?: string | undefined;
       method?: "align" | "stretch" | undefined;
       spacing?: "auto" | "exact" | undefined;
@@ -2898,13 +3228,13 @@ declare global {
     }
     interface TSpanSVGAttributes<T>
       extends TextContentElementSVGAttributes<T>,
-      ConditionalProcessingSVGAttributes,
-      ExternalResourceSVGAttributes,
-      StylableSVGAttributes,
-      Pick<
-        PresentationSVGAttributes,
-        "alignment-baseline" | "baseline-shift" | "display" | "visibility"
-      > {
+        ConditionalProcessingSVGAttributes,
+        ExternalResourceSVGAttributes,
+        StylableSVGAttributes,
+        Pick<
+          PresentationSVGAttributes,
+          "alignment-baseline" | "baseline-shift" | "display" | "visibility"
+        > {
       dx?: number | string | undefined;
       dy?: number | string | undefined;
       lengthAdjust?: "spacing" | "spacingAndGlyphs" | undefined;
@@ -2916,12 +3246,12 @@ declare global {
     /** @see https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use */
     interface UseSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      StylableSVGAttributes,
-      ConditionalProcessingSVGAttributes,
-      GraphicsElementSVGAttributes<T>,
-      PresentationSVGAttributes,
-      ExternalResourceSVGAttributes,
-      TransformableSVGAttributes {
+        StylableSVGAttributes,
+        ConditionalProcessingSVGAttributes,
+        GraphicsElementSVGAttributes<T>,
+        PresentationSVGAttributes,
+        ExternalResourceSVGAttributes,
+        TransformableSVGAttributes {
       height?: number | string | undefined;
       href?: string | undefined;
       width?: number | string | undefined;
@@ -2930,9 +3260,9 @@ declare global {
     }
     interface ViewSVGAttributes<T>
       extends CoreSVGAttributes<T>,
-      ExternalResourceSVGAttributes,
-      FitToViewBoxSVGAttributes,
-      ZoomAndPanSVGAttributes {
+        ExternalResourceSVGAttributes,
+        FitToViewBoxSVGAttributes,
+        ZoomAndPanSVGAttributes {
       viewTarget?: string | undefined;
     }
 
@@ -2956,7 +3286,8 @@ declare global {
       /** @deprecated */
       src?: string | undefined;
     }
-    interface MathMLAnnotationXmlElementAttributes<T> extends MathMLAttributes<T> {
+    interface MathMLAnnotationXmlElementAttributes<T>
+      extends MathMLAttributes<T> {
       encoding?: string | undefined;
 
       /** @deprecated */
@@ -2977,7 +3308,7 @@ declare global {
     interface MathMLMathElementAttributes<T> extends MathMLAttributes<T> {
       display?: "block" | "inline" | undefined;
     }
-    interface MathMLMerrorElementAttributes<T> extends MathMLAttributes<T> { }
+    interface MathMLMerrorElementAttributes<T> extends MathMLAttributes<T> {}
     interface MathMLMfracElementAttributes<T> extends MathMLAttributes<T> {
       linethickness?: string | undefined;
 
@@ -2996,7 +3327,8 @@ declare global {
       mathvariant?: "normal" | undefined;
     }
 
-    interface MathMLMmultiscriptsElementAttributes<T> extends MathMLAttributes<T> {
+    interface MathMLMmultiscriptsElementAttributes<T>
+      extends MathMLAttributes<T> {
       /**
        * @deprecated
        * @non-standard
@@ -3008,7 +3340,7 @@ declare global {
        */
       superscriptshift?: string | undefined;
     }
-    interface MathMLMnElementAttributes<T> extends MathMLAttributes<T> { }
+    interface MathMLMnElementAttributes<T> extends MathMLAttributes<T> {}
     interface MathMLMoElementAttributes<T> extends MathMLAttributes<T> {
       fence?: boolean | undefined;
       form?: "prefix" | "infix" | "postfix" | undefined;
@@ -3035,10 +3367,11 @@ declare global {
       voffset?: string | undefined;
       width?: string | undefined;
     }
-    interface MathMLMphantomElementAttributes<T> extends MathMLAttributes<T> { }
-    interface MathMLMprescriptsElementAttributes<T> extends MathMLAttributes<T> { }
-    interface MathMLMrootElementAttributes<T> extends MathMLAttributes<T> { }
-    interface MathMLMrowElementAttributes<T> extends MathMLAttributes<T> { }
+    interface MathMLMphantomElementAttributes<T> extends MathMLAttributes<T> {}
+    interface MathMLMprescriptsElementAttributes<T>
+      extends MathMLAttributes<T> {}
+    interface MathMLMrootElementAttributes<T> extends MathMLAttributes<T> {}
+    interface MathMLMrowElementAttributes<T> extends MathMLAttributes<T> {}
     interface MathMLMsElementAttributes<T> extends MathMLAttributes<T> {
       /** @deprecated */
       lquote?: string | undefined;
@@ -3050,7 +3383,7 @@ declare global {
       height?: string | undefined;
       width?: string | undefined;
     }
-    interface MathMLMsqrtElementAttributes<T> extends MathMLAttributes<T> { }
+    interface MathMLMsqrtElementAttributes<T> extends MathMLAttributes<T> {}
     interface MathMLMstyleElementAttributes<T> extends MathMLAttributes<T> {
       /**
        * @deprecated
@@ -3139,7 +3472,7 @@ declare global {
       /** @non-standard */
       rowalign?: "axis" | "baseline" | "bottom" | "center" | "top" | undefined;
     }
-    interface MathMLMtextElementAttributes<T> extends MathMLAttributes<T> { }
+    interface MathMLMtextElementAttributes<T> extends MathMLAttributes<T> {}
     interface MathMLMtrElementAttributes<T> extends MathMLAttributes<T> {
       /** @non-standard */
       columnalign?: "center" | "left" | "right" | undefined;
@@ -3153,7 +3486,7 @@ declare global {
       accent?: "" | boolean | undefined;
       accentunder?: "" | boolean | undefined;
     }
-    interface MathMLSemanticsElementAttributes<T> extends MathMLAttributes<T> { }
+    interface MathMLSemanticsElementAttributes<T> extends MathMLAttributes<T> {}
 
     /* MathMLDeprecatedElements */
 
@@ -4233,8 +4566,8 @@ declare global {
 
     interface IntrinsicElements
       extends HTMLElementTags,
-      HTMLElementDeprecatedTags,
-      SVGElementTags,
-      MathMLElementTags { }
+        HTMLElementDeprecatedTags,
+        SVGElementTags,
+        MathMLElementTags {}
   }
 }

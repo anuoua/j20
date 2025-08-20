@@ -1,1 +1,1 @@
-export { signal } from '@preact/signals-core'
+export { signal } from "@preact/signals-core";

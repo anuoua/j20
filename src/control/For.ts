@@ -1,6 +1,5 @@
-
 import { effect } from "../api/effect";
-import { signal } from '../api/signal'
+import { signal } from "../api/signal";
 import {
   Instance,
   instanceCreate,
@@ -14,10 +13,16 @@ function insertAfter(parentNode: Node, newNode: Node, targetNode: Node) {
   parentNode?.insertBefore(newNode, targetNode.nextSibling);
 }
 
-const getTrait = (item: any, trait: ((item: any) => string | number) | undefined) =>
-  trait ? trait(item) : item;
+const getTrait = (
+  item: any,
+  trait: ((item: any) => string | number) | undefined,
+) => (trait ? trait(item) : item);
 
-const isSame = (a: any, b: any, trait: ((item: any) => string | number) | undefined) => {
+const isSame = (
+  a: any,
+  b: any,
+  trait: ((item: any) => string | number) | undefined,
+) => {
   return Object.is(getTrait(a, trait), getTrait(b, trait));
 };
 
@@ -38,7 +43,6 @@ interface ListItem<T> {
 }
 
 export const For = <T>(p: ListProps<T>) => {
-
   let initialized = false;
 
   const currentInstance = getCurrentInstance()!;
@@ -120,7 +124,7 @@ export const For = <T>(p: ListProps<T>) => {
               const parentNode = currentInstance.range[0].parentNode;
               parentNode?.insertBefore(
                 newInstanceFragment,
-                currentInstance.range[0]
+                currentInstance.range[0],
               );
             }
           }
@@ -221,9 +225,10 @@ export const For = <T>(p: ListProps<T>) => {
         const newItem = newList[newIndex];
 
         // 确定锚点元素
-        const anchor = newIndex + 1 < l2
-          ? newListItems[newIndex + 1].instance.range[0]
-          : currentInstance.range[1];
+        const anchor =
+          newIndex + 1 < l2
+            ? newListItems[newIndex + 1].instance.range[0]
+            : currentInstance.range[1];
 
         if (newIndexToOldIndexMap[i] === 0) {
           // 创建新节点
@@ -254,7 +259,7 @@ export const For = <T>(p: ListProps<T>) => {
             const elementsToMove = instanceGetElements(nodeToMove.instance);
 
             // 将所有元素移动到锚点之前
-            elementsToMove.forEach(el => {
+            elementsToMove.forEach((el) => {
               anchor.parentNode?.insertBefore(el, anchor);
             });
           } else {
@@ -269,7 +274,7 @@ export const For = <T>(p: ListProps<T>) => {
     oldListItems = newListItems;
     currentInstance.children = newListItems.map((item, index) => {
       item.index.value = index;
-      return item.instance
+      return item.instance;
     });
   });
 

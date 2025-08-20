@@ -4,7 +4,10 @@ export const range = function* (start: number, end: number) {
   }
 };
 
-export function cacheGetterLazy<T extends object, K extends keyof T>(obj: T, prop: K): void {
+export function cacheGetterLazy<T extends object, K extends keyof T>(
+  obj: T,
+  prop: K,
+): void {
   const descriptor = Object.getOwnPropertyDescriptor(obj, prop);
   if (!descriptor || !descriptor.get) {
     throw new Error(`Property ${String(prop)} is not a getter.`);
@@ -24,12 +27,12 @@ export function cacheGetterLazy<T extends object, K extends keyof T>(obj: T, pro
           value: value,
           writable: true, // 可根据需要设置为 false
           enumerable: true,
-          configurable: true
+          configurable: true,
         });
       }
       return value;
     },
     enumerable: true,
-    configurable: true
+    configurable: true,
   });
 }

@@ -6,7 +6,7 @@ const update = (
   node: HTMLElement | SVGElement,
   key: string,
   oldValue: any,
-  newValue: any
+  newValue: any,
 ) => {
   if (isEvent(key)) {
     node.removeEventListener(getEventName(key), oldValue);
@@ -19,7 +19,7 @@ const update = (
 const unset = (node: HTMLElement | SVGElement, key: string, oldValue: any) => {
   if (isEvent(key)) {
     node.removeEventListener(getEventName(key), oldValue);
-  } else if (key === 'ref') {
+  } else if (key === "ref") {
     oldValue.current = null;
   } else {
     node.removeAttribute(key);
@@ -29,7 +29,7 @@ const unset = (node: HTMLElement | SVGElement, key: string, oldValue: any) => {
 const add = (node: HTMLElement | SVGElement, key: string, newValue: any) => {
   if (isEvent(key)) {
     node.addEventListener(getEventName(key), newValue);
-  } else if (key === 'ref') {
+  } else if (key === "ref") {
     const instance = getCurrentInstance();
     instance?.disposes.push(() => {
       newValue.current = null;
@@ -40,30 +40,35 @@ const add = (node: HTMLElement | SVGElement, key: string, newValue: any) => {
   }
 };
 
-export const createDom = (tag: HTMLElement | SVGElement, props: undefined | (() => any), children: undefined | (() => any)) => {
+export const createDom = (
+  tag: HTMLElement | SVGElement,
+  props: undefined | (() => any),
+  children: undefined | (() => any),
+) => {
   const node = tag;
 
   let oldProps: any = {};
 
-  props && effect(() => {
-    const newProps = { ...props() };
+  props &&
+    effect(() => {
+      const newProps = { ...props() };
 
-    const newKeys = Object.keys(newProps);
-    const oldKeys = Object.keys(oldProps);
-    const allKeys = new Set([...newKeys, ...oldKeys]);
+      const newKeys = Object.keys(newProps);
+      const oldKeys = Object.keys(oldProps);
+      const allKeys = new Set([...newKeys, ...oldKeys]);
 
-    for (const key of allKeys) {
-      oldKeys.includes(key)
-        ? newKeys.includes(key)
-          ? Object.is(oldProps[key], newProps[key])
-            ? null
-            : update(node, key, oldProps[key], newProps[key])
-          : unset(node, key, oldProps[key])
-        : add(node, key, newProps[key]);
-    }
+      for (const key of allKeys) {
+        oldKeys.includes(key)
+          ? newKeys.includes(key)
+            ? Object.is(oldProps[key], newProps[key])
+              ? null
+              : update(node, key, oldProps[key], newProps[key])
+            : unset(node, key, oldProps[key])
+          : add(node, key, newProps[key]);
+      }
 
-    oldProps = newProps;
-  });
+      oldProps = newProps;
+    });
 
   children && node.append(...getChildren([].concat(children())));
 

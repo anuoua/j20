@@ -15,7 +15,7 @@ export const getCurrentInstance = () => stack.at(-1);
 
 export const instanceCreate = <T extends () => any>(
   runner: T,
-  parent?: Instance
+  parent?: Instance,
 ) => {
   const id = generateId();
   const parentInstance = parent ?? getCurrentInstance();
@@ -41,7 +41,11 @@ export const instanceCreate = <T extends () => any>(
     return Array.isArray(res) ? res : [res];
   })();
 
-  const fragment = createDom(document.createDocumentFragment() as unknown as HTMLElement, undefined, () => children) as unknown as HTMLElement;
+  const fragment = createDom(
+    document.createDocumentFragment() as unknown as HTMLElement,
+    undefined,
+    () => children,
+  ) as unknown as HTMLElement;
 
   fragment.prepend(instance.range[0]);
   fragment.append(instance.range[1]);
@@ -66,10 +70,7 @@ export const instanceGetElements = (instance: Instance) => {
   return els;
 };
 
-export const instanceDestroy = (
-  parent: Instance,
-  instance: Instance
-) => {
+export const instanceDestroy = (parent: Instance, instance: Instance) => {
   const stack = [instance];
   while (stack.length) {
     const instance = stack.pop()!;

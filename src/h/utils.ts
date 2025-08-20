@@ -18,8 +18,8 @@ export const getChildren = (propChildren: any[]) => {
     if (isSignal(child)) {
       const el = untrackedReturn(() => child.value);
 
-      if (typeof el === 'number' || typeof el === 'string') {
-        let textNode = document.createTextNode(el + '');
+      if (typeof el === "number" || typeof el === "string") {
+        let textNode = document.createTextNode(el + "");
         effect(() => {
           textNode.nodeValue = child.value;
         });
@@ -27,7 +27,6 @@ export const getChildren = (propChildren: any[]) => {
       } else {
         arr.push(el);
       }
-
     } else if (child != undefined) {
       arr.push(child);
     }
