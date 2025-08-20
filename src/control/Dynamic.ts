@@ -1,6 +1,7 @@
 import { computed } from "../api/computed";
 import { isSignal } from "../api/utils";
 import { createComponent } from "../h/createComponent";
+import { FC } from "../types";
 import { For } from "./For";
 
 export interface DynamicProps<T> {
@@ -21,18 +22,20 @@ export const Dynamic = <T>(p: DynamicProps<T>) => {
     props.value.of
       ? props.value.of
       : props.value.children && isSignal(props.value.children)
-        ? (props.value.children as any).value
-        : (count = (count + 1) % 2),
+      ? (props.value.children as any).value
+      : (count = (count + 1) % 2),
   ]);
 
   return createComponent(
-    For,
+    For as (p: any) => any,
     () => ({
       of: list.value,
     }),
     () => (item: T) =>
       typeof props.value.children === "function"
         ? props.value.children(item)
-        : props.value.children,
+        : props.value.children
   );
 };
+
+(Dynamic as unknown as FC<DynamicProps<any>>).isLogic = true;

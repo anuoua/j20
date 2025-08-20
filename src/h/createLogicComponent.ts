@@ -1,9 +1,10 @@
 import { computed } from "../api/computed";
+import { FC } from "../types";
 
 export const createLogicComponent = (
   tag: FC,
   props: undefined | (() => any),
-  children: undefined | (() => any),
+  children: undefined | (() => any)
 ) => {
   return tag(
     computed(() => ({
@@ -11,6 +12,6 @@ export const createLogicComponent = (
       get children() {
         return children?.();
       },
-    })),
+    }))
   );
 };
