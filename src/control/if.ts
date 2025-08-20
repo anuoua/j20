@@ -6,7 +6,8 @@ import { For } from "./For";
 
 export interface IfProps {
   of: any;
-  children: JSX.Element | ((t: boolean) => JSX.Element);
+  children: JSX.Element | ((t: true) => JSX.Element);
+  else?: JSX.Element | ((t: false) => JSX.Element);
 }
 
 interface IfPropsInner {
@@ -21,15 +22,34 @@ export const If: FC<IfProps> = (p) => {
   return createComponent(
     For as (p: any) => any,
     () => ({
-      of: arr.value,
+      get of() {
+        return arr.value;
+      },
     }),
     () => (bool: { value: 1 | 0 }) => {
-      const props = untrackedReturn(() => (p as unknown as IfPropsInner).value);
-      if (typeof props.children === "function") {
-        return props.children(bool.value === 1);
+      const propsUnwrapped = untrackedReturn(
+        () => (p as unknown as IfPropsInner).value
+      );
+
+      if (bool.value) {
+        const children = propsUnwrapped.children;
+
+        if (typeof children === "function") {
+          return children(true);
+        } else {
+          return children;
+        }
       } else {
-        return props.children;
+        const elseCondition = propsUnwrapped.else;
+
+        if (typeof elseCondition === "function") {
+          return elseCondition(false);
+        } else {
+          return elseCondition;
+        }
       }
     }
   );
 };
+
+If.isLogic = true;

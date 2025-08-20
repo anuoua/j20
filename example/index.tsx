@@ -16,18 +16,17 @@ const TodoItem = ($props: any) => {
         onChange={() => ($checked = !$checked)}
       ></input>
       <div>
-        <If of={$checked}>
-          {(checked) =>
-            checked ? (
-              <span style="text-decoration: line-through;">
-                {$props.text} {checked.toString()}
-              </span>
-            ) : (
-              <span>
-                {$props.text} {checked.toString()}
-              </span>
-            )
+        <If
+          of={$checked}
+          else={
+            <span>
+              {$props.text} {$checked.toString()}
+            </span>
           }
+        >
+          <span style="text-decoration: line-through;">
+            {$props.text} {$checked.toString()}
+          </span>
         </If>
       </div>
       <button onClick={$props.onDelete}>delete</button>
