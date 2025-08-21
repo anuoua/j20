@@ -18,23 +18,25 @@ export const Dynamic = <T>(p: DynamicProps<T>) => {
 
   let count = 0;
 
-  const list = computed(() => [
-    props.value.of
+  const list = computed(() => {
+    "of" in props.value
       ? props.value.of
-      : props.value.children && isSignal(props.value.children)
-      ? (props.value.children as any).value
-      : (count = (count + 1) % 2),
-  ]);
+      : "children" in props.value
+      ? props.value.children
+      : false;
+
+    return [(count = (count + 1) % 2)];
+  });
 
   return createComponent(
     For as (p: any) => any,
     () => ({
       of: list.value,
     }),
-    () => (item: T) =>
-      typeof props.value.children === "function"
-        ? props.value.children(item)
-        : props.value.children
+    () => (item: T) => {
+      const children = props.value.children;
+      return typeof children === "function" ? children(item) : children;
+    }
   );
 };
 
