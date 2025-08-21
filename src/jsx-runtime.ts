@@ -19,7 +19,7 @@ export const template = (template: string) => {
         : document.createElement("div");
       templateEl.innerHTML = template;
       dom = templateEl.firstChild;
-      return dom;
+      return dom.cloneNode();
     } else {
       return dom.cloneNode();
     }
