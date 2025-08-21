@@ -6,7 +6,7 @@ export const range = function* (start: number, end: number) {
 
 export function cacheGetterLazy<T extends object, K extends keyof T>(
   obj: T,
-  prop: K,
+  prop: K
 ): void {
   const descriptor = Object.getOwnPropertyDescriptor(obj, prop);
   if (!descriptor || !descriptor.get) {
@@ -35,4 +35,25 @@ export function cacheGetterLazy<T extends object, K extends keyof T>(
     enumerable: true,
     configurable: true,
   });
+}
+
+/**
+ * Merges multiple objects while preserving property descriptors, including getters and setters.
+ * This ensures lazy evaluation for getters. If there are duplicate keys, later objects override earlier ones.
+ *
+ * @param {...objects} objects - The objects to merge.
+ * @returns A new object with merged property descriptors.
+ */
+export function mergeObjectsWithDescriptors(...objects: object[]): object {
+  // Start with an empty descriptors object
+  let mergedDescriptors: PropertyDescriptorMap = {};
+
+  // Merge descriptors from each object, overriding duplicates
+  for (const obj of objects) {
+    const descriptors = Object.getOwnPropertyDescriptors(obj);
+    mergedDescriptors = { ...mergedDescriptors, ...descriptors };
+  }
+
+  // Create a new object with the merged descriptors
+  return Object.defineProperties({}, mergedDescriptors);
 }

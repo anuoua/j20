@@ -21,9 +21,7 @@ interface MatchPropsInner {
 
 export const Switch: FC<MatchProps> = (p) => {
   const props = p as unknown as MatchPropsInner;
-  const children = untrackedReturn(
-    () => props.value.children as unknown as MatchChildrenInner[]
-  );
+  const children = props.value.children as unknown as MatchChildrenInner[];
   const res = computed(() => children.filter((i) => i.valid)[0]);
 
   return createComponent(
