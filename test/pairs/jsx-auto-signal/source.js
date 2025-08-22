@@ -30,5 +30,7 @@ const hello =
         </div>
         <input onChange={add}></input>
     </>
-    <App.Item></App.Item>
+    <App.Item>
+        {$hello}
+    </App.Item>
 </App>;

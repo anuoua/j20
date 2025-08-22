@@ -18,8 +18,8 @@ const hello = _jsxs(App, undefined, () => [_jsxs(__tmpl5(), undefined, () => [_j
     ...$a.value,
     ...$b.value
   }
-}), () => [_jsx(__tmpl6(), undefined, () => $hello.value), _jsx(__tmpl7(), undefined, () => $hello.value), $hello.value, ...$s.value]), _jsx(__tmpl9(), () => ({
+}), () => [_jsx(__tmpl6(), undefined, () => () => $hello.value), _jsx(__tmpl7(), undefined, () => () => $hello.value), () => $hello.value, ...$s.value]), _jsx(__tmpl9(), () => ({
   get onChange() {
     return add;
   }
-}))]), _jsx(App.Item)]);
+}))]), _jsx(App.Item, undefined, () => $hello.value)]);

@@ -145,7 +145,11 @@ export const jsxTransform = (
                             break;
                         }
                         case "JSXExpressionContainer": {
-                            if (child.node.expression.type !== "JSXEmptyExpression") children.push(child.node.expression)
+                            if (child.node.expression.type !== "JSXEmptyExpression") children.push(
+                                isCompatTag ? template.expression(`() => %%EXP%%`)({
+                                    EXP: child.node.expression
+                                }) : child.node.expression
+                            )
                             break;
                         }
                         case "JSXElement": {
