@@ -6,13 +6,9 @@ export const createLogicComponent = (
   props: undefined | (() => any),
   children: undefined | (() => any)
 ) => {
-  return tag({
-    get value() {
-      return mergeObjectsWithDescriptors(props?.() ?? {}, {
-        get children() {
-          return children?.();
-        },
-      });
-    },
-  });
+  return tag(
+    props,
+    // @ts-expect-error
+    children
+  );
 };

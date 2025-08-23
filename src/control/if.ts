@@ -10,14 +10,13 @@ export interface IfProps {
   else?: JSX.Element | ((t: false) => JSX.Element);
 }
 
-interface IfPropsInner {
-  value: IfProps;
-}
+export const If = ((
+  propsGetter: () => Omit<IfProps, "children">,
+  childrenGetter: () => any
+) => {
+  const props = propsGetter();
 
-export const If: FC<IfProps> = (p) => {
-  const arr = computed(() =>
-    !(p as unknown as IfPropsInner).value.of ? [0] : [1]
-  );
+  const arr = computed(() => (!props.of ? [0] : [1]));
 
   return createComponent(
     For as (p: any) => any,
@@ -27,12 +26,8 @@ export const If: FC<IfProps> = (p) => {
       },
     }),
     () => (bool: { value: 1 | 0 }) => {
-      const propsUnwrapped = untrackedReturn(
-        () => (p as unknown as IfPropsInner).value
-      );
-
       if (bool.value) {
-        const children = propsUnwrapped.children;
+        const children = childrenGetter();
 
         if (typeof children === "function") {
           return children(true);
@@ -40,7 +35,7 @@ export const If: FC<IfProps> = (p) => {
           return children;
         }
       } else {
-        const elseCondition = propsUnwrapped.else;
+        const elseCondition = props.else;
 
         if (typeof elseCondition === "function") {
           return elseCondition(false);
@@ -50,6 +45,6 @@ export const If: FC<IfProps> = (p) => {
       }
     }
   );
-};
+}) as unknown as FC<IfProps>;
 
 If.isLogic = true;

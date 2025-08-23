@@ -1,6 +1,7 @@
 import { instanceCreate } from "./instance";
 import { computed } from "../api/computed";
 import { FC } from "../types";
+import { mergeObjectsWithDescriptors } from "../utils";
 
 export const createComponent = (
   tag: FC,
@@ -9,12 +10,19 @@ export const createComponent = (
 ) => {
   let [, fragment] = instanceCreate(() =>
     tag(
-      computed(() => ({
-        ...props?.(),
-        get children() {
-          return children?.();
-        },
-      }))
+      computed(() =>
+        mergeObjectsWithDescriptors(props ? props() : {}, {
+          get children() {
+            return children?.();
+          },
+        })
+      )
+      // computed(() => ({
+      //   ...props?.(),
+      //   get children() {
+      //     return children?.();
+      //   },
+      // }))
     )
   );
   return fragment;

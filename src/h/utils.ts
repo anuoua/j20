@@ -11,17 +11,16 @@ export const getEventName = (eventName: string) => {
 };
 
 export const getChildren = (propChildren: any[]) => {
-  if (propChildren == null) return [];
   const arr: any[] = [];
   for (let i = 0; i < propChildren.length; i++) {
     const child = propChildren[i];
-    if (isSignal(child)) {
-      const el = untrackedReturn(() => child.value);
+    if (typeof child === "function") {
+      const el = child();
 
       if (typeof el === "number" || typeof el === "string") {
-        let textNode = document.createTextNode(el + "");
+        let textNode = document.createTextNode("");
         effect(() => {
-          textNode.nodeValue = child.value;
+          textNode.nodeValue = child();
         });
         arr.push(textNode);
       } else {

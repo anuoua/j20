@@ -15,13 +15,13 @@ function insertAfter(parentNode: Node, newNode: Node, targetNode: Node) {
 
 const getTrait = (
   item: any,
-  trait: ((item: any) => string | number) | undefined,
+  trait: ((item: any) => string | number) | undefined
 ) => (trait ? trait(item) : item);
 
 const isSame = (
   a: any,
   b: any,
-  trait: ((item: any) => string | number) | undefined,
+  trait: ((item: any) => string | number) | undefined
 ) => {
   return Object.is(getTrait(a, trait), getTrait(b, trait));
 };
@@ -108,7 +108,7 @@ export const For = <T>(p: ListProps<T>) => {
               {
                 value: newList[i],
               } as T,
-              newIndex as unknown as number,
+              newIndex as unknown as number
             );
             return newChild;
           }, currentInstance);
@@ -124,7 +124,7 @@ export const For = <T>(p: ListProps<T>) => {
               const parentNode = currentInstance.range[0].parentNode;
               parentNode?.insertBefore(
                 newInstanceFragment,
-                currentInstance.range[0],
+                currentInstance.range[0]
               );
             }
           }
@@ -239,7 +239,7 @@ export const For = <T>(p: ListProps<T>) => {
               {
                 value: newItem,
               } as T,
-              newIdx as unknown as number,
+              newIdx as unknown as number
             );
             return newChild;
           }, currentInstance);

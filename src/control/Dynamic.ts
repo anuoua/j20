@@ -9,21 +9,16 @@ export interface DynamicProps<T> {
   children: JSX.Element | ((t: T) => JSX.Element);
 }
 
-interface DynamicPropsInner<T> {
-  value: DynamicProps<T>;
-}
-
-export const Dynamic = <T>(p: DynamicProps<T>) => {
-  const props = p as unknown as DynamicPropsInner<T>;
+export const Dynamic = ((
+  propsGetter: (() => Omit<DynamicProps<any>, "children">) | undefined,
+  childrenGetter: () => any
+) => {
+  const props = propsGetter ? propsGetter() : {};
 
   let count = 0;
 
   const list = computed(() => {
-    "of" in props.value
-      ? props.value.of
-      : "children" in props.value
-      ? props.value.children
-      : false;
+    "of" in props ? props.of : childrenGetter ? childrenGetter() : false;
 
     return [(count = (count + 1) % 2)];
   });
@@ -33,11 +28,11 @@ export const Dynamic = <T>(p: DynamicProps<T>) => {
     () => ({
       of: list.value,
     }),
-    () => (item: T) => {
-      const children = props.value.children;
+    () => (item: any) => {
+      const children = childrenGetter();
       return typeof children === "function" ? children(item) : children;
     }
   );
-};
+}) as unknown as <T>(p: DynamicProps<T>) => JSX.Element;
 
 (Dynamic as unknown as FC<DynamicProps<any>>).isLogic = true;
