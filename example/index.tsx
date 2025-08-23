@@ -1,4 +1,4 @@
-import { Fragment } from "../src";
+import { computed, Fragment } from "../src";
 import { For } from "../src";
 import { If } from "../src";
 import { creatRoot } from "../src";
@@ -117,9 +117,14 @@ const App = () => {
       <input onChange={add}></input>
       <div>
         <For of={$list}>
-          {($item) => (
+          {($item, $index) => (
             <TodoItem
-              text={<span style="color: red">{$item.text}</span>}
+              text={
+                <span style="color: red">
+                  text: {$item.text};{"index:"}
+                  {$index}
+                </span>
+              }
               onDelete={() => handleDelete($item.id)}
             />
           )}

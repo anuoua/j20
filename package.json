@@ -14,7 +14,7 @@
     "vite": "^6.3.5"
   },
   "scripts": {
-    "dev": "vite example --config vite.config.ts",
+    "dev": "vite example --config vite.config.mjs",
     "build": "rimraf build dist && tsc -p tsconfig.build.json && rollup -c rollup.config.mjs",
     "test:watch": "vitest",
     "test": "vitest --run --dom"
