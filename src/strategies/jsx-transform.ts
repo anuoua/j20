@@ -243,7 +243,7 @@ export const jsxTransform = (
                 if (children.length > 0) {
                     const multiple = children.length > 1;
                     jsx = template.expression(`
-                        ${multiple ? path.state.jsxsVarName : path.state.jsxVarName}(%%TAG%%, ${attrsStr ? `() => ({ ${attrsStr} })` : `undefined`}, () => %%CHILDREN%%)
+                        ${multiple ? path.state.jsxsVarName : path.state.jsxVarName}(%%TAG%%, ${(attrsStr || children.length) ? `() => ({ ${(attrsStr ? attrsStr + "," : "")} get children() { return %%CHILDREN%% } })` : ""})
                     `)({
                         CHILDREN: multiple ? t.arrayExpression(children) : children[0],
                         TAG: jsxTag,

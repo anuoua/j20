@@ -11,16 +11,47 @@ const __tmpl9 = _template(`<input>`);
 const __tmpl10 = __tmpl6;
 const App = () => {};
 App.Item = () => {};
-const hello = _jsxs(App, undefined, () => [_jsxs(__tmpl5(), undefined, () => [_jsx(__tmpl1(true)), _jsx(__tmpl2(true)), _jsx(__tmpl3(true)), _jsx(__tmpl4(true))]), _jsxs(_Fragment, undefined, () => ["text", _jsxs(__tmpl8(), () => ({
-  get style() {
-    return $k.value;
-  },
-  ...{
-    ...$a.value,
-    ...$b.value
+const hello = _jsxs(App, () => ({
+  get children() {
+    return [_jsxs(__tmpl5(), () => ({
+      get children() {
+        return [_jsx(__tmpl1(true)), _jsx(__tmpl2(true)), _jsx(__tmpl3(true)), _jsx(__tmpl4(true))];
+      }
+    })), _jsxs(_Fragment, () => ({
+      get children() {
+        return ["text", _jsxs(__tmpl8(), () => ({
+          get style() {
+            return $k.value;
+          },
+          ...{
+            ...$a.value,
+            ...$b.value
+          },
+          get children() {
+            return [_jsx(__tmpl6(), () => ({
+              get children() {
+                return () => $hello.value;
+              }
+            })), _jsx(__tmpl7(), () => ({
+              get children() {
+                return () => $hello.value;
+              }
+            })), () => $hello.value, ...$s.value];
+          }
+        })), _jsx(__tmpl9(), () => ({
+          get onChange() {
+            return add;
+          }
+        }))];
+      }
+    })), _jsxs(__tmpl10(), () => ({
+      get children() {
+        return ["hello", 123];
+      }
+    })), _jsx(App.Item, () => ({
+      get children() {
+        return $hello.value;
+      }
+    }))];
   }
-}), () => [_jsx(__tmpl6(), undefined, () => () => $hello.value), _jsx(__tmpl7(), undefined, () => () => $hello.value), () => $hello.value, ...$s.value]), _jsx(__tmpl9(), () => ({
-  get onChange() {
-    return add;
-  }
-}))]), _jsxs(__tmpl10(), undefined, () => ["hello", 123]), _jsx(App.Item, undefined, () => $hello.value)]);
+}));
