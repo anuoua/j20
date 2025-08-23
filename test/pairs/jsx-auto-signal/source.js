@@ -30,6 +30,10 @@ const hello =
         </div>
         <input onChange={add}></input>
     </>
+    <div>
+        {"hello"}
+        {123}
+    </div>
     <App.Item>
         {$hello}
     </App.Item>

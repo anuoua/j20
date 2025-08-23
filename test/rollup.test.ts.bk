@@ -20,7 +20,7 @@ const trans = async (pair: string) => {
         config: { ...config }
       }),
     ],
-    //   external: ["test", "test2"],
+    external: ["../src", "../src/control/Dynamic", "../src/control/Switch"],
   };
   const outputOptions: OutputOptions = {
     file: "bundle.js",
