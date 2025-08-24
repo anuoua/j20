@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "pull:signal-compiler": "git subtree pull --prefix=packages/signal-compiler git@github.com:anuoua/signal-compiler.git main",
-    "push:signal-compiler": "git subtree push --prefix=packages/signal-compiler git@github.com:anuoua/signal-compiler.git main"
+    "pull:signal-compiler": "git subtree pull --prefix=packages/signal-compiler git@github.com:anuoua/signal-compiler.git main"
   },
   "keywords": [],
   "author": "",
