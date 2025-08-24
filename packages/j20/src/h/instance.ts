@@ -13,10 +13,7 @@ const stack: Instance[] = [];
 
 export const getCurrentInstance = () => stack.at(-1);
 
-export const instanceCreate = <T extends () => any>(
-  runner: T,
-  parent?: Instance
-) => {
+export const instanceCreate = (runner: () => any, parent?: Instance) => {
   const id = generateId();
   const parentInstance = parent ?? getCurrentInstance();
   const instance: Instance = {
@@ -36,15 +33,10 @@ export const instanceCreate = <T extends () => any>(
 
   stack.push(instance);
 
-  const children = (() => {
-    let res = runner();
-    return Array.isArray(res) ? res : [res];
-  })();
-
   const fragment = createDom(
     document.createDocumentFragment() as unknown as HTMLElement,
     undefined,
-    () => children
+    () => runner()
   ) as unknown as HTMLElement;
 
   fragment.prepend(instance.range[0]);

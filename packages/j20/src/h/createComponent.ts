@@ -3,8 +3,10 @@ import { computed } from "../api/computed";
 import { FC } from "../types";
 
 export const createComponent = (tag: FC, props: undefined | (() => any)) => {
-  let [, fragment] = instanceCreate(() =>
-    tag(computed(() => (props ? props() : {})))
-  );
+  const runner: FC = () => tag(computed(() => (props ? props() : {})));
+
+  runner.customElement = tag.customElement;
+
+  let [, fragment] = instanceCreate(runner as any);
   return fragment;
 };
