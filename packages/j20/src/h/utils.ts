@@ -1,6 +1,4 @@
 import { effect } from "../api/effect";
-import { untrackedReturn } from "../api/untracked-return";
-import { isSignal } from "../api/utils";
 
 export const isEvent = (eventName: string) => {
   return eventName.startsWith("on");
