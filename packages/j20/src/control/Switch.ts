@@ -9,25 +9,29 @@ export interface SwitchProps {
   children: JSX.Element[];
 }
 
+interface SwitchPropsInner {
+  value: SwitchProps;
+}
+
 interface MatchChildrenInner {
   valid: boolean;
   id: string;
   children: JSX.Element;
 }
 
-export const Switch = ((propsGetter: undefined, childrenGetter: () => any) => {
-  const children = childrenGetter() as unknown as MatchChildrenInner[];
+export const Switch: FC<SwitchProps> = (p) => {
+  const props = p as unknown as SwitchPropsInner;
+  const children = props.value.children as unknown as MatchChildrenInner[];
   const res = computed(() => children.filter((i) => i.valid)[0]);
 
-  return createComponent(
-    For as (p: any) => any,
-    () => ({
-      of: res.value ? [res.value] : [],
-      trait: (item: any) => item.id,
-    }),
-    () => (item: any) => item.value.children
-  );
-}) as unknown as FC<SwitchProps>;
+  return createComponent(For as (p: any) => any, () => ({
+    of: res.value ? [res.value] : [],
+    trait: (item: any) => item.id,
+    get children() {
+      return (item: any) => item.value.children;
+    },
+  }));
+};
 
 Switch.isLogic = true;
 
@@ -36,28 +40,39 @@ export interface CaseProps {
   children: JSX.Element;
 }
 
-export const Case = ((
-  propsGetter: () => Omit<CaseProps, "children">,
-  childrenGetter: () => any
-) => {
-  const props = propsGetter();
+interface CasePropsInner {
+  value: CaseProps;
+}
+
+export const Case: FC<CaseProps> = (p) => {
+  const props = p as unknown as CasePropsInner;
 
   const id = generateId();
 
   return {
     id,
     get valid() {
-      return props.of;
+      return props.value.of;
     },
     get children() {
-      return childrenGetter();
+      return props.value.children;
     },
   } as unknown as JSX.Element;
-}) as unknown as FC<CaseProps>;
+};
 
 Case.isLogic = true;
 
-export const Default = ((propsGetter: undefined, childrenGetter: () => any) => {
+export interface DefaultProps {
+  children: JSX.Element;
+}
+
+interface DefaultPropsInner {
+  value: DefaultProps;
+}
+
+export const Default: FC<DefaultProps> = (p) => {
+  const props = p as unknown as CasePropsInner;
+
   const id = generateId();
 
   const data = {
@@ -66,11 +81,11 @@ export const Default = ((propsGetter: undefined, childrenGetter: () => any) => {
       return true;
     },
     get children() {
-      return childrenGetter();
+      return props.value.children;
     },
   };
 
   return data as unknown as JSX.Element;
-}) as unknown as FC<Omit<CaseProps, "of">>;
+};
 
 Default.isLogic = true;

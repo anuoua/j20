@@ -10,41 +10,41 @@ export interface IfProps {
   else?: JSX.Element | ((t: false) => JSX.Element);
 }
 
-export const If = ((
-  propsGetter: () => Omit<IfProps, "children">,
-  childrenGetter: () => any
-) => {
-  const props = propsGetter();
+interface IfPropsInner {
+  value: IfProps;
+}
 
-  const arr = computed(() => (!props.of ? [0] : [1]));
+export const If: FC<IfProps> = (p) => {
+  const props = p as unknown as IfPropsInner;
 
-  return createComponent(
-    For as (p: any) => any,
-    () => ({
-      get of() {
-        return arr.value;
-      },
-    }),
-    () => (bool: { value: 1 | 0 }) => {
-      if (bool.value) {
-        const children = childrenGetter();
+  const arr = computed(() => (!props.value.of ? [0] : [1]));
 
-        if (typeof children === "function") {
-          return children(true);
+  return createComponent(For as (p: any) => any, () => ({
+    get of() {
+      return arr.value;
+    },
+    get children() {
+      return (bool: { value: 1 | 0 }) => {
+        if (bool.value) {
+          const children = props.value.children;
+
+          if (typeof children === "function") {
+            return children(true);
+          } else {
+            return children;
+          }
         } else {
-          return children;
-        }
-      } else {
-        const elseCondition = props.else;
+          const elseCondition = props.value.else;
 
-        if (typeof elseCondition === "function") {
-          return elseCondition(false);
-        } else {
-          return elseCondition;
+          if (typeof elseCondition === "function") {
+            return elseCondition(false);
+          } else {
+            return elseCondition;
+          }
         }
-      }
-    }
-  );
-}) as unknown as FC<IfProps>;
+      };
+    },
+  }));
+};
 
 If.isLogic = true;

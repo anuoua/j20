@@ -50,6 +50,7 @@ export function mergeObjectsWithDescriptors(...objects: object[]): object {
 
   // Merge descriptors from each object, overriding duplicates
   for (const obj of objects) {
+    if (obj === null || obj === undefined) continue;
     const descriptors = Object.getOwnPropertyDescriptors(obj);
     mergedDescriptors = { ...mergedDescriptors, ...descriptors };
   }

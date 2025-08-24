@@ -11,6 +11,6 @@ export const createElement = (
   return tag instanceof Node
     ? createDom(tag, props, children)
     : tag.isLogic
-      ? createLogicComponent(tag, props, children)
-      : createComponent(tag, props, children);
+      ? createLogicComponent(tag, props)
+      : createComponent(tag, props);
 };
