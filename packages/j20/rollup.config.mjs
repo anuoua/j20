@@ -11,13 +11,12 @@ const configGen = (format) => {
   };
 
   return defineConfig({
-    external: "@vue/reactivity",
-    input: "src/j20.ts",
+    input: "src/index.ts",
     output: [
       {
         name: format === "umd" ? "J20" : undefined,
         dir: "dist",
-        entryFileNames: `j20.${fileNameMap[format]}`,
+        entryFileNames: `index.${fileNameMap[format]}`,
         format,
         sourcemap: true,
       },

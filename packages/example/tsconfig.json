@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "j20",
     "module": "es6",
     "moduleResolution": "bundler",
-    "target": "es6",
 
     /* Emit */
     "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
@@ -12,5 +13,6 @@
     /* Type Checking */
     "strict": true /* Enable all strict type-checking options. */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
-  }
+  },
+  "include": ["src"]
 }

@@ -1,0 +1,19 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.5.2",
+  "dependencies": {
+    "signal-compiler": "0.0.30",
+    "vite": "^6.3.5",
+    "j20": "workspace:*"
+  }
+}

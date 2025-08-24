@@ -57,7 +57,7 @@ declare global {
         e: E & {
           currentTarget: T;
           target: DOMElement;
-        },
+        }
       ): void;
     }
 
@@ -99,7 +99,7 @@ declare global {
             | HTMLTextAreaElement
             ? T
             : DOMElement;
-        },
+        }
       ): void;
     }
     type InputEventHandlerUnion<T, E extends InputEvent> = EventHandlerUnion<
@@ -118,7 +118,7 @@ declare global {
             | HTMLTextAreaElement
             ? T
             : DOMElement;
-        },
+        }
       ): void;
     }
     type ChangeEventHandlerUnion<T, E extends Event> = EventHandlerUnion<
@@ -137,7 +137,7 @@ declare global {
             | HTMLTextAreaElement
             ? T
             : DOMElement;
-        },
+        }
       ): void;
     }
     type FocusEventHandlerUnion<T, E extends FocusEvent> = EventHandlerUnion<

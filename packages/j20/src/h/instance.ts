@@ -15,7 +15,7 @@ export const getCurrentInstance = () => stack.at(-1);
 
 export const instanceCreate = <T extends () => any>(
   runner: T,
-  parent?: Instance,
+  parent?: Instance
 ) => {
   const id = generateId();
   const parentInstance = parent ?? getCurrentInstance();
@@ -44,7 +44,7 @@ export const instanceCreate = <T extends () => any>(
   const fragment = createDom(
     document.createDocumentFragment() as unknown as HTMLElement,
     undefined,
-    () => children,
+    () => children
   ) as unknown as HTMLElement;
 
   fragment.prepend(instance.range[0]);

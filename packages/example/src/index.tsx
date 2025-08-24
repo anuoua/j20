@@ -1,10 +1,13 @@
-import { computed, Fragment } from "../src";
-import { For } from "../src";
-import { If } from "../src";
-import { creatRoot } from "../src";
-import { Dynamic } from "../src/control/Dynamic";
-import { Case, Default, Switch } from "../src/control/Switch";
-
+import {
+  Fragment,
+  For,
+  If,
+  creatRoot,
+  Dynamic,
+  Case,
+  Default,
+  Switch,
+} from "j20";
 const TodoItem = ($props: any) => {
   let $checked = true;
 

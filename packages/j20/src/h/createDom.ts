@@ -6,7 +6,7 @@ const update = (
   node: HTMLElement | SVGElement,
   key: string,
   oldValue: any,
-  newValue: any,
+  newValue: any
 ) => {
   if (isEvent(key)) {
     node.removeEventListener(getEventName(key), oldValue);
@@ -43,7 +43,7 @@ const add = (node: HTMLElement | SVGElement, key: string, newValue: any) => {
 export const createDom = (
   tag: HTMLElement | SVGElement,
   props: undefined | (() => any),
-  children: undefined | (() => any),
+  children: undefined | (() => any)
 ) => {
   const node = tag;
 

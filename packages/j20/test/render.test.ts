@@ -40,20 +40,20 @@ it("render", () => {
                       () =>
                         (
                           $item: JSignalLike<any>,
-                          $index: JSignalLike<number>,
+                          $index: JSignalLike<number>
                         ) =>
                           createElement("div", {
                             children: computed(() => "item_" + $item.value),
-                          }),
-                    ),
+                          })
+                    )
                   ),
-                }),
+                })
               ),
             ]),
-          }),
+          })
         ),
       },
-    ]),
+    ])
   );
 
   console.log(body.innerHTML);

@@ -1,33 +1,17 @@
 {
   "name": "j20",
   "version": "0.0.0",
-  "author": "anuoua",
-  "homepage": "https://www.github.com/anuoua/j20",
-  "main": "dist/j20.cjs",
-  "module": "dist/j20.mjs",
-  "unpkg": "dist/j20.global.js",
-  "types": "dist/j20.d.ts",
-  "typings": "dist/j20.d.ts",
-  "dependencies": {
-    "@preact/signals-core": "^1.11.0",
-    "signal-compiler": "^0.0.30",
-    "vite": "^6.3.5"
-  },
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "dev": "vite example --config vite.config.mjs",
-    "build": "rimraf build dist && tsc -p tsconfig.build.json && rollup -c rollup.config.mjs",
-    "test:watch": "vitest",
-    "test": "vitest --run --dom"
+    "pull:signal-compiler": "git subtree pull --prefix=packages/signal-compiler git@github.com:anuoua/signal-compiler.git main",
+    "push:signal-compiler": "git subtree push --prefix=packages/signal-compiler git@github.com:anuoua/signal-compiler.git main"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.5.2",
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^15.1.0",
-    "csstype": "^3.1.2",
-    "happy-dom": "^10.1.1",
-    "rimraf": "^5.0.1",
-    "rollup": "^3.26.2",
-    "rollup-plugin-dts": "^5.3.0",
-    "rollup-plugin-esbuild": "^5.0.0",
-    "typescript": "^5.1.6",
-    "vitest": "^0.33.0"
+    "prettier": "^3.6.2"
   }
 }
