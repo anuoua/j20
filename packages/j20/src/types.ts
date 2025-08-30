@@ -1,9 +1,13 @@
 export type CustomElement = {
   tag: string;
   shadow: "none" | "open" | "closed";
+  style?: string;
   props?: Record<
     string,
-    { reflect?: boolean; type?: string; attribute?: string }
+    {
+      type?: "string" | "number" | "boolean";
+      attribute?: string;
+    }
   >;
   extend?: (customElementConstructor: any) => CustomElement;
 };
@@ -36,14 +40,8 @@ export type CustomElement = {
 
 export type FC<P extends Record<string, any> = {}> = {
   isLogic?: boolean;
-  customElement?: CustomElement;
 } & ((props: P) => JSX.Element);
 
-const AA: FC<{ name: string }> = ($props) => {
-  return null;
-};
-
-AA.customElement = {
-  tag: "aa-tag",
-  shadow: "open",
-};
+export type WCFC<P extends Record<string, any> = {}> = {
+  customElement?: CustomElement;
+} & ((props: P) => JSX.Element);

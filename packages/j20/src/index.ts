@@ -10,10 +10,12 @@ export * from "./control/Switch";
 export * from "./h/createElement";
 export * from "./h/createComponent";
 export * from "./h/createLogicComponent";
+export * from "./web-components";
 export * from "./h/createDom";
 export * from "./h/createRoot";
 export * from "./h/instance";
 export * from "./jsx-runtime";
+export * from "./types";
 export { batch, untracked } from "@preact/signals-core";
 export type {
   SignalOptions,

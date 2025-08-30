@@ -1,3 +1,3 @@
-export interface JSignalLike<T = unknown> {
+export interface SignalLike<T = any> {
   value: T;
 }
