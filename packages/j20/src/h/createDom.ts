@@ -70,7 +70,13 @@ export const createDom = (
       oldProps = newProps;
     });
 
-  children && node.append(...getChildren([].concat(children())));
+  // 独立 wc 初始化
+  (node as any).initComp?.();
+
+  children &&
+    // 独立 wc 初始化，mode 为 none 时，忽略 children
+    ((node as any).initComp ? (!node.shadowRoot ? false : true) : true) &&
+    node.append(...getChildren([].concat(children())));
 
   return node;
 };

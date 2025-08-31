@@ -2,7 +2,7 @@ import { FC, WCFC } from "../types";
 import { createComponent } from "./createComponent";
 import { createDom } from "./createDom";
 import { createLogicComponent } from "./createLogicComponent";
-import { createWebComponent } from "./createWebComponents";
+import { createWebComponent } from "./createWebComponent";
 
 export const createElement = (
   tag: HTMLElement | SVGElement | FC | WCFC,
@@ -11,9 +11,9 @@ export const createElement = (
 ) => {
   return tag instanceof Node
     ? createDom(tag, props, children)
-    : (tag as FC).isLogic
+    : "isLogic" in tag
       ? createLogicComponent(tag, props)
-      : (tag as WCFC).customElement
+      : "customElement" in tag
         ? createWebComponent(tag, props)
         : createComponent(tag, props);
 };

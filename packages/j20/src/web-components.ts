@@ -1,10 +1,16 @@
-import { CustomElement, FC, WCFC } from "./types";
+import { CustomElement, WCFC } from "./types";
 import { signal } from "./api/signal";
 import { computed } from "./api/computed";
 import { getCurrentInstance, Instance, instanceCreate } from "./h/instance";
-import { Signal } from "@preact/signals-core";
 import { SignalLike } from "./api/types";
 import { BRAND } from "./brand";
+import { createWebComponent } from "./h/createWebComponent";
+
+let host: HTMLElement | undefined;
+
+export const setHost = (h: HTMLElement | undefined) => (host = h);
+
+export const getHost = () => host;
 
 export const registWebComponents = (Comp: WCFC) => {
   if (!Comp.customElement) {
@@ -15,12 +21,13 @@ export const registWebComponents = (Comp: WCFC) => {
     throw new Error("Custom element tag is already defined");
   }
 
-  const NewClass = buildClass(Comp.customElement, Comp);
+  const NewClass = buildClass(Comp);
 
   customElements.define(Comp.customElement.tag, NewClass);
 };
 
-export const buildClass = (customElement: CustomElement, Comp: FC) => {
+export const buildClass = (Comp: WCFC) => {
+  const { customElement } = Comp;
   const { a2p, a2v } = buildMap(customElement);
 
   return class NewElementClass extends HTMLElement {
@@ -28,7 +35,7 @@ export const buildClass = (customElement: CustomElement, Comp: FC) => {
 
     static get observedAttributes() {
       return Object.entries(customElement.props ?? {})
-        .map(([, value]) => value.attribute)
+        .map(([, value]: any) => value.attribute)
         .filter((i) => i != undefined);
     }
 
@@ -50,7 +57,7 @@ export const buildClass = (customElement: CustomElement, Comp: FC) => {
       }
 
       this._props = Object.entries(customElement.props ?? {}).reduce(
-        (acc, [key, value]) => {
+        (acc, [key, value]: any) => {
           acc[key] = signal(
             value.attribute
               ? a2v[value.attribute](this.getAttribute(value.attribute))
@@ -70,16 +77,16 @@ export const buildClass = (customElement: CustomElement, Comp: FC) => {
           return true;
         },
       }));
+    }
 
-      if (this.lazy) return;
+    initComp() {
+      setHost(this);
 
       const [instance, fragment] = instanceCreate(() => {
-        return Comp({
-          get value() {
-            return props;
-          },
-        });
+        return Comp(computed(() => this.props));
       }, getCurrentInstance());
+
+      setHost(undefined);
 
       if (this.#shadow) {
         this.#shadow.appendChild(fragment);
@@ -123,7 +130,7 @@ const buildMap = (customElement: CustomElement) => {
   const a2v: Record<string, any> = {};
 
   Object.entries(customElement.props ?? {})
-    .map(([key, value]) => [value.attribute, key, value.type] as const)
+    .map(([key, value]: any) => [value.attribute, key, value.type] as const)
     .filter(([attr]) => attr != undefined)
     .forEach((i) => {
       a2p[i[0] as unknown as string] = i[1];

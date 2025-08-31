@@ -1,9 +1,9 @@
 import { instanceCreate } from "./instance";
 import { computed } from "../api/computed";
-import { FC, WCFC } from "../types";
+import { WCFC } from "../types";
 import { untrackedReturn } from "../api/untracked-return";
 import { BRAND } from "../brand";
-import { buildClass } from "../web-components";
+import { buildClass, setHost } from "../web-components";
 import { getChildren } from "./utils";
 
 export const createWebComponent = (
@@ -26,13 +26,15 @@ export const createWebComponent = (
         el = new Exist(true);
       }
     } else {
-      const NewClass = buildClass(customElement, tag);
+      const NewClass = buildClass(tag);
       customElements.define(customElement.tag, NewClass);
       el = new NewClass(true);
     }
 
     let childrenGetter = () =>
       untrackedReturn(() => (props ? props().children : undefined));
+
+    setHost(el);
 
     const ret: any = tag(
       computed(() => {
@@ -44,6 +46,8 @@ export const createWebComponent = (
         return retProps;
       })
     );
+
+    setHost(undefined);
 
     (el as any).appendTo(getChildren([].concat(ret)));
 
