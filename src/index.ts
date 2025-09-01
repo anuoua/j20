@@ -8,7 +8,6 @@ import type { PluginObj } from "@babel/core";
 import type { Config, GlobalState } from "./types";
 import { patternSignalDeclaration } from "./strategies/pattern-signal-declaration";
 import { functionAutoSignal } from "./strategies/function-auto-signal";
-import { jsxTransform } from "./strategies/jsx-transform";
 import { identifierSignalAssign } from "./strategies/identifier-signal-assign";
 import { autoImport } from "./strategies/add-source";
 
@@ -19,7 +18,6 @@ const defaultConfig: Config = {
   patternSignalDeclaration: true,
   identifierSignalRead: true,
   functionAutoSignal: true,
-  jsxTransform: true,
   identifierSignalAssign: true,
 };
 
@@ -48,7 +46,6 @@ export const signalCompiler = (
     config.functionAutoSignal ? functionAutoSignal(babel, config) : null,
     config.identifierSignalAssign ? identifierSignalAssign(babel) : null,
     config.autoImport ? autoImport(babel, config) : null,
-    config.jsxTransform ? jsxTransform() : null,
   ].filter((i) => i) as babelCore.Visitor[];
 
   return {
