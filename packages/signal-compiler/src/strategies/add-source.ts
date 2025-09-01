@@ -4,7 +4,7 @@ import { Config } from "../types";
 
 export const autoImport = (
     babel: typeof babelCore,
-    config: Config
+    config: Required<Config>
 ): babelCore.Visitor => {
     const { types: t, template } = babel;
 
