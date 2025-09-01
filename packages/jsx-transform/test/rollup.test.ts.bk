@@ -1,0 +1,44 @@
+import { it, expect } from "vitest";
+import type { InputOptions, OutputOptions } from "rollup";
+import { rollup } from "rollup";
+import { signalCompilerRollup } from "../src/rollup";
+import * as fs from 'node:fs'
+import { resolve } from 'node:path'
+import { config } from "./config";
+
+const pairs = fs.readdirSync(resolve(__dirname, './pairs/'));
+
+const trans = async (pair: string) => {
+  const inputOptions: InputOptions = {
+    input: resolve(__dirname, `./pairs/${pair}/source.js`),
+    treeshake: false,
+    jsx: {
+      mode: "preserve",
+    },
+    plugins: [
+      signalCompilerRollup({
+        config: { ...config }
+      }),
+    ],
+    external: ["../src", "../src/control/Dynamic", "../src/control/Switch"],
+  };
+  const outputOptions: OutputOptions = {
+    file: "bundle.js",
+    format: "esm",
+  };
+
+  const bundle = await rollup(inputOptions);
+
+  const { output } = await bundle.generate(outputOptions);
+
+  return output?.[0]?.code;
+}
+
+for (const pair of pairs) {
+  it(pair, async () => {
+    const code = await trans(pair);
+    expect(code).toBe(fs.readFileSync(resolve(__dirname, `./pairs/${pair}/dist.js`), {
+      encoding: 'utf-8'
+    }).toString() + '\n');
+  })
+}

@@ -7,9 +7,19 @@ import {
   Case,
   Default,
   Switch,
+  FC,
+  registWebComponents,
+  WCFC,
+  wc,
 } from "j20";
-const TodoItem = ($props: any) => {
+const TodoItem: WCFC<{
+  text: JSX.Element;
+  onDelete: () => void;
+  children: JSX.Element;
+}> = ($props) => {
   let $checked = true;
+
+  console.log(wc());
 
   return (
     <div style="display: flex; align-items: center; gap: 10px;">
@@ -18,6 +28,7 @@ const TodoItem = ($props: any) => {
         checked={$checked}
         onChange={() => ($checked = !$checked)}
       ></input>
+      <slot></slot>
       <div>
         <If
           of={$checked}
@@ -37,8 +48,21 @@ const TodoItem = ($props: any) => {
   );
 };
 
+TodoItem.customElement = {
+  tag: "todo-item",
+  shadow: "closed",
+  props: {
+    text: {
+      attribute: "text",
+      type: "string",
+    },
+  },
+};
+
+// registWebComponents(TodoItem);
+
 let arr = [];
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 10000; i++) {
   arr.push({
     id: Math.random(),
     text: `item ${i}`,
@@ -129,7 +153,12 @@ const App = () => {
                 </span>
               }
               onDelete={() => handleDelete($item.id)}
-            />
+            >
+              <span>killer</span>
+            </TodoItem>
+            // <todo-item text={$index}>
+            //   <span>killer</span>
+            // </todo-item>
           )}
         </For>
       </div>
