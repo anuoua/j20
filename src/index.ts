@@ -23,7 +23,7 @@ const defaultConfig: Config = {
 
 export const signalCompiler = (
   babel: typeof babelCore,
-  config: Config
+  config: Required<Config>
 ): PluginObj => {
   const globalState: GlobalState = {
     signalImported: false,
