@@ -5,18 +5,14 @@ import type { FilterPattern } from "@rollup/pluginutils";
 import { signalCompiler } from ".";
 import { Config } from "./types";
 
-export interface ReassignOptions {
+export interface Options {
   include?: FilterPattern;
   exclude?: FilterPattern;
   sourcemap?: boolean;
   config: Config;
-  jsx?: {
-    importSource?: string;
-    throwIfNamespace?: boolean;
-  }
 }
 
-export function signalCompilerRollup(options: ReassignOptions): Plugin {
+export function signalCompilerRollup(options: Options): Plugin {
   const { include, exclude, sourcemap = true } = options;
 
   const idFilter = createFilter(include, exclude);

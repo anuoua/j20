@@ -10,6 +10,5 @@ export interface Config {
   patternSignalDeclaration?: boolean;
   identifierSignalRead?: boolean;
   functionAutoSignal?: boolean;
-  jsxTransform?: boolean;
   identifierSignalAssign?: boolean;
 }
