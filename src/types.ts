@@ -5,7 +5,7 @@ export interface GlobalState {
 
 export interface Config {
   autoImport?: boolean;
-  importSource: string;
+  importSource?: string;
   identifierSignalDeclaration?: boolean;
   patternSignalDeclaration?: boolean;
   identifierSignalRead?: boolean;

@@ -9,7 +9,7 @@ export interface Options {
   include?: FilterPattern;
   exclude?: FilterPattern;
   sourcemap?: boolean;
-  config: Config;
+  config?: Config;
 }
 
 export function signalCompilerRollup(options: Options): Plugin {
