@@ -9,11 +9,7 @@ export interface Options {
   include?: FilterPattern;
   exclude?: FilterPattern;
   sourcemap?: boolean;
-  config: Config;
-  jsx?: {
-    importSource?: string;
-    throwIfNamespace?: boolean;
-  };
+  config?: Config;
 }
 
 export function j20JsxTransformRollup(options: Options): Plugin {
