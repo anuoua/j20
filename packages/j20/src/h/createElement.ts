@@ -1,11 +1,11 @@
-import { FC, WCFC } from "../types";
+import { FC, WC } from "../types";
 import { createComponent } from "./createComponent";
 import { createDom } from "./createDom";
 import { createLogicComponent } from "./createLogicComponent";
 import { createWebComponent } from "./createWebComponent";
 
 export const createElement = (
-  tag: HTMLElement | SVGElement | FC | WCFC,
+  tag: HTMLElement | SVGElement | FC | WC,
   props: any,
   children: any
 ) => {

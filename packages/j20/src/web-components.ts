@@ -1,4 +1,4 @@
-import { CustomElement, WCFC } from "./types";
+import { CustomElement, WC } from "./types";
 import { signal } from "./api/signal";
 import { computed } from "./api/computed";
 import { getCurrentInstance, Instance, instanceCreate } from "./h/instance";
@@ -12,7 +12,7 @@ export const setHost = (h: HTMLElement | undefined) => (host = h);
 
 export const getHost = () => host;
 
-export const registWebComponents = (Comp: WCFC) => {
+export const registWebComponents = (Comp: WC) => {
   if (!Comp.customElement) {
     throw new Error("Custom element options is not provided");
   }
@@ -26,7 +26,7 @@ export const registWebComponents = (Comp: WCFC) => {
   customElements.define(Comp.customElement.tag, NewClass);
 };
 
-export const buildClass = (Comp: WCFC) => {
+export const buildClass = (Comp: WC) => {
   const { customElement } = Comp;
   const { a2p, a2v } = buildMap(customElement);
 
@@ -42,6 +42,8 @@ export const buildClass = (Comp: WCFC) => {
     #shadow: ShadowRoot | undefined;
 
     _props: Record<string, SignalLike> = {};
+
+    _instance: Instance | undefined;
 
     props: Record<string, any> = {};
 
@@ -68,7 +70,7 @@ export const buildClass = (Comp: WCFC) => {
         {} as Record<string, SignalLike>
       );
 
-      const props = (this.props = new Proxy(this._props, {
+      this.props = new Proxy(this._props, {
         get(target, key: string) {
           return target[key]?.value;
         },
@@ -76,15 +78,17 @@ export const buildClass = (Comp: WCFC) => {
           target[key].value = value;
           return true;
         },
-      }));
+      });
     }
 
-    initComp() {
+    lazyInit() {
       setHost(this);
 
       const [instance, fragment] = instanceCreate(() => {
         return Comp(computed(() => this.props));
       }, getCurrentInstance());
+
+      this._instance = instance;
 
       setHost(undefined);
 
@@ -95,7 +99,7 @@ export const buildClass = (Comp: WCFC) => {
       }
     }
 
-    appendTo(elements: HTMLElement[]) {
+    appendToRealChildren(elements: HTMLElement[]) {
       if (this.#shadow && elements.length > 0) {
         this.#shadow.append(...elements);
       } else {

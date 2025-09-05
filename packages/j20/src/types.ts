@@ -23,6 +23,6 @@ export type CustomElement<P extends Record<string, any> = {}> = {
   extend?: (customElementConstructor: any) => CustomElement;
 };
 
-export type WCFC<P extends Record<string, any> = {}> = {
+export type WC<P extends Record<string, any> = {}> = {
   customElement: CustomElement<P>;
 } & ((props: P) => JSX.Element);

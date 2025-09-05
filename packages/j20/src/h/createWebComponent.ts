@@ -1,15 +1,12 @@
 import { instanceCreate } from "./instance";
 import { computed } from "../api/computed";
-import { WCFC } from "../types";
+import { WC } from "../types";
 import { untrackedReturn } from "../api/untracked-return";
 import { BRAND } from "../brand";
 import { buildClass, setHost } from "../web-components";
 import { getChildren } from "./utils";
 
-export const createWebComponent = (
-  tag: WCFC,
-  props: undefined | (() => any)
-) => {
+export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
   const runner = () => {
     const customElement = tag.customElement!;
 
@@ -49,7 +46,7 @@ export const createWebComponent = (
 
     setHost(undefined);
 
-    (el as any).appendTo(getChildren([].concat(ret)));
+    (el as any).appendToRealChildren(getChildren([].concat(ret)));
 
     childrenGetter &&
       (el as any).appendToLightDom(getChildren([].concat(childrenGetter())));
