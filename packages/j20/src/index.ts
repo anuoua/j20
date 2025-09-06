@@ -4,6 +4,7 @@ export * from "./api/computed";
 export * from "./api/effect";
 export * from "./api/ref";
 export * from "./api/wc";
+export * from "./api/createContext";
 export * from "./control/For";
 export * from "./control/If";
 export * from "./control/Dynamic";

@@ -13,7 +13,7 @@ const stack: Instance[] = [];
 
 export const getCurrentInstance = () => stack.at(-1);
 
-export const instanceCreate = (runner: () => any, parent?: Instance) => {
+export const instanceInit = (parent?: Instance) => {
   const id = generateId();
   const parentInstance = parent ?? getCurrentInstance();
   const instance: Instance = {
@@ -30,7 +30,13 @@ export const instanceCreate = (runner: () => any, parent?: Instance) => {
       parentInstance.children = [instance];
     }
   }
+  return instance;
+};
 
+export const instanceCreateElement = (
+  instance: Instance,
+  runner: () => any
+) => {
   stack.push(instance);
 
   const fragment = createDom(
@@ -44,7 +50,12 @@ export const instanceCreate = (runner: () => any, parent?: Instance) => {
 
   stack.pop();
 
-  return [instance, fragment] as const;
+  return fragment;
+};
+
+export const instanceCreate = (runner: () => any, parent?: Instance) => {
+  const instance = instanceInit(parent);
+  return [instance, instanceCreateElement(instance, runner)] as const;
 };
 
 export const instanceGetElements = (instance: Instance) => {
