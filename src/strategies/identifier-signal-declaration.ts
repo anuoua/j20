@@ -2,6 +2,7 @@ import * as babelCore from "@babel/core";
 import { isSignal } from "../utils/is-signal";
 import type { Config, GlobalState } from "../types";
 import { isCustomHook } from "../utils/is-custom-hook";
+import { isDollar } from "../utils/is-dollar";
 
 export const identifierSignalDeclaration = (
   babel: typeof babelCore,
@@ -25,9 +26,13 @@ export const identifierSignalDeclaration = (
       node.declarations.forEach((declearation) => {
         if (t.isIdentifier(declearation.id)) {
           const confirmSignalToTransform =
-            isSignal(declearation.id.name) && !(
-              declearation.init?.type === "CallExpression" && declearation.init.callee.type === "Identifier" && isCustomHook(declearation.init.callee.name)
-            )
+            isSignal(declearation.id.name) &&
+            !(
+              declearation.init?.type === "CallExpression" &&
+              declearation.init.callee.type === "Identifier" &&
+              (isCustomHook(declearation.init.callee.name) ||
+                isDollar(declearation.init.callee.name))
+            );
 
           if (node.kind === "let" && confirmSignalToTransform) {
             declearation.init = buildStateAssignment({
