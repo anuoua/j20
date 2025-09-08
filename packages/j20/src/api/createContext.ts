@@ -1,11 +1,9 @@
 import {
   getCurrentInstance,
   Instance,
-  instanceCreate,
   instanceCreateElement,
   instanceInit,
 } from "../h/instance";
-import { computed } from "../api/computed";
 import { isSignal } from "./utils";
 
 const contextWeakMap = new WeakMap<Instance, any>();
@@ -20,7 +18,11 @@ export const createContext = <T>(defaultValue: T) => {
 
     contextWeakMap.set(instance, {
       ctx: Context,
-      value: computed(() => props.value.value),
+      value: {
+        get value() {
+          return props.value.value;
+        },
+      },
     });
 
     const fragment = instanceCreateElement(
@@ -38,20 +40,9 @@ export const createContext = <T>(defaultValue: T) => {
       value: { children: (value: T) => JSX.Element };
     };
 
-    const instance = getCurrentInstance();
+    const data = context(Context);
 
-    let index = instance?.parent;
-
-    while (index) {
-      if (contextWeakMap.has(index)) {
-        const { ctx, value } = contextWeakMap.get(index)!;
-        if (ctx === Context) {
-          return props.value.children(value);
-        }
-      } else {
-        index = index.parent;
-      }
-    }
+    if (data) return props.value.children(data);
 
     return props.value.children(
       isSignal(defaultValue)
@@ -68,5 +59,29 @@ export const createContext = <T>(defaultValue: T) => {
 
   Context.Consumer = Consumer;
 
+  Context.defaultValue = defaultValue;
+
   return Context;
 };
+
+export const context = <T>(Context: { defaultValue: T }) => {
+  const instance = getCurrentInstance();
+
+  let index = instance?.parent;
+
+  while (index) {
+    if (contextWeakMap.has(index)) {
+      const { ctx, value } = contextWeakMap.get(index)!;
+      if (ctx === Context) {
+        return value;
+      }
+    } else {
+      index = index.parent;
+    }
+  }
+
+  return Context.defaultValue;
+};
+
+export const $useContext = <T>(c: { defaultValue: T }): T =>
+  context<T>((c as any).value);
