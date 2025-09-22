@@ -6,7 +6,7 @@ export type AttrValueType = string | number | boolean;
 
 export type CustomElement<P extends Record<string, any> = {}> = {
   tag: string;
-  shadow: "none" | "open" | "closed";
+  shadow?: "open" | "closed";
   style?: string;
   props?: {
     [K in keyof P as P[K] extends AttrValueType ? K : never]?: {
@@ -23,6 +23,15 @@ export type CustomElement<P extends Record<string, any> = {}> = {
   extend?: (customElementConstructor: any) => CustomElement;
 };
 
-export type WC<P extends Record<string, any> = {}> = {
+export type WC<
+  P extends Record<string, string | boolean | number> = {},
+  E extends Record<string, any> = {},
+> = {
   customElement: CustomElement<P>;
-} & ((props: P) => JSX.Element);
+} & ((
+  props: P & {
+    children?: JSX.Element;
+  } & {
+    [K in keyof E as `on${Capitalize<K & string>}`]: (e: E[K]) => void;
+  }
+) => JSX.Element);

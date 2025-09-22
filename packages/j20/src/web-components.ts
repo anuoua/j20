@@ -4,7 +4,6 @@ import { computed } from "./api/computed";
 import { getCurrentInstance, Instance, instanceCreate } from "./h/instance";
 import { SignalLike } from "./api/types";
 import { BRAND } from "./brand";
-import { createWebComponent } from "./h/createWebComponent";
 
 let host: HTMLElement | undefined;
 
@@ -12,7 +11,7 @@ export const setHost = (h: HTMLElement | undefined) => (host = h);
 
 export const getHost = () => host;
 
-export const registWebComponents = (Comp: WC) => {
+export const registWebComponents = <C extends WC<any, any>>(Comp: C) => {
   if (!Comp.customElement) {
     throw new Error("Custom element options is not provided");
   }
@@ -54,7 +53,7 @@ export const buildClass = (Comp: WC) => {
 
       this.lazy = lazy;
 
-      if (customElement.tag && customElement.shadow !== "none") {
+      if (customElement.tag && customElement.shadow) {
         this.#shadow = this.attachShadow({ mode: customElement.shadow });
       }
 
@@ -71,12 +70,16 @@ export const buildClass = (Comp: WC) => {
       );
 
       this.props = new Proxy(this._props, {
-        get(target, key: string) {
-          return target[key]?.value;
+        get(target, key: string, receiver) {
+          return Reflect.get(target, key, receiver)?.value;
         },
-        set(target, key: string, value) {
-          target[key].value = value;
-          return true;
+        set(target, key: string, value, receiver) {
+          const sig = Reflect.get(target, key, receiver);
+          if (sig) {
+            return (sig.value = value);
+          } else {
+            throw new Error(`${key} is not found`);
+          }
         },
       });
     }
@@ -84,8 +87,27 @@ export const buildClass = (Comp: WC) => {
     lazyInit() {
       setHost(this);
 
+      const host = this;
+
       const [instance, fragment] = instanceCreate(() => {
-        return Comp(computed(() => this.props));
+        return Comp(
+          computed(() => {
+            return new Proxy(this.props, {
+              get(target, p, receiver) {
+                if (typeof p === "string" && p.startsWith("on")) {
+                  return (detail: any) =>
+                    host.dispatchEvent(
+                      new CustomEvent(p.slice(2).toLocaleLowerCase(), {
+                        detail,
+                      })
+                    );
+                } else {
+                  return Reflect.get(target, p, receiver);
+                }
+              },
+            });
+          })
+        );
       }, getCurrentInstance());
 
       this._instance = instance;
