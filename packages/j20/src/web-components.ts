@@ -11,7 +11,7 @@ export const setHost = (h: HTMLElement | undefined) => (host = h);
 
 export const getHost = () => host;
 
-export const registWebComponents = <C extends WC<any, any>>(Comp: C) => {
+export const registerWebComponent = <C extends WC<any, any>>(Comp: C) => {
   if (!Comp.customElement) {
     throw new Error("Custom element options is not provided");
   }
@@ -24,6 +24,13 @@ export const registWebComponents = <C extends WC<any, any>>(Comp: C) => {
 
   customElements.define(Comp.customElement.tag, NewClass);
 };
+
+export abstract class WebComponentClass extends HTMLElement {
+  abstract customElement: CustomElement;
+  constructor(public lazy: boolean) {
+    super();
+  }
+}
 
 export const buildClass = (Comp: WC) => {
   const { customElement } = Comp;
@@ -40,11 +47,9 @@ export const buildClass = (Comp: WC) => {
 
     #shadow: ShadowRoot | undefined;
 
-    _props: Record<string, SignalLike> = {};
+    #props: Record<string, SignalLike> = {};
 
-    _instance: Instance | undefined;
-
-    props: Record<string, any> = {};
+    customElement = customElement;
 
     lazy: boolean;
 
@@ -57,7 +62,7 @@ export const buildClass = (Comp: WC) => {
         this.#shadow = this.attachShadow({ mode: customElement.shadow });
       }
 
-      this._props = Object.entries(customElement.props ?? {}).reduce(
+      this.#props = Object.entries(customElement.props ?? {}).reduce(
         (acc, [key, value]: any) => {
           acc[key] = signal(
             value.attribute
@@ -68,20 +73,6 @@ export const buildClass = (Comp: WC) => {
         },
         {} as Record<string, SignalLike>
       );
-
-      this.props = new Proxy(this._props, {
-        get(target, key: string, receiver) {
-          return Reflect.get(target, key, receiver)?.value;
-        },
-        set(target, key: string, value, receiver) {
-          const sig = Reflect.get(target, key, receiver);
-          if (sig) {
-            return (sig.value = value);
-          } else {
-            throw new Error(`${key} is not found`);
-          }
-        },
-      });
     }
 
     lazyInit() {
@@ -89,10 +80,10 @@ export const buildClass = (Comp: WC) => {
 
       const host = this;
 
-      const [instance, fragment] = instanceCreate(() => {
+      const [, fragment] = instanceCreate(() => {
         return Comp(
           computed(() => {
-            return new Proxy(this.props, {
+            return new Proxy(this.#props, {
               get(target, p, receiver) {
                 if (typeof p === "string" && p.startsWith("on")) {
                   return (detail: any) =>
@@ -102,15 +93,13 @@ export const buildClass = (Comp: WC) => {
                       })
                     );
                 } else {
-                  return Reflect.get(target, p, receiver);
+                  return Reflect.get(target, p, receiver)?.value;
                 }
               },
             });
           })
         );
       }, getCurrentInstance());
-
-      this._instance = instance;
 
       setHost(undefined);
 
@@ -121,16 +110,20 @@ export const buildClass = (Comp: WC) => {
       }
     }
 
-    appendToRealChildren(elements: HTMLElement[]) {
+    appendToShadowDom(elements: HTMLElement[]) {
       if (this.#shadow && elements.length > 0) {
         this.#shadow.append(...elements);
-      } else {
-        this.append(...elements);
       }
     }
 
     appendToLightDom(elements: HTMLElement[]) {
       if (this.#shadow && elements.length > 0) {
+        this.append(...elements);
+      }
+    }
+
+    appendToBody(elements: HTMLElement[]) {
+      if (elements.length > 0) {
         this.append(...elements);
       }
     }
@@ -142,7 +135,7 @@ export const buildClass = (Comp: WC) => {
     ) {
       if (this.lazy) return;
       const attrs = NewElementClass.observedAttributes;
-      const propSignal = this._props[a2p[name]];
+      const propSignal = this.#props[a2p[name]];
       if (propSignal && attrs.includes(name)) {
         propSignal.value = a2v[name](newValue);
       }

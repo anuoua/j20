@@ -3,7 +3,7 @@ import { computed } from "../api/computed";
 import { WC } from "../types";
 import { untrackedReturn } from "../api/untracked-return";
 import { BRAND } from "../brand";
-import { buildClass, setHost } from "../web-components";
+import { buildClass, setHost, WebComponentClass } from "../web-components";
 import { getChildren } from "./utils";
 
 export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
@@ -12,7 +12,7 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
 
     const Exist = customElements.get(customElement.tag);
 
-    let el: HTMLElement | undefined;
+    let el: WebComponentClass | undefined;
 
     if (Exist) {
       if ((Exist as any).brand !== BRAND) {
@@ -20,7 +20,7 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
           `Custom element [${customElement.tag}] is already registered`
         );
       } else {
-        el = new Exist(true);
+        el = new Exist(true) as unknown as WebComponentClass;
       }
     } else {
       const NewClass = buildClass(tag);
@@ -46,10 +46,13 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
 
     setHost(undefined);
 
-    (el as any).appendToRealChildren(getChildren([].concat(ret)));
-
-    childrenGetter &&
-      (el as any).appendToLightDom(getChildren([].concat(childrenGetter())));
+    if (el.customElement.shadow) {
+      (el as any).appendToShadowDom(getChildren([].concat(ret)));
+      childrenGetter &&
+        (el as any).appendToLightDom(getChildren([].concat(childrenGetter())));
+    } else {
+      (el as any).appendToBody(getChildren([].concat(ret)));
+    }
 
     return el;
   };

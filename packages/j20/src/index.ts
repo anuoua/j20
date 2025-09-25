@@ -13,7 +13,7 @@ export * from "./control/Switch";
 export * from "./h/createElement";
 export * from "./h/createComponent";
 export * from "./h/createLogicComponent";
-export { registWebComponents } from "./web-components";
+export { registerWebComponent } from "./web-components";
 export * from "./h/createDom";
 export * from "./h/createRoot";
 export * from "./h/instance";
