@@ -1,9 +1,11 @@
-import { effect as innerEffect } from "@preact/signals-core";
+import { effect as innerEffect, Effect } from "../signals/signal";
 import { getCurrentInstance } from "../h/instance";
 
-export const effect: typeof innerEffect = (...args) => {
+export const effect: typeof innerEffect = (effectFn) => {
+  const effectInstance = innerEffect(effectFn);
   const currentInstance = getCurrentInstance();
-  const disposes = innerEffect(...args);
-  currentInstance?.disposes?.push(disposes);
-  return disposes;
+  currentInstance?.disposes?.push(() => effectInstance.dispose());
+  return effectInstance;
 };
+
+export { Effect };

@@ -1,1 +1,1 @@
-export { computed } from "@preact/signals-core";
+export { computed, Computed } from "../signals/signal";
