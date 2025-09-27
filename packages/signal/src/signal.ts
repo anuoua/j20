@@ -11,6 +11,7 @@ type Reaction = Effect | Computed<unknown>;
 class Signal<T> {
   _value: T;
   readonly _deps: Set<Reaction> = new Set();
+  _version: number = 0; // 版本号，用于性能优化
 
   constructor(value: T) {
     this._value = value;
@@ -37,6 +38,8 @@ class Signal<T> {
     if (Object.is(this._value, newValue)) return;
 
     this._value = newValue;
+    this._version++; // 增加版本号
+    
     // 触发依赖于此信号的所有 effect 重新执行
     this._deps.forEach((effect) => {
       if (effect instanceof Computed) {
@@ -48,6 +51,11 @@ class Signal<T> {
         }
       }
     });
+  }
+  
+  // 获取当前版本号
+  get version(): number {
+    return this._version;
   }
 }
 
@@ -61,6 +69,7 @@ class Computed<T> {
   dirty: boolean = true;
   readonly _deps: Set<Reaction> = new Set();
   _sources: Set<Signal<unknown> | Computed<unknown>> = new Set();
+  _version: number = 0; // 版本号，用于性能优化
 
   constructor(computeFn: () => T) {
     this.computeFn = computeFn;
@@ -102,6 +111,7 @@ class Computed<T> {
 
     try {
       this._value = this.computeFn();
+      this._version++; // 计算成功后增加版本号
     } finally {
       currentEffect = prevEffect;
       // 清理不再依赖的sources
@@ -145,6 +155,11 @@ class Computed<T> {
       deps.add(this);
     }
   }
+  
+  // 获取当前版本号
+  get version(): number {
+    return this._version;
+  }
 }
 
 class Effect {
@@ -152,6 +167,8 @@ class Effect {
   readonly _deps: Set<Signal<unknown> | Computed<unknown>> = new Set();
   cleanupFn: (() => void) | null = null;
   disposed: boolean = false;
+  // 存储依赖的版本号，用于优化检查
+  _depVersions: Map<Signal<unknown> | Computed<unknown>, number> = new Map();
 
   constructor(effectFn: () => void) {
     this.effectFn = effectFn;
@@ -193,6 +210,7 @@ class Effect {
       }
     });
     this._deps.clear();
+    this._depVersions.clear();
 
     // 执行清理函数（如果存在）
     if (this.cleanupFn) {
@@ -211,6 +229,10 @@ class Effect {
     // 避免重复添加依赖
     if (!this._deps.has(source)) {
       this._deps.add(source);
+      // 记录依赖的当前版本号
+      if ('version' in source) {
+        this._depVersions.set(source, source.version);
+      }
       let deps = depMap.get(source);
       if (!deps) {
         deps = new Set();
@@ -218,6 +240,16 @@ class Effect {
       }
       deps.add(this);
     }
+  }
+  
+  // 检查依赖是否发生变化
+  hasDepsChanged(): boolean {
+    for (const [dep, version] of this._depVersions) {
+      if ('version' in dep && dep.version !== version) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 

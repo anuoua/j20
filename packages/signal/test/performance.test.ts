@@ -1,5 +1,5 @@
 import { it, describe, expect } from "vitest";
-import { signal, computed, effect } from "../src";
+import { signal, computed, effect, Signal, Computed, Effect } from "../src";
 
 describe("Signal Performance", () => {
   it("should avoid duplicate dependency tracking", () => {
@@ -119,5 +119,58 @@ describe("Signal Performance", () => {
     
     // 验证effect运行三次
     expect(effectRunCount).toBe(3);
+  });
+  
+  it("should track version numbers correctly", () => {
+    const a = signal(1);
+    const b = computed(() => a.value * 2);
+    
+    // 验证初始版本号
+    expect((a as Signal<number>)._version).toBe(0);
+    expect((b as Computed<number>)._version).toBe(0);
+    
+    // 更新信号
+    a.value = 2;
+    
+    // 验证信号版本号增加
+    expect((a as Signal<number>)._version).toBe(1);
+    
+    // 访问computed值触发计算
+    expect(b.value).toBe(4);
+    
+    // 验证computed版本号增加
+    expect((b as Computed<number>)._version).toBe(1);
+  });
+  
+  it("should optimize effect dependency checking with versions", () => {
+    const a = signal(1);
+    const b = signal(2);
+    let effectRunCount = 0;
+    
+    // 创建effect
+    const eff = effect(() => {
+      a.value;
+      b.value;
+      effectRunCount++;
+    }) as Effect;
+    
+    // 验证effect运行一次
+    expect(effectRunCount).toBe(1);
+    
+    // 验证依赖版本号被正确记录
+    expect(eff._depVersions.size).toBe(2);
+    
+    // 再次运行effect，依赖未变化
+    // 注意：这里只是验证版本号机制，实际effect不会重新运行
+    // 因为我们没有改变信号值
+    
+    // 更新一个依赖
+    a.value = 3;
+    
+    // 验证effect运行两次
+    expect(effectRunCount).toBe(2);
+    
+    // 验证依赖版本号检查功能
+    expect(eff.hasDepsChanged()).toBe(true);
   });
 });
