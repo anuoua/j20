@@ -1,1 +1,1 @@
-export { computed, Computed } from "../signals/signal";
+export { computed, Computed } from "@j20/signal";

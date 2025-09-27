@@ -1,5 +1,5 @@
 import { it, describe, expect } from "vitest";
-import { signal, computed, effect } from "../src/signals";
+import { signal, computed, effect } from "../src";
 
 describe("Signal System", () => {
   it("should handle basic signal operations", () => {

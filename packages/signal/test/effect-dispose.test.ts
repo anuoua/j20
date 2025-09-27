@@ -1,7 +1,14 @@
 import { it, describe, expect } from "vitest";
-import { signal } from "../src/signals";
-import { effect } from "../src/api/effect";
-import { instanceCreate, getCurrentInstance } from "../src/h/instance";
+import { signal, effect as innerEffect, Effect } from "../src";
+import { instanceCreate, getCurrentInstance } from "../../j20/src/h/instance";
+
+// 模拟j20包中的effect实现
+const effect = (effectFn: () => void | (() => void)) => {
+  const effectInstance = innerEffect(effectFn);
+  const currentInstance = getCurrentInstance();
+  currentInstance?.disposes?.push(() => effectInstance.dispose());
+  return effectInstance;
+};
 
 describe("Effect dispose integration", () => {
   it("should register effect dispose function to current instance", () => {

@@ -1,1 +1,1 @@
-export { signal, Signal } from "../signals/signal";
+export { signal, Signal } from "@j20/signal";

@@ -1,4 +1,4 @@
-import { effect as innerEffect, Effect } from "../signals/signal";
+import { effect as innerEffect, Effect } from "@j20/signal";
 import { getCurrentInstance } from "../h/instance";
 
 export const effect: typeof innerEffect = (effectFn) => {
