@@ -5,6 +5,7 @@ export * from "./api/effect";
 export * from "./api/ref";
 export * from "./api/wc";
 export * from "./api/dollar";
+export * from "./api/scheduler";
 export { $useContext, createContext } from "./api/createContext";
 export * from "./control/For";
 export * from "./control/If";

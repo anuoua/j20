@@ -1,0 +1,35 @@
+{
+  "name": "@j20/scheduler",
+  "version": "0.0.1",
+  "description": "A priority task scheduler for J20 framework",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "test": "vitest --run"
+  },
+  "keywords": [
+    "scheduler",
+    "priority",
+    "j20"
+  ],
+  "author": "anuoua",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.1.6",
+    "vitest": "^0.33.0",
+    "happy-dom": "^10.1.1",
+    "rimraf": "^5.0.1"
+  }
+}

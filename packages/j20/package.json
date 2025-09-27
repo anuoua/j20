@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@j20/signal": "link:../signal",
+    "@j20/scheduler": "link:../scheduler",
     "@preact/signals-core": "^1.11.0",
     "signal-compiler": "^0.0.30",
     "vite": "^6.3.5"
