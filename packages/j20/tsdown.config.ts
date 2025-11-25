@@ -9,7 +9,7 @@ export default defineConfig([
   },
   {
     entry: ["./src/jsx-runtime.ts"],
-    external: ["."],
+    external: ["./index"],
     outDir: "dist",
     skipNodeModulesBundle: true,
   },
