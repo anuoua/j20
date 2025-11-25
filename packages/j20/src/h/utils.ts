@@ -5,7 +5,7 @@ export const isEvent = (eventName: string) => {
 };
 
 export const getEventName = (eventName: string) => {
-  return eventName.slice(2).toLocaleLowerCase();
+  return eventName.slice(2).toLowerCase();
 };
 
 export const getChildren = (propChildren: any[]) => {
