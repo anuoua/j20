@@ -16,12 +16,12 @@ export const template = (template: string) => {
     if (!dom) {
       const templateEl = isSvg
         ? document.createElementNS("http://www.w3.org/2000/svg", "svg")
-        : document.createElement("div");
+        : document.createElement("template");
       templateEl.innerHTML = template;
-      dom = templateEl.firstChild;
-      return dom.cloneNode();
-    } else {
-      return dom.cloneNode();
+      dom = isSvg
+        ? (templateEl as SVGSVGElement).firstChild
+        : (templateEl as HTMLTemplateElement).content.firstChild;
     }
+    return dom.cloneNode();
   };
 };
