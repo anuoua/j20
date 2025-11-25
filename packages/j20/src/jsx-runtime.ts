@@ -1,4 +1,4 @@
-import { createElement } from ".";
+import { createElement } from "./index";
 
 export const h2 = (tag: any, props: any, children: any) => {
   return createElement(tag, props, children);
