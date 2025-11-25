@@ -515,6 +515,13 @@ onMount(() => {
 });
 ```
 
+## JSX
+
+J20 的 jsx 和 React 类似，但是并不完全相同：
+
+- **class**：className（React）
+- **style**: 支持和原生html一样的字符串，同时支持 style 对象，style 对象的 key 和原生 css 样式名一致，不是 React 那样的驼峰法命名。
+
 ## FAQ
 
 ### 1. 什么是响应传递机制？
