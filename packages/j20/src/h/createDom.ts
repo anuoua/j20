@@ -1,5 +1,10 @@
 import { effect } from "../api/effect";
-import { getChildren, getEventName, isEvent } from "./utils";
+import {
+  getChildren,
+  getEventName,
+  isEvent,
+  styleObjectToString,
+} from "./utils";
 import { getCurrentInstance } from "./instance";
 
 const update = (
@@ -15,7 +20,13 @@ const update = (
     if (newValue === false || newValue == null) {
       node.removeAttribute(key);
     } else {
-      node.setAttribute(key, newValue === true ? "" : newValue);
+      const value =
+        key === "style" && typeof newValue === "object"
+          ? styleObjectToString(newValue)
+          : newValue === true
+            ? ""
+            : newValue;
+      node.setAttribute(key, value);
     }
   }
 };
@@ -40,9 +51,15 @@ const add = (node: HTMLElement | SVGElement, key: string, newValue: any) => {
     });
     newValue.current = node;
   } else {
-    newValue !== false &&
-      newValue != null &&
-      node.setAttribute(key, newValue === true ? "" : newValue);
+    if (newValue !== false && newValue != null) {
+      const value =
+        key === "style" && typeof newValue === "object"
+          ? styleObjectToString(newValue)
+          : newValue === true
+            ? ""
+            : newValue;
+      node.setAttribute(key, value);
+    }
   }
 };
 

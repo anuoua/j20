@@ -41,3 +41,12 @@ export const generateId = () => {
   }
   return `${overflow}${(count++).toString(32)}`;
 };
+
+export const styleObjectToString = (style: Record<string, string | number>) => {
+  let styleString = "";
+  for (const key in style) {
+    const value = style[key];
+    styleString += `${key}: ${value}; `;
+  }
+  return styleString.trim();
+};
