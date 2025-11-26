@@ -1,12 +1,9 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "dist",
     "jsx": "react-jsx",
-    "jsxImportSource": "j20",
-    "moduleResolution": "bundler",
     "target": "esnext",
     "module": "esnext",
+    "moduleResolution": "bundler",
 
     /* Emit */
     "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
@@ -17,5 +14,5 @@
     "strict": true /* Enable all strict type-checking options. */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "include": ["src", "example", "src/jsx.d.ts", "test"]
+  "include": ["src", "example", "jsx.d.ts", "test"]
 }

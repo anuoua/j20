@@ -1,1 +1,3 @@
-export const isSignal = (a: any) => a?.brand === Symbol.for("preact-signals");
+import { BRAND } from "../brand";
+
+export const isSignal = (a: any) => a?.brand === Symbol.for(BRAND);

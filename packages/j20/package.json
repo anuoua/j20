@@ -7,20 +7,19 @@
   "license": "MIT",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.mts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./jsx-runtime": {
-      "import": "./dist/jsx-runtime.mjs",
-      "types": "./dist/jsx-runtime.d.mts"
+      "import": "./dist/jsx-runtime.js",
+      "types": "./dist/jsx-runtime.d.ts"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "dev": "vite example --config vite.config.mjs",
-    "build": "rimraf dist && tsdown",
+    "build": "rimraf dist && tsc -p tsconfig.build.json && rollup -c rollup.config.mjs && rimraf _dist",
     "test:watch": "vitest",
     "test": "vitest --run --dom"
   },
@@ -29,11 +28,12 @@
   },
   "devDependencies": {
     "@j20org/signal": "workspace:*",
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "happy-dom": "^10.1.1",
     "rimraf": "^5.0.1",
-    "typescript": "^5.1.6",
-    "vitest": "^0.33.0",
-    "tsdown": "^0.16.6",
-    "vite": "^6.3.5"
+    "rollup": "^4.53.3",
+    "rollup-plugin-dts": "^6.2.3",
+    "typescript": "^5.9.3",
+    "vitest": "^0.33.0"
   }
 }
