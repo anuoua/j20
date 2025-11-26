@@ -1,6 +1,6 @@
 {
   "name": "@j20org/signal",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A reactive signal library for J20 framework",
   "type": "module",
   "main": "./dist/index.js",
