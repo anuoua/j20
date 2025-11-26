@@ -25,9 +25,19 @@ export const composeVisitors = (visitors: Visitor[]) => {
     // @ts-expect-error
     visitor[key] = {
       // @ts-expect-error
-      enter: (...args) => visitorStore[key].forEach((i) => i.enter ? i.enter(...args) : (typeof i === "function" ? i(...args) : null)),
+      enter: (...args) =>
+        visitorStore[key]?.forEach((i: any) =>
+          i.enter
+            ? i.enter(...args)
+            : typeof i === "function"
+              ? i(...args)
+              : null
+        ),
       // @ts-expect-error
-      exit: (...args) => visitorStore[key].forEach((i) => i.exit ? i.exit(...args) : null),
+      exit: (...args) =>
+        visitorStore[key]?.forEach((i: any) =>
+          i.exit ? i.exit(...args) : null
+        ),
     };
   });
 
