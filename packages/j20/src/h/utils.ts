@@ -13,17 +13,21 @@ export const getChildren = (propChildren: any[]) => {
   for (let i = 0; i < propChildren.length; i++) {
     const child = propChildren[i];
     if (typeof child === "function") {
-      const el = child();
-
-      if (typeof el === "number" || typeof el === "string") {
-        let textNode = document.createTextNode("");
-        effect(() => {
-          textNode.nodeValue = child();
-        });
-        arr.push(textNode);
-      } else {
-        arr.push(el);
-      }
+      let textNode: Text | undefined;
+      const effectInstance = effect(() => {
+        const el = child();
+        if (typeof el === "number" || typeof el === "string") {
+          if (textNode) {
+            textNode.nodeValue = el + "";
+          } else {
+            textNode = document.createTextNode(el + "");
+            arr.push(textNode);
+          }
+        } else {
+          arr.push(el);
+          effectInstance.dispose();
+        }
+      });
     } else if (child != undefined) {
       arr.push(child);
     }

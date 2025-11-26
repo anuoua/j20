@@ -1,13 +1,10 @@
 import { defineConfig } from "vite";
-import j20Preset from "@j20org/vite-plugin";
+import { j20 } from "@j20org/vite-plugin";
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  esbuild: {
-    jsx: "preserve",
-  },
   plugins: [
+    j20(),
     tailwindcss(),
-    ...j20Preset()
   ],
 });

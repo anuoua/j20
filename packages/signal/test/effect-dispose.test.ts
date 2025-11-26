@@ -5,22 +5,22 @@ describe("Effect dispose", () => {
   it("should properly dispose of effects", () => {
     let effectRunCount = 0;
     const count = signal(0);
-    
+
     // 创建一个effect
     const effectInstance = effect(() => {
       count.value;
       effectRunCount++;
     });
-    
+
     // 验证effect正常工作
     expect(effectRunCount).toBe(1);
-    
+
     count.value = 1;
     expect(effectRunCount).toBe(2);
-    
+
     // 调用dispose函数
     effectInstance.dispose();
-    
+
     // 验证effect已被正确dispose
     count.value = 2;
     expect(effectRunCount).toBe(2); // 不应该再增加
@@ -34,7 +34,7 @@ describe("Effect dispose", () => {
     const effectInstance = effect(() => {
       count.value;
       effectRunCount++;
-      
+
       return () => {
         cleanupRun = true;
       };
@@ -52,7 +52,7 @@ describe("Effect dispose", () => {
     // 当effect被dispose时，它会执行清理函数
     effectInstance.dispose();
     expect(cleanupRun).toBe(true); // dispose会执行清理函数
-    
+
     count.value = 2;
 
     // effect和清理函数都不应再运行

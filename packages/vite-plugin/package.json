@@ -1,12 +1,12 @@
 {
   "name": "@j20org/vite-plugin",
   "version": "0.0.4",
-  "description": "Vite plugin preset for j20 framework",
+  "description": "Vite plugin for j20 framework",
   "type": "module",
-  "main": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rimraf dist && tsdown"
+    "build": "rimraf dist && tsc -p tsconfig.build.json && rollup -c rollup.config.mjs && rimraf _dist"
   },
   "keywords": [
     "vite",
@@ -25,9 +25,9 @@
     "signal-compiler": "^0.1.1"
   },
   "devDependencies": {
-    "j20": "workspace:*",
     "rimraf": "^5.0.10",
-    "tsdown": "^0.16.6"
+    "rollup": "^4.53.3",
+    "rollup-plugin-dts": "^6.2.3"
   },
   "publishConfig": {
     "access": "public"

@@ -3,34 +3,26 @@
   "version": "0.0.3",
   "type": "module",
   "scripts": {
-    "build": "rimraf dist && tsdown",
+    "build": "rimraf dist && tsc -p tsconfig.build.json && rollup -c rollup.config.mjs && rimraf _dist",
     "test": "vitest --run --disableConsoleIntercept"
   },
   "author": "anuoua",
   "license": "MIT",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.mts"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./rollup": {
-      "import": "./dist/rollup.mjs",
-      "types": "./dist/rollup.d.mts"
+      "import": "./dist/rollup.js",
+      "types": "./dist/rollup.d.ts"
     }
   },
   "files": [
     "dist"
   ],
-  "devDependencies": {
-    "@types/babel__helper-module-imports": "^7.18.3",
-    "@types/babel__core": "^7.20.5",
-    "rimraf": "^5.0.1",
-    "tsdown": "^0.16.6",
-    "typescript": "^5.0.0",
-    "vitest": "^3.2.4"
-  },
   "dependencies": {
-    "rollup": "^4.46.2",
+    "rollup": "^4.53.3",
     "@rollup/pluginutils": "~5.2.0",
     "@babel/core": "~7.24.5",
     "@babel/generator": "^7.28.5",
@@ -39,5 +31,14 @@
     "@babel/helper-plugin-utils": "^7.27.1",
     "@babel/plugin-syntax-jsx": "^7.27.1",
     "@babel/types": "^7.28.2"
+  },
+  "devDependencies": {
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__helper-module-imports": "^7.18.3",
+    "rimraf": "^5.0.1",
+    "rollup-plugin-dts": "^6.2.3",
+    "typescript": "^5.0.0",
+    "vitest": "^3.2.4"
   }
 }
