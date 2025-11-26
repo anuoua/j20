@@ -51,6 +51,7 @@ export const For = <T>(p: ListProps<T>) => {
     const trait = props.trait ?? defaultTrait;
     const newList = props.of;
 
+    // @ts-expect-error
     if (import.meta.env.DEV) {
       const traitMap = new Map<any, T[]>();
       const duplicates: T[] = [];

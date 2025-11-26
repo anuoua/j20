@@ -70,7 +70,7 @@ interface DefaultPropsInner {
 }
 
 export const Default: FC<DefaultProps> = (p) => {
-  const props = p as unknown as CasePropsInner;
+  const props = p as unknown as DefaultPropsInner;
 
   const id = generateId();
 
