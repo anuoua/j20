@@ -25,9 +25,11 @@ export const getChildren = (propChildren: any[]) => {
           }
         } else {
           arr.push(el);
-          effectInstance.dispose();
         }
       });
+      if (!textNode) {
+        effectInstance.dispose();
+      }
     } else if (child != undefined) {
       arr.push(child);
     }
