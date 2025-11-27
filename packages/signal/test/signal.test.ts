@@ -1,5 +1,13 @@
 import { it, describe, expect } from "vitest";
-import { signal, computed, effect, Signal, Computed, Effect } from "../src";
+import {
+  signal,
+  computed,
+  effect,
+  Signal,
+  Computed,
+  Effect,
+  untrack,
+} from "../src";
 
 describe("Signal System", () => {
   it("should handle basic signal operations", () => {
@@ -156,5 +164,98 @@ describe("Signal System", () => {
     expect(() => {
       doubled.value;
     }).toThrow("Cannot access value of disposed computed");
+  });
+
+  it("untrack should not track code, but effect inside still works", () => {
+    const count = signal(0);
+    const tracked = signal(0);
+    let innerEffectRunCount = 0;
+    let untrackCode1Ran = false;
+    let untrackCode2Ran = false;
+
+    // 在 untrack 中执行代码
+    untrack(() => {
+      // code 1: 不追踪 tracked 信号
+      untrackCode1Ran = true;
+      tracked.value; // 虽然访问了 tracked，但不会建立依赖
+
+      // 在 untrack 内创建 effect，effect 本身仍然生效
+      const innerEff = effect(() => {
+        count.value; // effect 依赖 count
+        innerEffectRunCount++;
+      });
+
+      // code 2: 不追踪 tracked 信号
+      untrackCode2Ran = true;
+      tracked.value; // 虽然访问了 tracked，但不会建立依赖
+    });
+
+    expect(untrackCode1Ran).toBe(true);
+    expect(untrackCode2Ran).toBe(true);
+    expect(innerEffectRunCount).toBe(1); // inner effect 运行过一次
+
+    // 修改 tracked，inner effect 不会运行（因为没有依赖 tracked）
+    tracked.value = 1;
+    expect(innerEffectRunCount).toBe(1);
+
+    // 修改 count，inner effect 应该运行（因为 effect 依赖 count）
+    count.value = 1;
+    expect(innerEffectRunCount).toBe(2);
+  });
+
+  it("untrack prevents dependency tracking in outer effect", () => {
+    const outerSignal = signal(0);
+    const innerSignal = signal(0);
+    let outerEffectRunCount = 0;
+
+    // 外层 effect
+    const outerEff = effect(() => {
+      outerEffectRunCount++;
+
+      untrack(() => {
+        // 在 untrack 中访问 innerSignal，不建立依赖
+        innerSignal.value;
+      });
+
+      // 访问 outerSignal，建立依赖
+      outerSignal.value;
+    });
+
+    expect(outerEffectRunCount).toBe(1);
+
+    // 修改 innerSignal，outer effect 不应该运行
+    innerSignal.value = 1;
+    expect(outerEffectRunCount).toBe(1);
+
+    // 修改 outerSignal，outer effect 应该运行
+    outerSignal.value = 1;
+    expect(outerEffectRunCount).toBe(2);
+  });
+
+  it("untrack should not affect nested effect dependencies", () => {
+    const signal1 = signal(0);
+    const signal2 = signal(0);
+    let innerEffectRunCount = 0;
+
+    untrack(() => {
+      // 在 untrack 中创建 effect，该 effect 应该正常追踪依赖
+      const innerEff = effect(() => {
+        signal1.value; // effect 依赖 signal1
+        innerEffectRunCount++;
+      });
+
+      // untrack 中的其他代码不追踪
+      signal2.value;
+    });
+
+    expect(innerEffectRunCount).toBe(1);
+
+    // 修改 signal1，inner effect 应该运行
+    signal1.value = 1;
+    expect(innerEffectRunCount).toBe(2);
+
+    // 修改 signal2，inner effect 不应该运行
+    signal2.value = 1;
+    expect(innerEffectRunCount).toBe(2);
   });
 });
