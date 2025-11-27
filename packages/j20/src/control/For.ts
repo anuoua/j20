@@ -126,10 +126,8 @@ export const For = <T>(p: ListProps<T>) => {
         for (; i <= e2; i++) {
           const newIndex = signal(i);
           const [newInstance, newInstanceFragment] = instanceCreate(() => {
-            const children = untrack(() => props.children);
-            const newChild = children(
-              newList[i],
-              newIndex as unknown as number
+            const newChild = untrack(() =>
+              props.children(newList[i], newIndex as unknown as number)
             );
             return newChild;
           }, currentInstance);
@@ -255,8 +253,9 @@ export const For = <T>(p: ListProps<T>) => {
           // 创建新节点
           const newIdx = signal(newIndex);
           const [newInstance, newInstanceFragment] = instanceCreate(() => {
-            const children = untrack(() => props.children);
-            const newChild = children(newItem, newIdx as unknown as number);
+            const newChild = untrack(() =>
+              props.children(newItem, newIdx as unknown as number)
+            );
             return newChild;
           }, currentInstance);
 
