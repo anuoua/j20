@@ -5,8 +5,8 @@ import { For } from "./For";
 
 export interface IfProps {
   of: any;
-  children: JSX.Element | ((t: true) => JSX.Element);
-  else?: JSX.Element | ((t: false) => JSX.Element);
+  children: JSX.Element | ((t: boolean) => JSX.Element);
+  else?: JSX.Element;
 }
 
 interface IfPropsInner {
@@ -24,22 +24,15 @@ export const If: FC<IfProps> = (p) => {
     },
     get children() {
       return (bool: 1 | 0) => {
+        const propsValues = props.value;
+        const children = propsValues.children;
+        if (children && typeof children === "function") {
+          return children(!!bool);
+        }
         if (bool) {
-          const children = props.value.children;
-
-          if (typeof children === "function") {
-            return children(true);
-          } else {
-            return children;
-          }
+          return children;
         } else {
-          const elseCondition = props.value.else;
-
-          if (typeof elseCondition === "function") {
-            return elseCondition(false);
-          } else {
-            return elseCondition;
-          }
+          return propsValues.else;
         }
       };
     },
