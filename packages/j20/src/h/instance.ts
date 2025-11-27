@@ -74,25 +74,53 @@ export const instanceGetElements = (instance: Instance) => {
 };
 
 export const instanceDestroy = (parent: Instance, instance: Instance) => {
-  // 先递归销毁所有子节点（从叶子开始）
-  if (instance.children) {
-    instance.children.forEach((child) => {
-      instanceDestroy(instance, child);
-    });
-    instance.children = [];
-  }
+  // 使用栈来实现迭代式的深度优先销毁，避免递归开销
+  // 关键：需要跟踪每个实例的销毁状态（是否已销毁子节点）
 
-  // 再执行当前实例的清理函数
-  instance.disposes.forEach((dispose) => {
-    try {
-      dispose();
-    } catch (e) {
-      console.error("Error during instance dispose:", e);
+  const stack: Array<{ inst: Instance; childrenDestroyed: boolean }> = [
+    { inst: instance, childrenDestroyed: false },
+  ];
+
+  while (stack.length > 0) {
+    const current = stack[stack.length - 1]!;
+
+    if (!current.childrenDestroyed) {
+      // 第一次访问：先标记子节点已销毁，然后将子节点入栈
+      current.childrenDestroyed = true;
+
+      if (current.inst.children && current.inst.children.length > 0) {
+        // 倒序添加子节点，保持与递归相同的销毁顺序
+        for (let i = current.inst.children.length - 1; i >= 0; i--) {
+          stack.push({
+            inst: current.inst.children[i],
+            childrenDestroyed: false,
+          });
+        }
+      }
+    } else {
+      // 第二次访问：子节点已全部销毁，现在销毁当前节点
+      const inst = current.inst;
+
+      // 执行清理函数
+      inst.disposes.forEach((dispose) => {
+        try {
+          dispose();
+        } catch (e) {
+          console.error("Error during instance dispose:", e);
+        }
+      });
+
+      // 清空 dispose 数组
+      inst.disposes = [];
+
+      // 清空子节点引用
+      if (inst.children) {
+        inst.children = [];
+      }
+
+      stack.pop();
     }
-  });
-
-  // 清空 dispose 数组
-  instance.disposes = [];
+  }
 
   // 从父实例中移除此实例的引用
   if (parent && parent.children) {
