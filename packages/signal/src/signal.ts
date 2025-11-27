@@ -13,6 +13,7 @@ type Reaction = Effect | Computed<unknown>;
  * Signal类 - 用于存储响应式数据
  */
 class Signal<T> {
+  readonly SIGNAL = true;
   private _value: T;
   private _version: number = 0;
   public readonly _deps: Set<Reaction> = new Set();
@@ -34,7 +35,7 @@ class Signal<T> {
 
     this._value = newValue;
     this._version++;
-    
+
     // 通知所有依赖项
     this._deps.forEach((reaction) => {
       if (reaction instanceof Computed) {
@@ -56,7 +57,7 @@ class Signal<T> {
   private track(reaction: Reaction): void {
     if (!this._deps.has(reaction)) {
       this._deps.add(reaction);
-      
+
       // 维护反向依赖关系
       let reactions = depMap.get(this);
       if (!reactions) {
@@ -64,7 +65,7 @@ class Signal<T> {
         depMap.set(this, reactions);
       }
       reactions.add(reaction);
-      
+
       // 在reaction中记录依赖
       reaction.track(this);
     }
@@ -75,6 +76,7 @@ class Signal<T> {
  * Computed类 - 用于计算派生值
  */
 class Computed<T> {
+  readonly SIGNAL = true;
   private computeFn: () => T;
   private _value: T;
   private _version: number = 0;
@@ -91,9 +93,9 @@ class Computed<T> {
 
   get value(): T {
     if (this.disposed) {
-      throw new Error('Cannot access value of disposed computed');
+      throw new Error("Cannot access value of disposed computed");
     }
-    
+
     if (this.dirty) {
       this.compute();
     }
@@ -115,14 +117,14 @@ class Computed<T> {
 
   private compute(): void {
     if (this.disposed) {
-      throw new Error('Cannot compute disposed computed');
+      throw new Error("Cannot compute disposed computed");
     }
-    
+
     // 检查循环依赖
     if (computationStack.includes(this)) {
-      throw new Error('Circular dependency detected in computed values');
+      throw new Error("Circular dependency detected in computed values");
     }
-    
+
     this.dirty = false;
 
     // 保存当前状态
@@ -146,9 +148,9 @@ class Computed<T> {
       if (index !== -1) {
         computationStack.splice(index, 1);
       }
-      
+
       currentReaction = prevReaction;
-      
+
       // 清理不再依赖的sources
       prevSources.forEach((source) => {
         if (!this.sources.has(source)) {
@@ -164,7 +166,7 @@ class Computed<T> {
   markDirty(): void {
     if (this.disposed || this.dirty) return;
     this.dirty = true;
-    
+
     // 通知依赖项
     this._deps.forEach((reaction) => {
       if (reaction instanceof Computed) {
@@ -177,10 +179,10 @@ class Computed<T> {
 
   track(source: Signal<unknown> | Computed<unknown>): void {
     if (this.disposed) return;
-    
+
     if (!this.sources.has(source)) {
       this.sources.add(source);
-      
+
       let reactions = depMap.get(source);
       if (!reactions) {
         reactions = new Set();
@@ -201,10 +203,10 @@ class Computed<T> {
         reactions.delete(this);
       }
     });
-    
+
     this.sources.clear();
     this._deps.clear();
-    
+
     // 清理引用
     this._value = undefined as unknown as T;
     this.computeFn = undefined as unknown as () => T;
@@ -222,7 +224,10 @@ class Effect {
   private cleanupFn: (() => void) | null = null;
   public disposed: boolean = false;
   public readonly _deps: Set<Signal<unknown> | Computed<unknown>> = new Set();
-  public readonly _depVersions: Map<Signal<unknown> | Computed<unknown>, number> = new Map();
+  public readonly _depVersions: Map<
+    Signal<unknown> | Computed<unknown>,
+    number
+  > = new Map();
 
   constructor(effectFn: () => void | (() => void)) {
     this.effectFn = effectFn;
@@ -236,7 +241,7 @@ class Effect {
       try {
         this.cleanupFn();
       } catch (e) {
-        console.warn('Error in effect cleanup function:', e);
+        console.warn("Error in effect cleanup function:", e);
       }
       this.cleanupFn = null;
     }
@@ -266,7 +271,7 @@ class Effect {
         reactions.delete(this);
       }
     });
-    
+
     this._deps.clear();
     this._depVersions.clear();
 
@@ -275,7 +280,7 @@ class Effect {
       try {
         this.cleanupFn();
       } catch (e) {
-        console.warn('Error in effect cleanup function:', e);
+        console.warn("Error in effect cleanup function:", e);
       }
       this.cleanupFn = null;
     }
@@ -287,15 +292,15 @@ class Effect {
 
   track(source: Signal<unknown> | Computed<unknown>): void {
     if (this.disposed) return;
-    
+
     if (!this._deps.has(source)) {
       this._deps.add(source);
-      
+
       // 记录依赖的版本号
-      if ('version' in source) {
+      if ("version" in source) {
         this._depVersions.set(source, source.version);
       }
-      
+
       let reactions = depMap.get(source);
       if (!reactions) {
         reactions = new Set();
@@ -307,7 +312,7 @@ class Effect {
 
   hasDepsChanged(): boolean {
     for (const [dep, version] of this._depVersions) {
-      if ('version' in dep && dep.version !== version) {
+      if ("version" in dep && dep.version !== version) {
         return true;
       }
     }
