@@ -74,27 +74,25 @@ export const instanceGetElements = (instance: Instance) => {
 };
 
 export const instanceDestroy = (parent: Instance, instance: Instance) => {
-  const stack = [instance];
-  while (stack.length) {
-    const inst = stack.pop()!;
-
-    // 安全地执行清理函数
-    inst.disposes.forEach((dispose) => {
-      try {
-        dispose();
-      } catch (e) {
-        console.error("Error during instance dispose:", e);
-      }
+  // 先递归销毁所有子节点（从叶子开始）
+  if (instance.children) {
+    instance.children.forEach((child) => {
+      instanceDestroy(instance, child);
     });
-
-    // 清空 dispose 数组
-    inst.disposes = [];
-
-    if (inst.children) {
-      stack.push(...inst.children);
-      inst.children = []; // 清空子实例引用
-    }
+    instance.children = [];
   }
+
+  // 再执行当前实例的清理函数
+  instance.disposes.forEach((dispose) => {
+    try {
+      dispose();
+    } catch (e) {
+      console.error("Error during instance dispose:", e);
+    }
+  });
+
+  // 清空 dispose 数组
+  instance.disposes = [];
 
   // 从父实例中移除此实例的引用
   if (parent && parent.children) {
