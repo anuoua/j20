@@ -24,6 +24,7 @@ export default defineConfig([
   },
   {
     input: "_dist/jsx-runtime.js",
+    external: ["./index"],
     output: [
       {
         file: "dist/jsx-runtime.js",
@@ -35,6 +36,7 @@ export default defineConfig([
   },
   {
     input: "_dist/jsx-runtime.d.ts",
+    external: ["./index"],
     output: [{ file: "dist/jsx-runtime.d.ts", format: "es" }],
     plugins: [dts()],
     sourcemap: true,
