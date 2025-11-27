@@ -1,26 +1,26 @@
-# Guide
+# 指南
 
-Welcome to the J20 Framework guide! Here you'll find comprehensive documentation on how to use J20 to build modern web applications.
+欢迎来到 J20 框架指南！在这里您将找到关于如何使用 J20 构建现代 Web 应用程序的全面文档。
 
-## Start Here
+## 开始这里
 
-- [Introduction](/guide/introduction) - Overview of J20 and basic setup
-- [State Management](/guide/state) - Learn about signals, derived signals, and hooks
+- [介绍](/guide/introduction) - J20 概述和基本设置
+- [状态管理](/guide/state) - 了解信号、派生信号和钩子
 
-## Core Concepts
+## 核心概念
 
-- [Component Props](/guide/props) - How to pass data to components
-- [Conditional Rendering](/guide/conditional) - Using If and Switch components
-- [List Rendering](/guide/list) - Rendering dynamic lists with For
-- [Dynamic Rendering](/guide/dynamic) - When and how to use Dynamic components
+- [组件属性](/guide/props) - 如何向组件传递数据
+- [条件渲染](/guide/conditional) - 使用 If 和 Switch 组件
+- [列表渲染](/guide/list) - 使用 For 渲染动态列表
+- [动态渲染](/guide/dynamic) - 何时以及如何使用 Dynamic 组件
 
-## Advanced Topics
+## 高级主题
 
-- [Web Component](/guide/web-component) - Building Web Component with J20
-- [Lifecycle](/guide/lifecycle) - Component lifecycle patterns
-- [JSX Syntax](/guide/jsx) - JSX specifics in J20
+- [Web 组件](/guide/web-component) - 使用 J20 构建 Web 组件
+- [生命周期](/guide/lifecycle) - 组件生命周期模式
+- [JSX 语法](/guide/jsx) - J20 中的 JSX 特性
 
-## Reference
+## 参考
 
-- [API Reference](/guide/api) - Complete API documentation
-- [FAQ](/guide/faq) - Frequently asked questions
+- [API 参考](/guide/api) - 完整的 API 文档
+- [常见问题](/guide/faq) - 常见问题解答

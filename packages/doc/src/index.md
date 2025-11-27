@@ -3,23 +3,23 @@
 layout: home
 
 hero:
-  name: "J20 Framework Documentation"
-  text: "Document for j20"
-  tagline: My great project tagline
+  name: "J20 框架文档"
+  text: "J20 框架文档"
+  tagline: 我的优秀项目标语
   actions:
     - theme: brand
-      text: Markdown Examples
+      text: Markdown 示例
       link: /markdown-examples
     - theme: alt
-      text: API Examples
+      text: API 示例
       link: /api-examples
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: 特性 A
+    details: 这里是关于特性的详细描述
+  - title: 特性 B
+    details: 这里是关于特性的详细描述
+  - title: 特性 C
+    details: 这里是关于特性的详细描述
 ---
 
