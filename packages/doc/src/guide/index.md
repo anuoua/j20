@@ -12,7 +12,7 @@
 - [组件属性](/guide/props) - 如何向组件传递数据
 - [条件渲染](/guide/conditional) - 使用 If 和 Switch 组件
 - [列表渲染](/guide/list) - 使用 For 渲染动态列表
-- [动态渲染](/guide/dynamic) - 何时以及如何使用 Dynamic 组件
+- [动态渲染](/guide/replace) - 何时以及如何使用 Dynamic 组件
 
 ## 高级主题
 
