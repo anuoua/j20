@@ -9,15 +9,15 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: "Home", link: "/" },
-      { text: "Examples", link: "/markdown-examples" },
+      { text: "首页", link: "/" },
+      { text: "文档", link: "/guide/" },
     ],
 
     sidebar: [
       {
         text: "指南",
         items: [
-          { text: "导航", link: "/guide/index" },
+          { text: "导航", link: "/guide/" },
           { text: "介绍", link: "/guide/introduction" },
           { text: "状态管理", link: "/guide/state" },
           { text: "组件 Props", link: "/guide/props" },
@@ -32,10 +32,7 @@ export default defineConfig({
       },
       {
         text: "示例",
-        items: [
-          { text: "Markdown 示例", link: "/markdown-examples" },
-          { text: "API 参考", link: "/guide/api" },
-        ],
+        items: [{ text: "API 参考", link: "/guide/api" }],
       },
     ],
 

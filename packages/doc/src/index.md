@@ -8,11 +8,11 @@ hero:
   tagline: 我的优秀项目标语
   actions:
     - theme: brand
-      text: Markdown 示例
-      link: /markdown-examples
+      text: 开始使用
+      link: /guide/index
     - theme: alt
       text: API 示例
-      link: /api-examples
+      link: /guide/api
 
 features:
   - title: 特性 A
