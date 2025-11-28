@@ -4,7 +4,7 @@ import { signal } from "../src/api/signal";
 import { For } from "../src/control/For";
 import { If } from "../src/control/If";
 import { Switch, Case, Default } from "../src/control/Switch";
-import { Dynamic } from "../src/control/Dynamic";
+import { Replace } from "../src/control/Replace";
 import { instanceCreate, instanceDestroy } from "../src/h/instance";
 
 const { body } = document;
@@ -156,7 +156,7 @@ describe("Control Components", () => {
 
     const [instance, fragment] = instanceCreate(() => {
       return createElement(
-        Dynamic as any,
+        Replace as any,
         () => ({
           get of() {
             return element.value;

@@ -11,7 +11,7 @@ export * from "./api/id";
 export * from "./control/For";
 export * from "./control/If";
 export * from "./control/Some";
-export * from "./control/Dynamic";
+export * from "./control/Replace";
 export * from "./control/Switch";
 export * from "./h/createElement";
 export * from "./h/createComponent";
