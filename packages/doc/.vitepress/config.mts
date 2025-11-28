@@ -5,7 +5,7 @@ export default defineConfig({
   srcDir: "src",
   base: "/j20/",
 
-  title: "J20 Framework",
+  title: "J20",
   description: "Document for j20",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
@@ -20,6 +20,7 @@ export default defineConfig({
         items: [
           { text: "导航", link: "/guide/" },
           { text: "介绍", link: "/guide/introduction" },
+          { text: "安装", link: "/guide/install" },
           { text: "状态管理", link: "/guide/state" },
           { text: "组件 Props", link: "/guide/props" },
           { text: "条件渲染", link: "/guide/conditional" },

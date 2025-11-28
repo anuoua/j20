@@ -5,6 +5,7 @@
 ## 开始这里
 
 - [介绍](/guide/introduction) - J20 概述和基本设置
+- [安装](/guide/install) - 如何安装使用
 - [状态管理](/guide/state) - 了解信号、派生信号和钩子
 
 ## 核心概念
