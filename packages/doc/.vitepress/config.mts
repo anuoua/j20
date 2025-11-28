@@ -23,7 +23,7 @@ export default defineConfig({
           { text: "组件 Props", link: "/guide/props" },
           { text: "条件渲染", link: "/guide/conditional" },
           { text: "列表渲染", link: "/guide/list" },
-          { text: "动态渲染", link: "/guide/dynamic" },
+          { text: "动态渲染", link: "/guide/replace" },
           { text: "Web Component", link: "/guide/web-component" },
           { text: "生命周期", link: "/guide/lifecycle" },
           { text: "JSX 语法", link: "/guide/jsx" },
