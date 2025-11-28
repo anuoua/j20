@@ -1,0 +1,58 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'release(doc):')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Get version from commit message
+        id: version
+        run: |
+          MESSAGE="${{ github.event.head_commit.message }}"
+          if [[ $MESSAGE =~ release\(doc\):\ ([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+            echo "version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+            echo "Found version: ${BASH_REMATCH[1]}"
+          else
+            echo "No valid version found in commit message"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: |
+          cd packages/doc
+          pnpm install
+
+      - name: Build documentation
+        run: |
+          cd packages/doc
+          pnpm build
+
+      - name: Deploy to doc branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./packages/doc/.vitepress/dist
+          publish_branch: doc
+          force_orphan: true
+          commit_message: "Release docs ${{ steps.version.outputs.version }}"
+          cname: ''
