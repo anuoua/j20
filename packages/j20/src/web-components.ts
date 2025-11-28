@@ -36,6 +36,12 @@ export const buildClass = (Comp: WC) => {
   const { customElement } = Comp;
   const { a2p, a2v } = buildMap(customElement);
 
+  const styleSheet = customElement.style
+    ? typeof customElement.style === "string"
+      ? new CSSStyleSheet().replaceSync(customElement.style)
+      : customElement.style
+    : null;
+
   return class NewElementClass extends HTMLElement {
     static get observedAttributes() {
       return Object.entries(customElement.props ?? {})
@@ -60,6 +66,7 @@ export const buildClass = (Comp: WC) => {
 
       if (customElement.tag && customElement.shadow) {
         this.#shadow = this.attachShadow({ mode: customElement.shadow });
+        if (styleSheet) this.#shadow.adoptedStyleSheets = [styleSheet];
       }
 
       this.#props = Object.entries(customElement.props ?? {}).reduce(

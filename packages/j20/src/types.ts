@@ -7,7 +7,7 @@ export type AttrValueType = string | number | boolean;
 export type CustomElement<P extends Record<string, any> = {}> = {
   tag: string;
   shadow?: "open" | "closed";
-  style?: string;
+  style?: string | CSSStyleSheet;
   props?: {
     [K in keyof P as P[K] extends AttrValueType ? K : never]?: {
       type: P[K] extends string
@@ -20,7 +20,6 @@ export type CustomElement<P extends Record<string, any> = {}> = {
       attribute: string;
     };
   };
-  extend?: (customElementConstructor: any) => CustomElement;
 };
 
 export type WC<
