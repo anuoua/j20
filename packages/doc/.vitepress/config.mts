@@ -3,6 +3,7 @@ import { defineConfig } from "vitepress";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   srcDir: "src",
+  base: "/j20/",
 
   title: "J20 Framework",
   description: "Document for j20",
