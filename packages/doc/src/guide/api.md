@@ -8,6 +8,8 @@
 - [effect](#effect)
 - [wc](#wc)
 - [untrack](#untrack)
+- [onMount](#onmount)
+- [onDestroy](#ondestroy)
 - [createContext](#createcontext)
 - [$useContext](#usecontext)
 
@@ -111,6 +113,180 @@ const App = () => {
 ```
 
 ## createContext
+
+## onMount
+
+在组件挂载到 DOM 后执行回调函数，使用 `requestAnimationFrame` 确保在 DOM 渲染完成后执行。
+
+```tsx
+import { onMount } from "j20";
+
+const App = () => {
+  let $count = 0;
+
+  onMount(() => {
+    console.log("Component mounted");
+  });
+
+  return (
+    <div>
+      <p>Count: {$count}</p>
+      <button onClick={() => $count++}>Increment</button>
+    </div>
+  );
+};
+```
+
+### 返回清理函数
+
+`onMount` 可以返回一个清理函数，在组件卸载时自动执行：
+
+```tsx
+import { onMount } from "j20";
+
+const App = () => {
+  onMount(() => {
+    console.log("Component mounted");
+
+    // 返回清理函数
+    return () => {
+      console.log("Component will unmount");
+    };
+  });
+
+  return <div>App Component</div>;
+};
+```
+
+### 异步支持
+
+支持异步回调函数：
+
+```tsx
+import { onMount } from "j20";
+
+const App = () => {
+  onMount(async () => {
+    // 异步操作
+    await fetch("/api/data");
+    console.log("Data loaded");
+  });
+
+  return <div>App Component</div>;
+};
+```
+
+### 多次调用
+
+可以在同一个组件中多次调用 `onMount`：
+
+```tsx
+import { onMount } from "j20";
+
+const App = () => {
+  onMount(() => {
+    console.log("Mount handler 1");
+  });
+
+  onMount(() => {
+    console.log("Mount handler 2");
+  });
+
+  return <div>App Component</div>;
+};
+```
+
+## onDestroy
+
+在组件卸载时执行回调函数，用于清理副作用、移除事件监听器等。
+
+```tsx
+import { onDestroy } from "j20";
+
+const App = () => {
+  onDestroy(() => {
+    console.log("Component destroyed");
+    // 清理资源
+  });
+
+  return <div>App Component</div>;
+};
+```
+
+### 多个清理函数
+
+支持注册多个清理函数：
+
+```tsx
+import { onDestroy } from "j20";
+
+const App = () => {
+  onDestroy(() => {
+    console.log("Cleanup 1");
+  });
+
+  onDestroy(() => {
+    console.log("Cleanup 2");
+  });
+
+  return <div>App Component</div>;
+};
+```
+
+### 事件监听器清理
+
+常用于移除事件监听器：
+
+```tsx
+import { onDestroy } from "j20";
+
+const App = () => {
+  onDestroy(() => {
+    // 移除事件监听器
+    window.removeEventListener("resize", handleResize);
+  });
+};
+
+// 在挂载时添加事件监听器
+useEffect(() => {
+  const handleResize = () => {
+    console.log("Window resized");
+  };
+
+  window.addEventListener("resize", handleResize);
+});
+```
+
+### 与 effect 配合使用
+
+`onDestroy` 本质上是 `effect` 的简化版本，专门用于清理操作：
+
+```tsx
+import { onDestroy, effect } from "j20";
+
+const App = () => {
+  // 使用 effect 管理副作用
+  const cancel = effect(() => {
+    const timer = setInterval(() => {
+      $count++;
+    }, 1000);
+
+    // 使用 onDestroy 进行额外清理
+    onDestroy(() => {
+      clearInterval(timer);
+    });
+  });
+
+  return <button onClick={() => cancel()}>Stop Timer</button>;
+};
+```
+
+## 最佳实践
+
+1. **配对使用**：每个 `onMount` 都应该有对应的 `onDestroy` 清理资源
+2. **及时清理**：在清理函数中移除所有事件监听器、定时器等
+3. **避免嵌套**：深度嵌套的生命周期会让代码难以维护
+4. **第三方库**：在 `onMount` 中初始化第三方库时，在 `onDestroy` 中销毁实例
 
 J20 默认提供了 `createContext` 方法，用于创建上下文。
 
