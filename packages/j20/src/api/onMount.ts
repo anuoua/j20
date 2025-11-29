@@ -7,13 +7,23 @@ export const onMount = (callback: () => (() => void) | void) => {
 
   requestAnimationFrame(() => {
     clean = callback();
-    if (destroyed) {
-      clean?.();
+    if (destroyed && clean) {
+      if (typeof clean === "function") {
+        clean();
+      } else {
+        console.warn("onMount callback must return a function or undefined");
+      }
     }
   });
 
   effect(() => () => {
     destroyed = true;
-    clean?.();
+    if (clean) {
+      if (typeof clean === "function") {
+        clean();
+      } else {
+        console.warn("onMount callback must return a function or undefined");
+      }
+    }
   });
 };
