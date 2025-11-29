@@ -3,17 +3,17 @@ import { createComponent } from "../h/createComponent";
 import { FC } from "../types";
 import { For } from "./For";
 
-export interface DynamicProps<T> {
+export interface ReplaceProps<T> {
   of: T;
   children: JSX.Element | ((t: T) => JSX.Element);
 }
 
-export interface DynamicPropsInner<T> {
-  value: DynamicProps<T>;
+export interface ReplacePropsInner<T> {
+  value: ReplaceProps<T>;
 }
 
-export const Dynamic = <T>(p: DynamicProps<T>) => {
-  const props = p as unknown as DynamicPropsInner<T>;
+export const Replace = <T>(p: ReplaceProps<T>) => {
+  const props = p as unknown as ReplacePropsInner<T>;
 
   let count = 0;
 
@@ -33,4 +33,4 @@ export const Dynamic = <T>(p: DynamicProps<T>) => {
   }));
 };
 
-(Dynamic as unknown as FC<DynamicProps<any>>).isLogic = true;
+(Replace as unknown as FC<ReplaceProps<any>>).isLogic = true;

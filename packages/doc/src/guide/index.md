@@ -5,6 +5,7 @@
 ## 开始这里
 
 - [介绍](/guide/introduction) - J20 概述和基本设置
+- [安装](/guide/install) - 如何安装使用
 - [状态管理](/guide/state) - 了解信号、派生信号和钩子
 
 ## 核心概念
@@ -12,7 +13,7 @@
 - [组件属性](/guide/props) - 如何向组件传递数据
 - [条件渲染](/guide/conditional) - 使用 If 和 Switch 组件
 - [列表渲染](/guide/list) - 使用 For 渲染动态列表
-- [动态渲染](/guide/dynamic) - 何时以及如何使用 Dynamic 组件
+- [动态渲染](/guide/replace) - 何时以及如何使用 Dynamic 组件
 
 ## 高级主题
 
