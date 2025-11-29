@@ -15,6 +15,10 @@
       "types": "./dist/jsx-runtime.d.ts"
     }
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:anuoua/j20.git"
+  },
   "files": [
     "dist"
   ],
