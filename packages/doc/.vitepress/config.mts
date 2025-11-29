@@ -8,6 +8,8 @@ export default defineConfig({
   title: "J20",
   description: "Document for j20",
   themeConfig: {
+    logo: "/logo2.png",
+
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: "首页", link: "/" },

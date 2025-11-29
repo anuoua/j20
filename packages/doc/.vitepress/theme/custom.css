@@ -1,0 +1,8 @@
+/* .vitepress/theme/custom.css */
+
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
+  --vp-home-hero-image-filter: blur(60px);
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, #f7e7ff 0%, #bd34fe 50%, #41d1ff 75%, #064a65 100%);
+}
