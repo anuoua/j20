@@ -1,4 +1,6 @@
 import { defineConfig } from "vitepress";
+import llmstxt from "vitepress-plugin-llms";
+import { copyOrDownloadAsMarkdownButtons } from "vitepress-plugin-llms";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -7,6 +9,14 @@ export default defineConfig({
 
   title: "J20",
   description: "Document for j20",
+  vite: {
+    plugins: [llmstxt()],
+  },
+  markdown: {
+    config(md) {
+      md.use(copyOrDownloadAsMarkdownButtons);
+    },
+  },
   themeConfig: {
     logo: "/logo2.png",
 
@@ -21,6 +31,7 @@ export default defineConfig({
         text: "指南",
         items: [
           { text: "导航", link: "/guide/" },
+          { text: "LLMs", link: "/guide/llms" },
           { text: "介绍", link: "/guide/introduction" },
           { text: "安装", link: "/guide/install" },
           { text: "状态管理", link: "/guide/state" },
