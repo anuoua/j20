@@ -12,7 +12,7 @@ hero:
   actions:
     - theme: brand
       text: 开始使用
-      link: /guide/index
+      link: /guide/introduction
     - theme: alt
       text: API 示例
       link: /guide/api
@@ -21,8 +21,8 @@ features:
   - title: 无感 Signal 驱动
     details: 创新的编译手段，你可以无感使用信号
   - title: 高性能
-    details: 无虚拟 DOM
+    details: 细粒度响应，无虚拟 DOM
   - title: Web Component 一流支持
-    details: 无缝的框架开发体验
+    details: 无缝的 Web Component 框架开发体验
 ---
 
