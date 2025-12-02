@@ -23,15 +23,19 @@ describe("Memory Leak Prevention", () => {
       const div = document.createElement("div");
       // 模拟添加一个 dispose 函数
       const currentInst = instanceCreate(() => div)[0];
+      if (!currentInst.disposes) currentInst.disposes = [];
       currentInst.disposes.push(disposeFn);
       return div;
     });
+
+    // 确保 root 实例也有 disposes 数组
+    if (!instance.disposes) instance.disposes = [];
 
     // 销毁实例
     instanceDestroy(instance, instance);
 
     expect(disposeFn).toHaveBeenCalled();
-    expect(instance.disposes.length).toBe(0);
+    expect(instance.disposes?.length).toBe(0);
   });
 
   it("should handle errors in dispose functions gracefully", () => {
@@ -49,6 +53,7 @@ describe("Memory Leak Prevention", () => {
       return document.createElement("div");
     });
 
+    if (!instance.disposes) instance.disposes = [];
     instance.disposes.push(errorFn);
     instance.disposes.push(successFn);
 
@@ -92,12 +97,13 @@ describe("Memory Leak Prevention", () => {
       return document.createElement("div");
     });
 
+    if (!instance.disposes) instance.disposes = [];
     instance.disposes.push(disposeFn);
 
     // 第一次销毁
     instanceDestroy(instance, instance);
     expect(disposeFn).toHaveBeenCalledTimes(1);
-    expect(instance.disposes.length).toBe(0);
+    expect(instance.disposes?.length).toBe(0);
 
     // 再次销毁应该不会执行 dispose（因为数组已被清空）
     instanceDestroy(instance, instance);
@@ -117,6 +123,10 @@ describe("Memory Leak Prevention", () => {
     [child] = instanceCreate(() => document.createElement("div"), root);
     [grandchild] = instanceCreate(() => document.createElement("div"), child);
 
+    if (!root.disposes) root.disposes = [];
+    if (!child.disposes) child.disposes = [];
+    if (!grandchild.disposes) grandchild.disposes = [];
+
     root.disposes.push(disposeFn1);
     child.disposes.push(disposeFn2);
     grandchild.disposes.push(disposeFn3);
@@ -127,8 +137,8 @@ describe("Memory Leak Prevention", () => {
     expect(disposeFn1).toHaveBeenCalled();
     expect(disposeFn2).toHaveBeenCalled();
     expect(disposeFn3).toHaveBeenCalled();
-    expect(root.disposes.length).toBe(0);
-    expect(root.children.length).toBe(0);
+    expect(root.disposes?.length).toBe(0);
+    expect(root.children?.length).toBe(0);
   });
 
   it("should handle For component destruction without memory leaks", () => {
@@ -153,13 +163,14 @@ describe("Memory Leak Prevention", () => {
     document.body.appendChild(fragment);
 
     // 模拟添加 dispose
+    if (!instance.disposes) instance.disposes = [];
     instance.disposes.push(disposeFn);
 
     // 销毁实例
     instanceDestroy(instance, instance);
 
     expect(disposeFn).toHaveBeenCalled();
-    expect(instance.disposes.length).toBe(0);
+    expect(instance.disposes?.length).toBe(0);
     if (instance.children) {
       expect(instance.children.length).toBe(0);
     }
@@ -181,6 +192,12 @@ describe("Memory Leak Prevention", () => {
     [grandchild2] = instanceCreate(() => document.createElement("div"), child2);
 
     // 添加 dispose 函数来记录销毁顺序
+    if (!root.disposes) root.disposes = [];
+    if (!child1.disposes) child1.disposes = [];
+    if (!child2.disposes) child2.disposes = [];
+    if (!grandchild1.disposes) grandchild1.disposes = [];
+    if (!grandchild2.disposes) grandchild2.disposes = [];
+
     root.disposes.push(() => destroyOrder.push("root"));
     child1.disposes.push(() => destroyOrder.push("child1"));
     child2.disposes.push(() => destroyOrder.push("child2"));
@@ -213,6 +230,12 @@ describe("Memory Leak Prevention", () => {
     [child1] = instanceCreate(() => document.createElement("div"), root);
     [child2] = instanceCreate(() => document.createElement("div"), root);
     [grandchild1] = instanceCreate(() => document.createElement("div"), child1);
+
+    // 添加 dispose 函数
+    if (!root.disposes) root.disposes = [];
+    if (!child1.disposes) child1.disposes = [];
+    if (!child2.disposes) child2.disposes = [];
+    if (!grandchild1.disposes) grandchild1.disposes = [];
 
     root.disposes.push(() => destroyOrder.push("root"));
     child1.disposes.push(() => destroyOrder.push("child1"));

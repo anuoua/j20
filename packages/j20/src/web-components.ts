@@ -1,7 +1,7 @@
 import { CustomElement, WC } from "./types";
 import { signal } from "./api/signal";
 import { computed } from "./api/computed";
-import { getCurrentInstance, Instance, instanceCreate } from "./h/instance";
+import { getCurrentInstance, instanceCreate } from "./h/instance";
 import { SignalLike } from "./api/types";
 import { BRAND } from "./brand";
 

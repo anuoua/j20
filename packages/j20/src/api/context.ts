@@ -1,15 +1,15 @@
 import {
-  getCurrentInstance,
   Instance,
   instanceCreateElement,
   instanceInit,
+  securityGetCurrentInstance,
 } from "../h/instance";
 import { isSignal } from "./utils";
 
 const contextWeakMap = new WeakMap<Instance, any>();
 
 const context = <T>(Context: { defaultValue: T }) => {
-  const instance = getCurrentInstance();
+  const instance = securityGetCurrentInstance();
 
   let index = instance?.parent;
 
@@ -33,7 +33,7 @@ export const createContext = <T>(defaultValue: T) => {
       value: { children: JSX.Element; value: T };
     };
 
-    const instance = instanceInit(getCurrentInstance());
+    const instance = instanceInit(securityGetCurrentInstance());
 
     contextWeakMap.set(instance, {
       ctx: Context,

@@ -5,13 +5,20 @@ export interface Instance {
   parent?: Instance;
   id: string;
   range: Comment[];
-  disposes: (() => void)[];
+  disposes?: (() => void)[];
   children?: Instance[];
 }
 
 const stack: Instance[] = [];
 
 export const getCurrentInstance = () => stack.at(-1);
+
+// api security guard
+export const securityGetCurrentInstance = () => {
+  const instance = getCurrentInstance();
+  if (!instance) throw new Error("Do not run this api out of component");
+  return instance;
+};
 
 export const instanceInit = (parent?: Instance) => {
   const id = generateId();
@@ -20,7 +27,6 @@ export const instanceInit = (parent?: Instance) => {
     parent: parentInstance,
     id,
     range: [document.createTextNode(""), document.createTextNode("")],
-    disposes: [],
   };
 
   if (parentInstance) {
@@ -102,7 +108,7 @@ export const instanceDestroy = (parent: Instance, instance: Instance) => {
       const inst = current.inst;
 
       // 执行清理函数
-      inst.disposes.forEach((dispose) => {
+      inst.disposes?.forEach((dispose) => {
         try {
           dispose();
         } catch (e) {
@@ -110,8 +116,10 @@ export const instanceDestroy = (parent: Instance, instance: Instance) => {
         }
       });
 
-      // 清空 dispose 数组
-      inst.disposes = [];
+      // 清空 dispose 数组，但保留数组引用
+      if (inst.disposes) {
+        inst.disposes.length = 0;
+      }
 
       // 清空子节点引用
       if (inst.children) {

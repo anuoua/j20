@@ -46,9 +46,12 @@ const add = (node: HTMLElement | SVGElement, key: string, newValue: any) => {
     node.addEventListener(getEventName(key), newValue);
   } else if (key === "ref") {
     const instance = getCurrentInstance();
-    instance?.disposes.push(() => {
-      newValue.current = null;
-    });
+    if (instance) {
+      if (!instance.disposes) instance.disposes = [];
+      instance.disposes.push(() => {
+        newValue.current = null;
+      });
+    }
     newValue.current = node;
   } else {
     if (newValue !== false && newValue != null) {

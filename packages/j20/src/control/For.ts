@@ -3,9 +3,9 @@ import { signal } from "../api/signal";
 import {
   Instance,
   instanceCreate,
-  getCurrentInstance,
   instanceGetElements,
   instanceDestroy,
+  securityGetCurrentInstance,
 } from "../h/instance";
 import { untrack } from "../api/untrack";
 
@@ -38,7 +38,7 @@ const defaultTrait = (a: any) => a as any;
 export const For = <T>(p: ListProps<T>) => {
   let initialized = false;
 
-  const currentInstance = getCurrentInstance()!;
+  const currentInstance = securityGetCurrentInstance()!;
 
   let oldList: T[] = [];
 
