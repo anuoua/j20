@@ -7,6 +7,7 @@ export interface Instance {
   range: Comment[];
   disposes?: (() => void)[];
   children?: Instance[];
+  mounts?: (() => void)[];
 }
 
 const stack: Instance[] = [];
@@ -39,6 +40,8 @@ export const instanceInit = (parent?: Instance) => {
   return instance;
 };
 
+export const mounts: (() => void)[] = [];
+
 export const instanceCreateElement = (
   instance: Instance,
   runner: () => any
@@ -54,7 +57,19 @@ export const instanceCreateElement = (
   fragment.prepend(instance.range[0]);
   fragment.append(instance.range[1]);
 
+  if (instance.mounts) {
+    mounts.push(...instance.mounts);
+    instance.mounts = undefined;
+  }
+
   stack.pop();
+
+  if (stack.length === 0) {
+    requestAnimationFrame(() => {
+      mounts.forEach((mount) => mount());
+      mounts.length = 0;
+    });
+  }
 
   return fragment;
 };
