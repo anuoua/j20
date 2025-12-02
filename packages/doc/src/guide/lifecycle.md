@@ -29,26 +29,6 @@ const App = () => {
 };
 ```
 
-`onMount` 可以返回一个清理函数，在组件卸载时自动执行：
-
-```tsx
-const App = () => {
-  onMount(() => {
-    // 设置定时器
-    let timer = setInterval(() => {
-      console.log("Timer tick");
-    }, 1000);
-
-    // 返回清理函数
-    return () => { // [!code ++]
-      clearInterval(timer); // [!code ++]
-    }; // [!code ++]
-  });
-};
-```
-
-`onMount` 回调不能为异步函数。
-
 ### 多次调用
 
 可以在同一个组件中多次调用 `onMount`：
@@ -122,32 +102,16 @@ const App = () => {
 
 ```tsx
 const App = () => {
+  const handleResize = () => {
+    console.log("Window resized");
+  };
+
   onDestroy(() => {
     window.removeEventListener("resize", handleResize);
   });
 
   onMount(() => {
-    const handleResize = () => {
-      console.log("Window resized");
-    };
     window.addEventListener("resize", handleResize);
-  });
-};
-```
-
-和直接使用 `onMount` 返回清理函数效果一样：
-
-```tsx
-const App = () => {
-  onMount(() => {
-    const handleResize = () => {
-      console.log("Window resized");
-    };
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    }
   });
 };
 ```
@@ -169,17 +133,6 @@ const BadComponent = () => {
   onMount(() => {
     // 没有清理定时器
     setInterval(() => {}, 1000);
-  });
-};
-
-// ✅ 正确：清理资源
-const GoodComponent = () => {
-  onMount(() => {
-    const timer = setInterval(() => {}, 1000);
-
-    return () => {
-      clearInterval(timer);
-    };
   });
 };
 
