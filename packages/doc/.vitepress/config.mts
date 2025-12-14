@@ -40,7 +40,6 @@ export default defineConfig({
           { text: "Web Component", link: "/guide/web-component" },
           { text: "生命周期", link: "/guide/lifecycle" },
           { text: "JSX 语法", link: "/guide/jsx" },
-          { text: "响应链传递", link: "/guide/reactivity" },
           { text: "常见问题", link: "/guide/faq" },
         ],
       },

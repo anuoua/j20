@@ -2,9 +2,26 @@
 
 ## 响应链传递
 
-只有 `$` 前缀的变量才会被编译成信号，所以，信号传递过程中不能中断，必须传递给 `$` 开头的变量，才能保持响应性，解构的时候需要尤其注意，解构的变量名要设置别名为 `$` 开头的。
+**信号必须通过 `$` 前缀的变量传递才能保持响应性**
 
-信号的传递路径，以自定义 hook 为例子：
+根据 [Signal Compiler](https://github.com/anuoua/signal-compiler) 编译策略，`$` 前缀的变量才会被编译编译器识别。
+
+以自定义 hook 为例子：
+
+```javascript
+let $msg = ""; // 声明
+const $dipslay = $msg + "hello"; // 派生
+
+const $useText = ($a) => ({
+  $text: $a + "hello"
+});
+
+// 返回信号
+const { $text } = $useText(
+  // 入参信号
+  $display
+);
+```
 
 ```
 声明信号 -> 派生信号 -> hook(入参信号) -> hook(返回值信号) -> 派生信号/解构信号
