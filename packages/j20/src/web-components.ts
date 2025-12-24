@@ -38,7 +38,11 @@ export const buildClass = (Comp: WC) => {
 
   const styleSheet = customElement.style
     ? typeof customElement.style === "string"
-      ? new CSSStyleSheet().replaceSync(customElement.style)
+      ? (() => {
+          const style = new CSSStyleSheet();
+          style.replaceSync(customElement.style);
+          return style;
+        })()
       : customElement.style
     : null;
 
