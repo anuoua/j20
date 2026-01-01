@@ -22,7 +22,8 @@ tsconfig.json
 {
     "compilerOptions": {
         "jsx": "react-jsx",
-        "jsxImportSource": "j20" // [!code ++]
+        "jsxImportSource": "j20", // [!code ++]
+        "moduleResolution": "bundler", // [!code ++]
     }
 }
 ```
@@ -40,16 +41,4 @@ export default defineConfig({
     j20(),
   ],
 });
-```
-
-## 创建应用
-
-使用 `createRoot` 方法创建应用
-
-```tsx
-import { createRoot } from "j20";
-
-const root = createRoot(() => <span>hello world</span>);
-
-document.querySelector("#root").append(root.element);
 ```

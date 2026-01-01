@@ -1,6 +1,6 @@
 # 组件
 
-J20 的组件和 React 的组件非常相似，如果你熟悉 React，那么你可以快速地上手。
+J20 的组件和 React 的组件类似，如果你熟悉 React，那么你可以快速地上手。
 
 ```tsx
 const App = () => {
@@ -14,7 +14,7 @@ const App = () => {
 
 J20 的组件状态由信号驱动，因为 J20 创新的编译手段，你可以像普通变量一样无感使用信号。
 
-### 声明信号
+## 声明信号
 
 使用 `let` 关键字 + `$` 前缀符号来声明一个信号。
 
@@ -32,7 +32,7 @@ const App = () => {
 };
 ```
 
-### 派生信号
+## 派生信号
 
 使用 `const` 和 `$` 前缀符号来声明一个派生信号，派生信号的值不可变，只读。
 
@@ -63,7 +63,7 @@ const App = () => {
 
 > 注：信号变量不能使用 `$use` 开头， `$use` 是自定义 hooks 的前缀，它拥有特殊的编译策略。
 
-### 自定义 hooks
+## 自定义 hooks
 
 自定义 hooks 以 `$use` 为前缀，支持解构，解构变量以 `$` 开头可以保持响应。
 
@@ -145,4 +145,35 @@ function Msg({ name: $name }: { name: string }) {
 function Msg({ name }: { name: string }) {
   return <span>{name}</span>;
 }
+```
+
+## 组件插槽
+
+J20 的插槽的最佳实践是封装成 render 函数，除非是静态的插槽（类似 Web Component 的 slot），凡是需要复用的插槽，都应封装成 render 函数。
+
+```tsx
+ const App = ($props: {
+   header: JSX.Element,
+  option: () => JSX.Element,
+}) => {
+  let $visible = false;
+
+  return (
+    <div>
+      <div class="header">
+        {$props.header}
+      </div>
+      <div>
+         <If of={$visible} else ={<div>{$props.option(false)}</div>}>
+          {$props.option()}
+        </If>
+      </div>
+    </div>
+  );
+};
+
+<App 
+  header={<h1>header</h1>}
+  some={(visible) => <div>{visible ? "none" : "some"}</div>}
+/>
 ```

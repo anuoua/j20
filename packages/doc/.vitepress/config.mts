@@ -18,12 +18,12 @@ export default defineConfig({
     },
   },
   themeConfig: {
-    logo: "/logo2.png",
+    logo: "/logo.png",
 
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: "首页", link: "/" },
-      { text: "文档", link: "/guide/" },
+      { text: "文档", link: "/guide/introduction" },
     ],
 
     sidebar: [
@@ -33,13 +33,15 @@ export default defineConfig({
           { text: "介绍", link: "/guide/introduction" },
           { text: "LLMs", link: "/guide/llms" },
           { text: "安装", link: "/guide/install" },
+          { text: "开始", link: "/guide/start" },
+          { text: "JSX", link: "/guide/jsx" },
           { text: "组件", link: "/guide/component" },
           { text: "条件渲染", link: "/guide/conditional" },
           { text: "列表渲染", link: "/guide/list" },
           { text: "动态渲染", link: "/guide/replace" },
           { text: "Web Component", link: "/guide/web-component" },
           { text: "生命周期", link: "/guide/lifecycle" },
-          { text: "JSX 语法", link: "/guide/jsx" },
+          { text: "最佳实践", link: "/guide/best-practice" },
           { text: "常见问题", link: "/guide/faq" },
         ],
       },
