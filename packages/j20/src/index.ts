@@ -1,5 +1,6 @@
 export type * from "../jsx";
 export * from "./api/signal";
+export * from "./api/batch";
 export * from "./api/computed";
 export * from "./api/effect";
 export * from "./api/ref";
