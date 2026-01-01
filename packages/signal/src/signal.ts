@@ -1,6 +1,11 @@
 // 当前正在执行的effect或computed
 let currentReaction: Reaction | null = null;
 
+// 批处理栈，用于延迟 effect 的执行
+let batchDepth: number = 0;
+// 待执行的 effect 队列
+let pendingEffects: Set<Effect> = new Set();
+
 // 存储所有信号的依赖关系
 const depMap = new WeakMap<
   Signal<unknown> | Computed<unknown>,
@@ -43,7 +48,12 @@ class Signal<T> {
       } else if (reaction.isActive()) {
         // 对于effect，使用版本检查优化
         if (reaction._depVersions.has(this) || reaction.hasDepsChanged()) {
-          reaction.execute();
+          if (batchDepth > 0) {
+            // 在批处理模式下，延迟执行 effect
+            pendingEffects.add(reaction);
+          } else {
+            reaction.execute();
+          }
         }
       }
     });
@@ -172,7 +182,12 @@ class Computed<T> {
       if (reaction instanceof Computed) {
         reaction.markDirty();
       } else if (reaction.isActive()) {
-        reaction.execute();
+        if (batchDepth > 0) {
+          // 在批处理模式下，延迟执行 effect
+          pendingEffects.add(reaction);
+        } else {
+          reaction.execute();
+        }
       }
     });
   }
@@ -349,5 +364,29 @@ function untrack<T>(fn: () => T): T {
   }
 }
 
+// 批处理 - 延迟 effect 的执行直到批处理结束
+function batch<T>(fn: () => T): T {
+  batchDepth++;
+
+  try {
+    return fn();
+  } finally {
+    batchDepth--;
+
+    // 当批处理结束时，执行所有待处理的 effect
+    if (batchDepth === 0) {
+      const effects = Array.from(pendingEffects);
+      pendingEffects.clear();
+
+      // 执行所有待处理的 effect
+      effects.forEach((effect) => {
+        if (effect.isActive()) {
+          effect.execute();
+        }
+      });
+    }
+  }
+}
+
 // 导出所有API
-export { signal, computed, effect, untrack, Signal, Computed, Effect };
+export { signal, computed, effect, untrack, batch, Signal, Computed, Effect };
