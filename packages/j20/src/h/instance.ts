@@ -4,7 +4,8 @@ import { generateId } from "./utils";
 export interface Instance {
   parent?: Instance;
   id: string;
-  range: Comment[];
+  range: Text[];
+  host?: HTMLElement;
   disposes?: (() => void)[];
   children?: Instance[];
   mounts?: (() => void)[];

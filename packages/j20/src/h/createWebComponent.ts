@@ -46,7 +46,7 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
 
     setHost(undefined);
 
-    if (el.customElement.shadow) {
+    if (el.customElement.mode) {
       (el as any).appendToShadowDom(getChildren([].concat(ret)));
       childrenGetter &&
         (el as any).appendToLightDom(getChildren([].concat(childrenGetter())));

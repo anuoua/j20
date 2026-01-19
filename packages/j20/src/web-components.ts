@@ -27,9 +27,14 @@ export const registerWebComponent = <C extends WC<any, any>>(Comp: C) => {
 
 export abstract class WebComponentClass extends HTMLElement {
   abstract customElement: CustomElement;
+
   constructor(public lazy: boolean) {
     super();
   }
+
+  addStyleSheet(sheet: CSSStyleSheet) {}
+
+  removeStyleSheet(sheet: CSSStyleSheet) {}
 }
 
 export const buildClass = (Comp: WC) => {
@@ -68,8 +73,8 @@ export const buildClass = (Comp: WC) => {
 
       this.lazy = lazy;
 
-      if (customElement.tag && customElement.shadow) {
-        this.#shadow = this.attachShadow({ mode: customElement.shadow });
+      if (customElement.tag && customElement.mode) {
+        this.#shadow = this.attachShadow({ mode: customElement.mode });
         if (styleSheet) this.#shadow.adoptedStyleSheets = [styleSheet];
       }
 
@@ -91,7 +96,7 @@ export const buildClass = (Comp: WC) => {
 
       const host = this;
 
-      const [, fragment] = instanceCreate(() => {
+      const [instance, fragment] = instanceCreate(() => {
         return Comp(
           computed(() => {
             return new Proxy(this.#props, {
@@ -113,6 +118,8 @@ export const buildClass = (Comp: WC) => {
       }, getCurrentInstance());
 
       setHost(undefined);
+
+      instance.host = this;
 
       if (this.#shadow) {
         this.#shadow.appendChild(fragment);
@@ -136,6 +143,19 @@ export const buildClass = (Comp: WC) => {
     appendToBody(elements: HTMLElement[]) {
       if (elements.length > 0) {
         this.append(...elements);
+      }
+    }
+
+    addStyleSheet(sheet: CSSStyleSheet) {
+      if (this.#shadow) {
+        this.#shadow.adoptedStyleSheets.push(sheet);
+      }
+    }
+
+    removeStyleSheet(sheet: CSSStyleSheet) {
+      if (this.#shadow) {
+        this.#shadow.adoptedStyleSheets =
+          this.#shadow.adoptedStyleSheets.filter((s) => s !== sheet);
       }
     }
 

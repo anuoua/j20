@@ -101,8 +101,12 @@ export const createDom = (
 
   if (
     children &&
-    // 独立 wc 初始化时 mode 为 none 时，忽略 children
-    ((node as any).lazyInit ? (!node.shadowRoot ? false : true) : true)
+    // 独立 wc 初始化时 mode 为空时，忽略 children
+    ((node as any).lazyInit
+      ? !(node as any).customElement.mode
+        ? false
+        : true
+      : true)
   ) {
     node.append(...getChildren([].concat(children())));
   }
