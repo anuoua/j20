@@ -107,7 +107,7 @@ const App: WC<{}, { eventName: { payload: { data: string } } }> = () => {
 
 App.customElement = {
   tag: "my-app",
-  shadow: "open",
+  mode: "open",
 };
 ```
 

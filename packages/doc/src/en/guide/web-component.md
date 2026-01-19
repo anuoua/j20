@@ -36,7 +36,7 @@ App.customElement = {
   // html tag
   tag: "my-app",
   // attachShadow mode: open or closed
-  shadow: "open",
+  mode: "open",
   // Props to HTML attributes mapping
   // Type supports "string", "number", "boolean"
   props: {

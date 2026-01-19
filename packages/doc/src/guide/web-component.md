@@ -36,7 +36,7 @@ App.customElement = {
   // html tag
   tag: "my-app",
   // attachShadow mode: open 或者 closed
-  shadow: "open",
+  mode: "open",
   // 入参和html属性的映射,类型支持 "string", "number", "boolean"
   props: {
     name: {
