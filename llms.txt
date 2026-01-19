@@ -1,0 +1,45 @@
+# J20 前端框架
+
+> 专注于构建下一代 Web 应用
+
+体验和性能巅峰
+
+## Table of Contents
+
+### 指南
+
+- [介绍](/j20/guide/introduction.md)
+- [LLMs](/j20/guide/llms.md)
+- [安装](/j20/guide/install.md)
+- [创建应用](/j20/guide/start.md)
+- [JSX 语法](/j20/guide/jsx.md)
+- [组件](/j20/guide/component.md)
+- [条件渲染](/j20/guide/conditional.md)
+- [列表渲染](/j20/guide/list.md)
+- [动态渲染](/j20/guide/replace.md)
+- [Web Component](/j20/guide/web-component.md)
+- [生命周期](/j20/guide/lifecycle.md)
+- [最佳实践](/j20/guide/best-practice.md)
+- [常见问题](/j20/guide/faq.md)
+
+### 示例
+
+- [API 参考](/j20/guide/api.md)
+
+### Other
+
+- [API Reference](/j20/en/guide/api.md)
+- [Best Practices](/j20/en/guide/best-practice.md)
+- [Components](/j20/en/guide/component.md)
+- [Conditional Rendering](/j20/en/guide/conditional.md)
+- [Creating an App](/j20/en/guide/start.md)
+- [Dynamic Rendering](/j20/en/guide/replace.md)
+- [FAQ](/j20/en/guide/faq.md)
+- [https://vitepress.dev/reference/default-theme-home-page](/j20/en.md)
+- [Installation](/j20/en/guide/install.md)
+- [Introduction](/j20/en/guide/introduction.md)
+- [JSX Syntax](/j20/en/guide/jsx.md)
+- [Lifecycle](/j20/en/guide/lifecycle.md)
+- [List Rendering](/j20/en/guide/list.md)
+- [LLMs](/j20/en/guide/llms.md)
+- [Web Component](/j20/en/guide/web-component.md)

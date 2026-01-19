@@ -1,0 +1,2528 @@
+---
+url: /j20/en/guide/api.md
+---
+# API Reference
+
+## Overview
+
+* [signal](#signal)
+* [computed](#computed)
+* [ref](#ref)
+* [effect](#effect)
+* [wc](#wc)
+* [untrack](#untrack)
+* [onMount](#onmount)
+* [onDestroy](#ondestroy)
+* [createContext](#createcontext)
+* [$useContext](#usecontext)
+
+## signal
+
+Type: `<T>(init: T): Signal<T>`
+
+*Creates a signal value. Typically not used directly - automatically created by the compiler.*
+
+## computed
+
+Type: `<T>(fn: () => T) => Computed<T>`
+
+*Creates a derived signal value. Typically not used directly - automatically created by the compiler.*
+
+## ref
+
+Type: `<T>(init?: T): { current: T | null; }`
+
+References a DOM element.
+
+```tsx
+import { ref } from "j20";
+
+const App = () => {
+  const domRef = ref<HTMLInputElement>();
+
+  onMount(() => {
+    console.log(domRef.current);
+  });
+
+  return <input ref={domRef} />;
+};
+```
+
+## effect
+
+Type: `(handler: () => void | (() => void)) => Effect`
+
+Side effect function that executes during component rendering, collects signals used during execution, re-executes when dependencies change, and runs cleanup functions before re-execution.
+
+```tsx
+import { effect } from "j20";
+
+const App = () => {
+  let $count = 0;
+
+  const cancel = effect(() => {
+    const timer = setInterval(() => {
+      $count++;
+    }, 1000);
+
+    // Cleanup function
+    return () => {
+      clearInterval(timer);
+    };
+  });
+
+  return <button onClick={cancel}>hello: {$count}</button>;
+};
+```
+
+## wc
+
+Type:
+
+```typescript
+() => {
+    host: HTMLElement;
+    emit: (name: string, detail: any) => void;
+    onConnectedCallback: (callback: () => void) => void;
+    onDisconnectedCallback: (callback: () => void) => void;
+}
+```
+
+Gets Web Component instance and methods through `wc`. Only usable within Web Component components.
+
+* **host**: Web Component instance
+* **emit**: Trigger event
+* **onConnectedCallback**: Web Component mount callback
+* **onDisconnectedCallback**: Web Component unmount callback
+
+```tsx
+import { wc, WC } from "j20";
+const App: WC<{}, { eventName: { payload: { data: string } } }> = () => {
+  const { host, emit, onConnectedCallback, onDisconnectedCallback } = wc();
+
+  onConnectedCallback(() => {
+    emit("eventName", { payload: { data: "hello" } });
+  });
+  onDisconnectedCallback(() => {});
+
+  return <div>some</div>;
+};
+
+App.customElement = {
+  tag: "my-app",
+  mode: "open",
+};
+```
+
+## untrack
+
+Type: `<T>(fn: () => T): T`
+
+Skips dependency collection during function execution to achieve non-observed effects, while still returning a value.
+
+```tsx
+import { untrack } from "j20";
+
+const App = () => {
+  let $count = 0;
+
+  // After clicking button, count increments but view doesn't update
+  const handleClick = () => {
+    $count++;
+  };
+
+  return <div onClick={handleClick}>{untrack(() => $count)}</div>;
+};
+```
+
+## onMount
+
+Type: `(callback: () => (() => void) | void) => void`
+
+See [Lifecycle](/en/guide/lifecycle)
+
+## onDestroy
+
+Type: `(callback: () => void) => Effect`
+
+See [Lifecycle](/en/guide/lifecycle)
+
+## createContext
+
+Type:
+
+```typescript
+<T>(defaultValue: T) => {
+    (p: {
+        children: JSX.Element;
+        value: T;
+    }): HTMLElement;
+    Consumer: {
+        (p: {
+            children: (value: T) => JSX.Element;
+        }): JSX.Element;
+    };
+    defaultValue: T;
+}
+```
+
+J20 provides the `createContext` method for creating context.
+
+Usage is similar to React 19 - no additional Provider needed. Use the created context object directly.
+
+```tsx
+import { createContext } from "j20";
+export const SomeContext = createContext<{ name: string }>({ name: "" });
+
+<SomeContext value={{ name: "J20" }}>
+  <Inner />
+</SomeContext>;
+
+function Inner() {
+  return (
+    <SomeContext.Consumer>
+      {/* $ctx is a signal */}
+      {($ctx) => <span>{$ctx.name}</span>}
+    </SomeContext.Consumer>
+  );
+}
+```
+
+## $useContext
+
+Type: `<T>(c: { defaultValue: T }) => T`
+
+Gets context data.
+
+```tsx
+import { $useContext } from "j20";
+import { SomeContext } from "./SomeContext";
+
+function Inner() {
+  const $ctx = $useContext(SomeContext);
+  return <span>{$ctx.name}</span>;
+}
+```
+
+## $
+
+Type: `<T>(val: T) => T extends SignalLike ? (typeof val)["value"] : SignalLike<T>`
+
+Converter between signal variables and normal variables. When you know a variable is reactive, or when you need to convert a reactive variable to a normal variable, use `$` to convert it.
+
+**Main Use Cases**
+
+1. **Type escape**: When passing Signal objects to third-party libraries that don't support J20 syntax
+2. **Debugging**: Inspect Signal object internal structure in console
+
+### Example
+
+```tsx
+let $count = 0; // Actually Signal<number>, type in IDE: number
+
+// Scenario: Get actual Signal object instance for debugging or passing to third-party lib
+const countSignal = $($count); // Actually Signal<number>, type in IDE: Signal<number>
+
+let $newCount = $(countSignal); // Actually Signal<number>, type in IDE: number
+```
+
+---
+
+---
+url: /j20/guide/api.md
+---
+# API 参考
+
+## 概览
+
+* [signal](#signal)
+* [computed](#computed)
+* [ref](#ref)
+* [effect](#effect)
+* [wc](#wc)
+* [untrack](#untrack)
+* [onMount](#onmount)
+* [onDestroy](#ondestroy)
+* [createContext](#createcontext)
+* [$useContext](#usecontext)
+
+## signal
+
+类型：`<T>(init: T): Signal<T>`
+
+*创建一个信号值，一般不需要直接使用这个函数，由编译器自动创建。*
+
+## computed
+
+类型：`<T>(fn: () => T) => Computed<T>`
+
+*创建一个派生信号值，一般不需要直接使用这个函数，由编译器自动创建。*
+
+## ref
+
+类型：`<T>(init?: T): { current: T | null; }`
+
+引用 DOM 元素。
+
+```tsx
+import { ref } from "j20";
+
+const App = () => {
+  const domRef = ref<HTMLInputElement>();
+
+  onMount(() => {
+    console.log(domRef.current);
+  });
+
+  return <input ref={domRef} />;
+};
+```
+
+## effect
+
+类型：`(handler: () => void | (() => void)) => Effect`
+
+副作用函数，在组件渲染时执行，在执行时搜集用到的信号，当依赖的信号变更时重新执行，并在执行前运行清理函数。
+
+```tsx
+import { effect } from "j20";
+
+const App = () => {
+  let $count = 0;
+
+  const cancel = effect(() => {
+    const timer = setInterval(() => {
+      $count++;
+    }, 1000);
+
+    // 清理函数
+    return () => {
+      clearInterval(timer);
+    };
+  });
+
+  return <button onClick={cancel}>hello: {$count}</button>;
+};
+```
+
+## wc
+
+类型：
+
+```typescript
+() => {
+    host: HTMLElement;
+    emit: (name: string, detail: any) => void;
+    onConnectedCallback: (callback: () => void) => void;
+    onDisconnectedCallback: (callback: () => void) => void;
+}
+```
+
+通过 wc 可以获取 Web Component 实例以及方法，仅可以在 Web Component 组件中使用。
+
+* host: Web Component 实例
+* emit: 触发事件
+* onConnectedCallback: Web Component 挂载回调
+* onDisconnectedCallback: Web Component 卸载回调
+
+```tsx
+import { wc, WC } from "j20";
+const App: WC<{}, { eventName: { payload: { data: string } } }> = () => {
+  const { host, emit, onConnectedCallback, onDisconnectedCallback } = wc();
+
+  onConnectedCallback(() => {
+    emit("eventName", { payload: { data: "hello" } });
+  });
+  onDisconnectedCallback(() => {});
+
+  return <div>some</div>;
+};
+
+App.customElement = {
+  tag: "my-app",
+  mode: "open",
+};
+```
+
+## untrack
+
+类型：`<T>(fn: () => T): T`
+
+可以跳过运行函数中的依赖搜集，以实现不被 effect 监听的目的，同时有返回值。
+
+```tsx
+import { untrack } from "j20";
+
+const App = () => {
+  let $count = 0;
+
+  // 点击 button 后 count 会加 1，但是视图上不会更新
+  const handleClick = () => {
+    $count++;
+  };
+
+  return <div onClick={handleClick}>{untrack(() => $count)}</div>;
+};
+```
+
+## onMount
+
+类型：`(callback: () => (() => void) | void) => void`
+
+查看 [生命周期](/guide/lifecycle)
+
+## onDestroy
+
+类型：`(callback: () => void) => Effect`
+
+查看 [生命周期](/guide/lifecycle)
+
+## createContext
+
+类型：
+
+```typescript
+<T>(defaultValue: T) => {
+    (p: {
+        children: JSX.Element;
+        value: T;
+    }): HTMLElement;
+    Consumer: {
+        (p: {
+            children: (value: T) => JSX.Element;
+        }): JSX.Element;
+    };
+    defaultValue: T;
+}
+```
+
+J20 默认提供了 `createContext` 方法，用于创建上下文。
+
+用法和 React 19 类似，无需额外使用 Provider ，直接使用创建的上下文对象。
+
+```tsx
+import { createContext } from "j20";
+export const SomeContext = createContext<{ name: string }>({ name: "" });
+
+<SomeContext value={{ name: "J20" }}>
+  <Inner />
+</SomeContext>;
+
+function Inner() {
+  return (
+    <SomeContext.Consumer>
+      {/* $ctx 是信号 */}
+      {($ctx) => <span>{$ctx.name}</span>}
+    </SomeContext.Consumer>
+  );
+}
+```
+
+## $useContext
+
+类型：`<T>(c: { defaultValue: T }) => T`
+
+获取上下文数据
+
+```tsx
+import { $useContext } from "j20";
+import { SomeContext } from "./SomeContext";
+
+function Inner() {
+  const $ctx = $useContext(SomeContext);
+  return <span>{$ctx.name}</span>;
+}
+```
+
+## $
+
+类型：`<T>(val: T) => T extends SignalLike ? (typeof val)["value"] : SignalLike<T>`
+
+信号变量和普通变量的转换器，在你确定某个变量是响应变量时，或者有个响应变量你需要转换为普通变量时，你可以用 $ 转换它。
+
+**主要用途**
+
+1. **类型逃生**：当需要将 Signal 对象传递给不支持 J20 语法的第三方库时。
+2. **调试**：在控制台查看 Signal 对象的内部结构。
+
+### 示例
+
+```tsx
+let $count = 0; // 实际为 Signal<number>，IDE中类型为：number
+
+// 场景：获取真实的 Signal 对象实例，用于调试或传给三方库
+const countSignal = $($count); // 实际为 Signal<number>，IDE中类型为：Signal<number>
+
+let $newCount = $(countSignal); // 实际为：Signal<number>，IDE中类型为：number
+```
+
+---
+
+---
+url: /j20/en/guide/best-practice.md
+---
+# Best Practices
+
+Here's a TodoList example demonstrating best practices.
+
+index.tsx:
+
+```tsx
+import { createRoot } from "j20";
+import { App } from "./Todo";
+
+// Use createRoot to create app root
+const root = createRoot(() => <App></App>);
+
+// Append root to DOM
+document.querySelector("#root")!.append(root.element);
+```
+
+Todo.tsx:
+
+```tsx
+import { For } from "j20";
+import { TodoItem } from "./TodoItem";
+
+// Define Todo item type
+interface Todo {
+  id: number;
+  text: string;
+  completed: boolean;
+}
+
+// Initialize sample data
+let $todos = [
+  { id: 1, text: "Learn j20 framework", completed: false },
+  { id: 2, text: "Create todolist app", completed: false },
+  { id: 3, text: "Enjoy programming", completed: true },
+];
+
+// Function to add new todo
+const addTodo = (text: string) => {
+  if (text.trim() === "") return;
+
+  $todos = [
+    ...$todos,
+    {
+      id: Date.now(), // Use timestamp as unique ID
+      text: text.trim(),
+      completed: false,
+    },
+  ];
+};
+
+// Function to delete todo
+const deleteTodo = (id: number) => {
+  $todos = $todos.filter((todo) => todo.id !== id);
+};
+
+// Function to toggle todo completion status
+const toggleTodo = (id: number) => {
+  $todos = $todos.map((todo) =>
+    todo.id === id ? { ...todo, completed: !todo.completed } : todo
+  );
+};
+
+// Clear all completed todos
+const clearCompleted = () => {
+  $todos = $todos.filter((todo) => !todo.completed);
+};
+
+// Count uncompleted todos
+const $activeCount = $todos.filter((todo) => !todo.completed).length;
+
+// App component
+export const App = () => {
+  let $newTodoText = ""; // Input value
+
+  const handleAddTodo = (e: Event & { target: HTMLInputElement }) => {
+    addTodo(e.target.value);
+    e.target.value = ""; // Clear input
+    $newTodoText = ""; // Clear signal value
+  };
+
+  return (
+    <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+      <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">
+        Todo List
+      </h1>
+
+      {/* Add new todo input */}
+      <div class="mb-6">
+        <div class="flex">
+          <input
+            type="text"
+            placeholder="Add new task..."
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onInput={(e: Event & { target: HTMLInputElement }) => {
+              $newTodoText = e.target.value;
+            }}
+            onKeyDown={(e: KeyboardEvent) => {
+              if (e.key === "Enter" && $newTodoText.trim() !== "") {
+                addTodo($newTodoText);
+                $newTodoText = "";
+              }
+            }}
+          />
+          <button
+            class="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-600 transition-colors"
+            onClick={() => {
+              if ($newTodoText.trim() !== "") {
+                addTodo($newTodoText);
+                $newTodoText = "";
+              }
+            }}
+          >
+            Add
+          </button>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div class="mb-4 text-gray-600">
+        Incomplete: {$activeCount} | Total: {$todos.length}
+      </div>
+
+      {/* Todo list */}
+      <div class="mb-6">
+        <For of={$todos}>
+          {(todo, $index) => (
+            <TodoItem
+              text={`${todo.text}, Index: ${$index}`}
+              completed={todo.completed}
+              onToggle={() => toggleTodo(todo.id)}
+              onDelete={() => deleteTodo(todo.id)}
+            />
+          )}
+        </For>
+      </div>
+
+      {/* Action buttons */}
+      <div class="flex justify-between">
+        <button
+          class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+          onClick={clearCompleted}
+        >
+          Clear Completed
+        </button>
+        <div class="text-gray-600">
+          All: {$todos.length} | Completed: {$todos.length - $activeCount}
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+TodoItem.tsx:
+
+```tsx
+// Define component props type
+interface TodoItemProps {
+  text: string;
+  completed: boolean;
+  onToggle?: () => void;
+  onDelete?: () => void;
+}
+
+// TodoItem component
+export const TodoItem = ($props: TodoItemProps) => {
+  // Destructure props with $ prefix alias for reactivity
+  // Or use $props.xx directly
+  const {
+    text: $text,
+    completed: $completed,
+    onToggle: $onToggle = () => {},
+    onDelete: $onDelete = () => {},
+  } = $props;
+
+  return (
+    <div class="flex items-center justify-between p-3 mb-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+      <div class="flex items-center">
+        {/* Checkbox */}
+        <input
+          type="checkbox"
+          class="h-5 w-5 mr-3 text-blue-500 rounded focus:ring-blue-400"
+          checked={$completed}
+          onChange={() => $onToggle()}
+        />
+
+        {/* Todo text */}
+        <span
+          class={$completed ? "line-through text-gray-500" : "text-gray-800"}
+        >
+          {$text}
+        </span>
+      </div>
+
+      {/* Delete button */}
+      <button
+        class="text-red-500 hover:text-red-700 transition-colors"
+        onClick={() => $onDelete()}
+      >
+        Delete
+      </button>
+    </div>
+  );
+};
+```
+
+---
+
+---
+url: /j20/en/guide/component.md
+---
+# Components
+
+J20 components are similar to React components. If you're familiar with React, you can quickly get started.
+
+```tsx
+const App = () => {
+  const $msg = "hello world";
+
+  return <span>{$msg}</span>;
+};
+```
+
+## Component State
+
+J20 component state is driven by signals. Thanks to J20's innovative compilation, you can use signals just like normal variables seamlessly.
+
+## Declaring Signals
+
+Use the `let` keyword with the `$` prefix to declare a signal.
+
+Signal values are mutable - directly assigning a value updates the view.
+
+```tsx
+const App = () => {
+  let $msg = "hello world";
+
+  const onClick = () => {
+    $msg = $msg + " j20";
+  };
+
+  return <span onClick={onClick}>{$msg}</span>;
+};
+```
+
+## Derived Signals
+
+Use `const` with the `$` prefix to declare a derived signal. Derived signal values are immutable and read-only.
+
+```tsx
+const App = () => {
+  let $msg = "hello world";
+  let $count = 1;
+
+  // String concatenation
+  const $displayMsg = "display: " + $msg;
+
+  // Math calculation
+  const $double = $count * 2;
+  const $isEven = $count % 2 === 0;
+
+  const onClick = () => {
+    $msg = $msg + " j20";
+    $count++;
+  };
+
+  return (
+    <span onClick={onClick}>
+      {$displayMsg} - Count: {$double} (Even: {$isEven.toString()})
+    </span>
+  );
+};
+```
+
+> Note: Signal variables cannot start with `$use`. `$use` is the prefix for custom hooks and has special compilation behavior.
+
+## Custom Hooks
+
+Custom hooks use the `$use` prefix and support destructuring. Destructured variables starting with `$` maintain reactivity.
+
+```tsx
+const $useCount = () => {
+  let $count = 0;
+
+  return {
+    count: $count,
+  };
+};
+
+const { count: $count } = $useCount();
+console.log($count);
+
+const $res = $useCount();
+console.log($res.count);
+```
+
+Question: Can custom hooks directly return `{ $count }`?
+
+```tsx
+const $useCount = () => {
+  let $count = 0;
+
+  return {
+    $count, // $ prefix directly as a property name - use with caution, easily confused with signals
+  };
+};
+
+const { $count } = $useCount();
+// Clean destructuring, convenient to use
+console.log($count);
+
+// Bad practice
+// `$res` is a signal
+const $res = $useCount();
+// `.$count` is just a property of `$res` (not a signal), but has a $ prefix, easily confusing
+console.log($res.$count);
+```
+
+This approach makes writing and destructuring more convenient, but please don't abuse it. Keep clean destructuring usage - we want the meaning of the `$` prefix to be unambiguous.
+
+Note: Destructured variable names must start with `$`. If not, you need to set a `$`-prefixed alias, otherwise reactivity is lost.
+
+For more details, see [Reactivity Chain Propagation](/en/guide/faq#reactivity-chain-propagation).
+
+## Component Props
+
+Component parameters are derived signals, so variable names must start with `$`.
+
+```tsx
+function Msg($props: { name: string }) {
+  return <span>{$props.name}</span>;
+}
+
+function App() {
+  let $name = "hello";
+
+  return <Msg name={$name} />;
+}
+```
+
+> If `<Msg name="hello" />` where name is a static value, then the `$name` signal inside the component will always be `"hello"`.
+
+## Props Destructuring
+
+Destructured field variable names must start with `$` to maintain reactivity. They are read-only derived signals.
+
+```tsx
+function Msg({ name: $name }: { name: string }) {
+  return <span>{$name}</span>;
+}
+
+// Bad usage
+// If the function parameter name or destructured variable name doesn't start with $,
+// the function's parameters **will not be compiled**
+// This means the function receives raw values - whatever is passed in from outside
+// may cause type and actual value inconsistencies
+function Msg({ name }: { name: string }) {
+  return <span>{name}</span>;
+}
+```
+
+## Component Slots
+
+J20's best practice for slots is to encapsulate them as render functions, unless they are static slots (like Web Component slots). Any reusable slot should be encapsulated as a render function.
+
+```tsx
+const App = ($props: {
+  header: JSX.Element;
+  option: () => JSX.Element;
+}) => {
+  let $visible = false;
+
+  return (
+    <div>
+      <div class="header">
+        {$props.header}
+      </div>
+      <div>
+         <If of={$visible} else={<div>{$props.option(false)}</div>}>
+          {$props.option()}
+        </If>
+      </div>
+    </div>
+  );
+};
+
+<App
+  header={<h1>header</h1>}
+  some={(visible) => <div>{visible ? "none" : "some"}</div>}
+/>
+```
+
+---
+
+---
+url: /j20/en/guide/conditional.md
+---
+# Conditional Rendering
+
+J20 provides `If`, `Some`, and `Switch` components for conditional rendering.
+
+## If Component
+
+`If` handles simple conditional rendering
+
+```tsx
+import { If } from "j20";
+
+let $visible = true;
+
+<If of={$visible} else={<div>invisible</div>}>
+  <span>visible</span>
+</If>;
+```
+
+## Switch Component
+
+`Switch` handles multi-condition rendering - only the first Case with `of=true` is rendered. Used for rendering with multiple mutually exclusive conditions. `Default` is the fallback.
+
+```tsx
+import { Switch, Case, Default } from "j20";
+
+let $value = 1;
+
+<Switch>
+  <Case of={$value === 1}>1</Case>
+  <Case of={$value === 2}>2</Case>
+  <Default>default</Default>
+</Switch>;
+```
+
+## Some Component
+
+`Some` handles values that may be `null` or `undefined`. When the `of` prop is not `null` or `undefined`, it renders the child function. Otherwise renders the `none` content.
+
+Use with optional chaining - provides excellent TypeScript type hints and greatly improves developer experience.
+
+```tsx
+import { Some } from "j20";
+
+let $data: { person?: { name: string } } | undefined;
+
+<Some of={$data?.person} none={<div>No data</div>}>
+  {($person) => <div>Hello {$person.name}</div>}
+  {/* $person is non-null and is a signal value */}
+</Some>;
+```
+
+---
+
+---
+url: /j20/en/guide/start.md
+---
+# Creating an App
+
+Use the `createRoot` method to create an application
+
+```tsx
+import { createRoot } from "j20";
+
+const root = createRoot(() => <span>hello world</span>);
+
+document.querySelector("#root").append(root.element);
+```
+
+## Simple Component
+
+```tsx
+import { createRoot } from "j20";
+
+const App = () => {
+  return (
+    <span>hello world</span>
+  )
+}
+
+const root = createRoot(() => <App />);
+
+document.querySelector("#root").append(root.element);
+```
+
+---
+
+---
+url: /j20/en/guide/replace.md
+---
+# Dynamic Rendering
+
+J20 provides the `Replace` component for dynamic rendering. When the `of` value changes, the internal content is unmounted and rebuilt. Used for scenarios requiring large-scale reconstruction.
+
+## Basic Usage
+
+```tsx
+import { Replace } from "j20";
+
+let $value = 1;
+
+<Replace of={$value}>
+  {/* Content related to $value - use function to get value (value is a regular snapshot) */}
+  {(value) => <div>{value}</div>}
+  {/* Content unrelated to $value - renders directly */}
+  <div>Some</div>
+</Replace>;
+```
+
+## Use Cases
+
+The `Replace` component is suitable for:
+
+* Scenarios requiring complete component tree reconstruction
+* Scenarios requiring cleanup of previous state
+* Switching between multiple different components
+
+---
+
+---
+url: /j20/en/guide/faq.md
+---
+# FAQ
+
+## Reactivity Chain Propagation
+
+**Signals must be passed through `$`-prefixed variables to maintain reactivity**
+
+According to the [Signal Compiler](https://github.com/anuoua/signal-compiler) compilation strategy, only variables with the `$` prefix are recognized by the compiler.
+
+Example with custom hook:
+
+```javascript
+let $msg = ""; // Declaration
+const $display = $msg + "hello"; // Derived
+
+const $useText = ($a) => ({
+  $text: $a + "hello"
+});
+
+// Returns signal
+const { $text } = $useText(
+  // Input signal
+  $display
+);
+```
+
+```
+Declaration signal -> Derived signal -> Hook(input signal) -> Hook(return signal) -> Derived signal/destructured signal
+```
+
+Each step compiles the signal, so reactivity is not interrupted. This is the signal reactivity chain propagation.
+
+## Why use `$` prefix?
+
+First: To mark variables with the `$` prefix for compilation into signal-related code. This marker is unambiguous (to avoid conflicts with very few third-party libraries - please use aliases if needed). The compilation plugin is open source - see [signal-compiler](https://github.com/anuoua/signal-compiler) for details.
+
+Second: To avoid confusion with normal (non-Signal) variables. In large applications, **the number of variables is enormous**, and developers cannot distinguish between signal variables and normal variables, making debugging difficult.
+
+---
+
+---
+url: /j20/en.md
+---
+***
+
+# https://vitepress.dev/reference/default-theme-home-page
+
+layout: home
+
+hero:
+name: "J20 Frontend Framework"
+text: "Building Next-Generation Web Apps"
+tagline: Peak Experience and Performance
+image:
+src: /logo.png
+alt: J20
+actions:
+\- theme: brand
+text: Get Started
+link: /en/guide/introduction
+\- theme: alt
+text: API Reference
+link: /en/guide/api
+
+features:
+\- title: Transparent Signal-Driven
+details: Innovative compilation allows you to use signals seamlessly
+\- title: High Performance
+details: Fine-grained reactivity with no virtual DOM
+\- title: First-Class Web Component Support
+details: Seamless Web Component framework development experience
+
+---
+
+---
+url: /j20/en/guide/install.md
+---
+# Installation
+
+It is recommended to use TypeScript
+
+```bash
+npm i typescript -D
+npx tsc --init
+```
+
+## Install Dependencies
+
+```bash
+npm i j20
+npm i vite @j20org/vite-plugin -D
+```
+
+## TypeScript Configuration
+
+tsconfig.json
+
+```json
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "jsxImportSource": "j20", // [!code ++]
+        "moduleResolution": "bundler", // [!code ++]
+    }
+}
+```
+
+## Vite Configuration
+
+vite.config.mjs
+
+```javascript
+import { defineConfig } from "vite";
+import { j20 } from "@j20org/vite-plugin";
+
+export default defineConfig({
+  plugins: [
+    j20(),
+  ],
+});
+```
+
+---
+
+---
+url: /j20/en/guide/introduction.md
+---
+# Introduction
+
+J20 is a Signal-based Web Component frontend framework designed to build next-generation web applications.
+
+## Features
+
+* **Transparent Signal-Driven** - Innovative compilation for seamless signal usage
+* **High Performance** - No virtual DOM overhead
+* **Excellent Developer Experience** - Original naming convention based Signal compilation technology
+* **First-Class Web Component Support**
+
+---
+
+---
+url: /j20/en/guide/jsx.md
+---
+# JSX Syntax
+
+J20's JSX is similar to React but not identical.
+
+## class vs className
+
+In React, use `className`. In J20, use `class`:
+
+```tsx
+// React
+<div className="my-class">content</div>
+
+// J20
+<div class="my-class">content</div>
+```
+
+## Style Supports Two Forms
+
+J20 supports both native HTML string form and style object form.
+
+String form:
+
+```tsx
+<div style="color: red; font-size: 16px;">content</div>
+```
+
+Object form:
+
+Style object keys match native CSS style names - **not React's camelCase naming**.
+
+```tsx
+<div style={{ "color": "red", "font-size": "16px" }}>content</div>
+```
+
+> String form is recommended - closer to native HTML.
+
+## Interpolation
+
+J20's interpolation syntax requires attention - text nodes and element nodes are handled differently.
+
+### Text Interpolation
+
+In J20, strings and numbers are directly converted to text nodes.
+
+```tsx
+let text = "hello world";
+<span>{text}</span>
+```
+
+If text is a [signal](/en/guide/component#declaring-signals), it updates with the reactive variable.
+
+```tsx
+let $text = "hello world";
+<span>{$text}</span>
+```
+
+### Element Node Interpolation
+
+Element node interpolation does not update with signal variable changes.
+
+```tsx
+let $visible = false;
+let $el = $visible ? <div>el</div> : null;
+<div>{$el}</div>
+```
+
+For node switching, J20 provides `<If>`, `<Switch>`, and `<Replace>` components. See [Conditional Rendering](/en/guide/conditional).
+
+---
+
+---
+url: /j20/guide/jsx.md
+---
+# JSX 语法
+
+J20 的 jsx 和 React 类似，但是并不完全相同。
+
+## class vs className
+
+在 React 中使用 `className`，在 J20 中使用 `class`：
+
+```tsx
+// React
+<div className="my-class">content</div>
+
+// J20
+<div class="my-class">content</div>
+```
+
+## style 支持两种写法
+
+J20 支持和原生 html 一样的字符串形式，同时也支持 style 对象。
+
+字符串形式：
+
+```tsx
+<div style="color: red; font-size: 16px;">content</div>
+```
+
+对象形式：
+
+style 对象的 key 和原生 css 样式名一致，**不是 React 那样的驼峰法命名**。
+
+```tsx
+<div style={{ "color": "red", "font-size": "16px" }}>content</div>
+```
+
+> 推荐使用字符串形式，更接近原生 HTML。
+
+## 插值
+
+J20 的插值语法需要注意，文本节点和元素节点处理方式并不一样。
+
+### 文本插值
+
+J20 中字符串和数字，会直接转化为文本节点。
+
+```tsx
+let text = "hello world"; 
+<span>{text}</span>
+```
+
+如果 text 为[信号](/guide/component#声明信号)，那么会随着响应变量更新而更新。
+
+```tsx
+let $text = "hello world"; 
+<span>{$text}</span>
+```
+
+### 元素节点插值
+
+元素节点插值它不会随着信号变量更新而更新。
+
+```tsx
+let $visible = false;
+let $el = $visible ? <div>el</div> : null;
+<div>{$el}</div>
+```
+
+对于节点切换，J20 提供了 `<If>` `<Switch>` `<Replace>` 组件，可以查看[条件渲染](/guide/conditional)。
+
+---
+
+---
+url: /j20/en/guide/lifecycle.md
+---
+# Lifecycle
+
+J20 provides dedicated lifecycle APIs for managing component mounting and unmounting.
+
+## onMount - Component Mount
+
+Executes a callback after the component is mounted to the DOM, using `requestAnimationFrame` to ensure DOM rendering is complete.
+
+```tsx
+import { onMount } from "j20";
+
+const App = () => {
+  let $count = 0;
+
+  onMount(() => {
+    console.log("Component mounted");
+  });
+
+  const handleClick = () => {
+    $count++;
+  };
+
+  return (
+    <div>
+      <p>Count: {$count}</p>
+      <button onClick={handleClick}>Increment</button>
+    </div>
+  );
+};
+```
+
+### Multiple Calls
+
+You can call `onMount` multiple times in the same component:
+
+```tsx
+const App = () => {
+  onMount(() => {
+    console.log("Mount handler 1");
+  });
+
+  onMount(() => {
+    console.log("Mount handler 2");
+  });
+
+  return <div>App</div>;
+};
+```
+
+## onDestroy - Component Unmount
+
+Executes a callback when the component is unmounted, used for cleanup, removing event listeners, etc.
+
+```tsx
+import { onDestroy } from "j20";
+
+const App = () => {
+  let $count = 0;
+
+  onDestroy(() => {
+    console.log("Component destroyed");
+  });
+
+  const handleClick = () => {
+    $count++;
+  };
+
+  return (
+    <div>
+      <p>Count: {$count}</p>
+      <button onClick={handleClick}>Increment</button>
+    </div>
+  );
+};
+```
+
+### Multiple Cleanup Functions
+
+Supports registering multiple cleanup functions:
+
+```tsx
+const App = () => {
+  onDestroy(() => {
+    console.log("Cleanup 1");
+  });
+
+  onDestroy(() => {
+    console.log("Cleanup 2");
+  });
+
+  onDestroy(() => {
+    console.log("Cleanup 3");
+  });
+
+  return <div>App</div>;
+};
+```
+
+### Event Listener Cleanup
+
+Used for cleaning up event listeners:
+
+```tsx
+const App = () => {
+  const handleResize = () => {
+    console.log("Window resized");
+  };
+
+  onDestroy(() => {
+    window.removeEventListener("resize", handleResize);
+  });
+
+  onMount(() => {
+    window.addEventListener("resize", handleResize);
+  });
+};
+```
+
+## Execution Timing
+
+* **onMount**: Executes after DOM rendering completes (uses `requestAnimationFrame`)
+* **onDestroy**: Executes when component is removed from DOM
+
+## Considerations
+
+### Memory Management
+
+Always remember to clean up resources created in `onMount`:
+
+```tsx
+// Bad: Memory leak
+const BadComponent = () => {
+  onMount(() => {
+    // No cleanup for timer
+    setInterval(() => {}, 1000);
+  });
+};
+
+// Good: Clean up resources
+const GoodComponent = () => {
+  let timer;
+  onMount(() => {
+    timer = setInterval(() => {}, 1000);
+  });
+
+  onDestroy(() => {
+    clearInterval(timer);
+  });
+};
+```
+
+## Best Practices
+
+1. **Clean up promptly**: Clean up all created resources in `onDestroy`
+2. **Avoid nesting**: Deeply nested lifecycle hooks make code hard to maintain
+3. **Use third-party libraries**: When integrating third-party libraries, initialize in `onMount` and destroy in the callback or `onDestroy`
+
+---
+
+---
+url: /j20/en/guide/list.md
+---
+# List Rendering
+
+J20 provides the `For` component for list rendering.
+
+## Basic Usage
+
+```tsx
+import { For } from 'j20';
+
+let $todos = [{ id: 1, text: 'todo1' }, { id: 2, text: 'todo2' }]
+
+<For of={$todos} trait={i => i.id}>
+  {(todo, $index) => (
+    <div>
+      index: {$index}
+      text: {todo.text}
+    </div>
+  )}
+</For>
+```
+
+## Important Concepts
+
+* **trait**: Determines uniqueness (similar to `key` in other frameworks). If not passed, uniqueness is based on the list item itself - i.e., trait defaults to `i => i`
+* **todo**: Not a signal - array items are immutable
+* **$index**: Is a signal - changes as items are added/removed from the array
+
+## Updating Lists
+
+List rendering updates through array modification.
+
+```tsx
+// Signals don't deeply proxy arrays - just reassign
+$todos = [...$todos, { id: 3, text: "new" }];
+```
+
+---
+
+---
+url: /j20/en/guide/llms.md
+---
+# LLMs
+
+J20 provides complete Markdown documentation [llms-full.txt](/llms-full.txt) for use by Large Language Models.
+
+---
+
+---
+url: /j20/guide/llms.md
+---
+# LLMs
+
+J20 提供完整的 Markdown 文档 [llms-full.txt](/llms-full.txt) 供大模型使用。
+
+---
+
+---
+url: /j20/en/guide/web-component.md
+---
+# Web Component
+
+J20 allows users to create Web Component components with first-class support. They can be used like regular components or as HTML tags, with complete TypeScript support.
+
+Web Components **do not support complex object** props. J20 doesn't add special handling for this. We should be aware of the applicable scope of Web Components and not expect them to work like regular components.
+
+## Creating Web Component
+
+```tsx
+// App.tsx
+import { WC } from "j20";
+
+// Props types - only supports string, number, boolean
+interface AppProps {
+  name: string;
+}
+
+// Custom events and their payload types
+// Event names used inside the component follow DOM element mapping rules:
+//   delete -> onDelete
+//   add -> onAdd
+interface AppEvents {
+  delete: number;
+  add: number;
+}
+
+const App: WC<AppProps, AppEvents> = ($props) => {
+  return (
+    <div class="container" onClick={() => $props.onDelete(1)}>
+      {$props.name}
+    </div>
+  );
+};
+
+App.customElement = {
+  // html tag
+  tag: "my-app",
+  // attachShadow mode: open or closed
+  mode: "open",
+  // Props to HTML attributes mapping
+  // Type supports "string", "number", "boolean"
+  props: {
+    name: {
+      type: "string",
+      attribute: "name",
+    },
+  },
+  // Component styles
+  style: `
+    .container {
+      color: red;
+    }
+  `,
+};
+```
+
+## Using as Regular Component
+
+```tsx
+<App
+  name="hello"
+  onDelete={(value) => {
+    console.log(value);
+  }}
+/>
+// console.log 1
+```
+
+## Using as HTML Tag
+
+To use as an HTML tag, you need to register the component first.
+
+### Register Component
+
+```tsx
+import { registerWebComponent } from "j20";
+import App from "./App.tsx";
+
+registerWebComponent(App);
+```
+
+### Using in J20
+
+```tsx
+<my-app name="hello" onDelete={(value) => console.log(value)} />
+// console.log => CustomEvent { ... detail: 1 }
+```
+
+### Using in Native HTML
+
+This means components in this form can run in any framework.
+
+```html
+<my-app name="hello" />
+<script type="text/javascript">
+  document.querySelector("my-app").addEventListener("delete", (e) => {
+    console.log(e);
+  });
+  // console.log => CustomEvent { ... detail: 1 }
+</script>
+```
+
+---
+
+---
+url: /j20/guide/web-component.md
+---
+# Web Component
+
+J20 允许用户创建 Web Component 组件，提供一流支持。既能够像普通组件一样使用，也可以像 Web Component 一样通过 html 标签使用，同时类型支持完善。
+
+Web Component 本身**不支持复杂对象**的传参， J20 也不会特殊照顾，我们应当意识到 Web Component 的适用范围，不应该幻想 Web Component 组件能够像普通组件一样使用。
+
+## 创建 Web Component 组件
+
+```tsx
+// App.tsx
+import { WC } from "j20";
+
+// props 类型，仅支持 string, number, boolean
+interface AppProps {
+  name: string;
+}
+
+// 自定义事件以及携带的 payload 类型
+// 组件内调用事件的名称，它的映射规则和 DOM 元素一致
+//   delete -> onDelete
+//   add -> onAdd
+interface AppEvents {
+  delete: number;
+  add: number;
+}
+
+const App: WC<AppProps, AppEvents> = ($props) => {
+  return (
+    <div class="container" onClick={() => $props.onDelete(1)}>
+      {$props.name}
+    </div>
+  );
+};
+
+App.customElement = {
+  // html tag
+  tag: "my-app",
+  // attachShadow mode: open 或者 closed
+  mode: "open",
+  // 入参和html属性的映射,类型支持 "string", "number", "boolean"
+  props: {
+    name: {
+      type: "string",
+      attribute: "name",
+    },
+  },
+  // 组件样式
+  style: `
+    .container {
+      color: red;
+    }
+  `,
+};
+```
+
+## 像普通组件一样使用
+
+```tsx
+<App
+  name="hello"
+  onDelete={(value) => {
+    console.log(value);
+  }}
+/>
+// console.log 1
+```
+
+## 通过 html 标签使用
+
+通过 html 标签使用，需要先注册组件。
+
+### 注册组件
+
+```tsx
+import { registerWebComponent } from "j20";
+import App from "./App.tsx";
+
+registerWebComponent(App);
+```
+
+### 在 J20 中使用
+
+```tsx
+<my-app name="hello" onDelete={(value) => console.log(value)} />
+// console.log => CustomEvent { ... detail: 1 }
+```
+
+### 在原生 html 中使用
+
+意味着这种形态的组件是可以运行在任何框架中。
+
+```html
+<my-app name="hello" />
+<script type="text/javascript">
+  document.querySelector("my-app").addEventListener("delete", (e) => {
+    console.log(e);
+  });
+  // console.log => CustomEvent { ... detail: 1 }
+</script>
+```
+
+---
+
+---
+url: /j20/guide/introduction.md
+---
+# 介绍
+
+J20 是一个基于 Signal 的 Web Component 前端框架，目标是构建下一代 Web 应用。
+
+## 特点
+
+* **无感 Signal 驱动**
+* **高性能**：无虚拟 DOM
+* **开发体验优秀**：原创基于命名标记的 Signal 编译技术
+* **Web Component 一流支持**
+
+---
+
+---
+url: /j20/guide/best-practice.md
+---
+# 最佳实践
+
+这里提供一个TodoList的示例，展示最佳实践。
+
+index.tsx:
+
+```tsx
+import { createRoot } from "j20";
+import { App } from "./Todo";
+
+// 用creatRoot创建应用根节点
+const root = createRoot(() => <App></App>);
+
+// 将根节点添加到DOM中
+document.querySelector("#root")!.append(root.element);
+```
+
+Todo.tsx:
+
+```tsx
+import { For } from "j20";
+import { TodoItem } from "./TodoItem";
+
+// 定义Todo项的类型
+interface Todo {
+  id: number;
+  text: string;
+  completed: boolean;
+}
+
+// 初始化一些示例数据
+let $todos = [
+  { id: 1, text: "学习j20框架", completed: false },
+  { id: 2, text: "创建todolist应用", completed: false },
+  { id: 3, text: "享受编程乐趣", completed: true },
+];
+
+// 添加新todo的函数
+const addTodo = (text: string) => {
+  if (text.trim() === "") return;
+
+  $todos = [
+    ...$todos,
+    {
+      id: Date.now(), // 使用时间戳作为唯一ID
+      text: text.trim(),
+      completed: false,
+    },
+  ];
+};
+
+// 删除todo的函数
+const deleteTodo = (id: number) => {
+  $todos = $todos.filter((todo) => todo.id !== id);
+};
+
+// 切换todo完成状态的函数
+const toggleTodo = (id: number) => {
+  $todos = $todos.map((todo) =>
+    todo.id === id ? { ...todo, completed: !todo.completed } : todo
+  );
+};
+
+// 清除所有已完成的todo
+const clearCompleted = () => {
+  $todos = $todos.filter((todo) => !todo.completed);
+};
+
+// 计算未完成的todo数量
+const $activeCount = $todos.filter((todo) => !todo.completed).length;
+
+// App组件
+export const App = () => {
+  let $newTodoText = ""; // 输入框的值
+
+  const handleAddTodo = (e: Event & { target: HTMLInputElement }) => {
+    addTodo(e.target.value);
+    e.target.value = ""; // 清空输入框
+    $newTodoText = ""; // 清空信号值
+  };
+
+  return (
+    <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+      <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">
+        Todo List
+      </h1>
+
+      {/* 添加新todo的输入框 */}
+      <div class="mb-6">
+        <div class="flex">
+          <input
+            type="text"
+            placeholder="添加新的任务..."
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onInput={(e: Event & { target: HTMLInputElement }) => {
+              $newTodoText = e.target.value;
+            }}
+            onKeyDown={(e: KeyboardEvent) => {
+              if (e.key === "Enter" && $newTodoText.trim() !== "") {
+                addTodo($newTodoText);
+                $newTodoText = "";
+              }
+            }}
+          />
+          <button
+            class="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-600 transition-colors"
+            onClick={() => {
+              if ($newTodoText.trim() !== "") {
+                addTodo($newTodoText);
+                $newTodoText = "";
+              }
+            }}
+          >
+            添加
+          </button>
+        </div>
+      </div>
+
+      {/* 统计信息 */}
+      <div class="mb-4 text-gray-600">
+        未完成: {$activeCount} | 总计: {$todos.length}
+      </div>
+
+      {/* Todo列表 */}
+      <div class="mb-6">
+        <For of={$todos}>
+          {(todo, $index) => (
+            <TodoItem
+              text={`${todo.text}, 序号: ${$index}`}
+              completed={todo.completed}
+              onToggle={() => toggleTodo(todo.id)}
+              onDelete={() => deleteTodo(todo.id)}
+            />
+          )}
+        </For>
+      </div>
+
+      {/* 操作按钮 */}
+      <div class="flex justify-between">
+        <button
+          class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+          onClick={clearCompleted}
+        >
+          清除已完成
+        </button>
+        <div class="text-gray-600">
+          全部: {$todos.length} | 已完成: {$todos.length - $activeCount}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+```
+
+TodoItem.tsx:
+
+```tsx
+// 定义组件属性类型
+interface TodoItemProps {
+  text: string;
+  completed: boolean;
+  onToggle?: () => void;
+  onDelete?: () => void;
+}
+
+// TodoItem组件
+export const TodoItem = ($props: TodoItemProps) => {
+  // 入参解构要使用 $ 开头别名，这样才是响应式的
+  // 或者使用 $props.xx 直接取
+  const {
+    text: $text,
+    completed: $completed,
+    onToggle: $onToggle = () => {},
+    onDelete: $onDelete = () => {},
+  } = $props;
+
+  return (
+    <div class="flex items-center justify-between p-3 mb-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+      <div class="flex items-center">
+        {/* 复选框 */}
+        <input
+          type="checkbox"
+          class="h-5 w-5 mr-3 text-blue-500 rounded focus:ring-blue-400"
+          checked={$completed}
+          onChange={() => $onToggle()}
+        />
+
+        {/* Todo文本 */}
+        <span
+          class={$completed ? "line-through text-gray-500" : "text-gray-800"}
+        >
+          {$text}
+        </span>
+      </div>
+
+      {/* 删除按钮 */}
+      <button
+        class="text-red-500 hover:text-red-700 transition-colors"
+        onClick={() => $onDelete()}
+      >
+        删除
+      </button>
+    </div>
+  );
+};
+
+```
+
+---
+
+---
+url: /j20/guide/list.md
+---
+# 列表渲染
+
+J20 提供了 `For` 组件，用于列表渲染。
+
+## 基本用法
+
+```tsx
+import { For } from 'j20';
+
+let $todos = [{ id: 1, text: 'todo1' }, { id: 2, text: 'todo2' }]
+
+<For of={$todos} trait={i => i.id}>
+  {(todo, $index) => (
+    <div>
+      index: {$index}
+      text: {todo.text}
+    </div>
+  )}
+</For>
+```
+
+## 重要概念
+
+* **trait**：用来确定唯一性（类似其他框架的 key ），如果不传，唯一性判断的依据是列表项本身。即 trait 默认为 `i => i`
+* **todo**：不是信号，数组项不可变
+* **$index**：是信号，会随着数组项的增减而改变
+
+## 更新列表
+
+列表的渲染通过修改数组来更新。
+
+```tsx
+// Signal 不会深度劫持数组，重新赋值即可
+$todos = [...$todos, { id: 3, text: "new" }];
+```
+
+---
+
+---
+url: /j20/guide/start.md
+---
+# 创建应用
+
+使用 `createRoot` 方法创建应用
+
+```tsx
+import { createRoot } from "j20";
+
+const root = createRoot(() => <span>hello world</span>);
+
+document.querySelector("#root").append(root.element);
+```
+
+## 简单组件
+
+```tsx
+import { createRoot } from "j20";
+
+const App = () => {
+  return (
+    <span>hello world</span>
+  )
+}
+
+const root = createRoot(() => <App />);
+
+document.querySelector("#root").append(root.element);
+```
+
+---
+
+---
+url: /j20/guide/replace.md
+---
+# 动态渲染
+
+J20 提供了 `Replace` 组件，用于动态渲染，`of` 的值一旦改变，内部的元素会卸载并重建，用于需要大规模重建的场景。
+
+## 基本用法
+
+```tsx
+import { Replace } from "j20";
+
+let $value = 1;
+
+<Replace of={$value}>
+  {/* 内容和 $value 有关，可以使用函数获取 value (value 为普通值快照) */}
+  {(value) => <div>{value}</div>}
+  {/* 内容和 $value 无关，直接渲染 */}
+  <div>Some</div>
+</Replace>;
+```
+
+## 使用场景
+
+`Replace` 组件适合以下场景：
+
+* 需要完全重建组件树的场景
+* 需要清理之前状态的场景
+* 在多个不同组件之间切换时
+
+---
+
+---
+url: /j20/guide/install.md
+---
+# 安装
+
+推荐使用 typescript
+
+```bash
+npm i typescript -D
+npx tsc --init
+```
+
+## 安装依赖
+
+```bash
+npm i j20
+npm i vite @j20org/vite-plugin -D
+```
+
+## TS 配置
+
+tsconfig.json
+
+```json
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "jsxImportSource": "j20", // [!code ++]
+        "moduleResolution": "bundler", // [!code ++]
+    }
+}
+```
+
+## Vite 配置
+
+vite.config.mjs
+
+```javascript
+import { defineConfig } from "vite";
+import { j20 } from "@j20org/vite-plugin";
+
+export default defineConfig({
+  plugins: [
+    j20(),
+  ],
+});
+```
+
+---
+
+---
+url: /j20/guide/faq.md
+---
+# 常见问题
+
+## 响应链传递
+
+**信号必须通过 `$` 前缀的变量传递才能保持响应性**
+
+根据 [Signal Compiler](https://github.com/anuoua/signal-compiler) 编译策略，`$` 前缀的变量才会被编译编译器识别。
+
+以自定义 hook 为例子：
+
+```javascript
+let $msg = ""; // 声明
+const $dipslay = $msg + "hello"; // 派生
+
+const $useText = ($a) => ({
+  $text: $a + "hello"
+});
+
+// 返回信号
+const { $text } = $useText(
+  // 入参信号
+  $display
+);
+```
+
+```
+声明信号 -> 派生信号 -> hook(入参信号) -> hook(返回值信号) -> 派生信号/解构信号
+```
+
+这里每一步都会进行信号编译，响应才不会中断，这就是信号的响应链传递。
+
+## 为什么要加 `$` 前缀?
+
+第一：为了编译时将符号 `$` 前缀的变量编译成和信号相关的代码所做的标记，这个标记是明确的没有歧义的（避免极少数三方库的冲突，请自行别名处理），编译插件已经开源，具体原理可以看 [signal-compiler](https://github.com/anuoua/signal-compiler)
+
+第二：为了避免和普通变量（非 Signal）混淆。在大型应用中**变量的数量庞大**，开发人员无法区分信号变量和普通变量，导致 debug 困难。
+
+---
+
+---
+url: /j20/guide/conditional.md
+---
+# 条件渲染
+
+J20 提供了 `If`、`Some` 和 `Switch` 组件来处理条件渲染。
+
+## If 组件
+
+`If` 用来处理简单的条件渲染
+
+```tsx
+import { If } from "j20";
+
+let $visible = true;
+
+<If of={$visible} else={<div>invisible</div>}>
+  <span>visible</span>
+</If>;
+```
+
+## Switch 组件
+
+`Switch` 用来处理多条件渲染，只渲染第一个 of = true 的 Case 项，用于多个互斥条件下的渲染，`Default` 则是默认项
+
+```tsx
+import { Switch, Case, Default } from "j20";
+
+let $value = 1;
+
+<Switch>
+  <Case of={$value === 1}>1</Case>
+  <Case of={$value === 2}>2</Case>
+  <Default>default</Default>
+</Switch>;
+```
+
+## Some 组件
+
+`Some` 组件用于处理可能为 `null` 或 `undefined` 的值，当 `of` 属性不为 `null` 或 `undefined` 时渲染子组件函数，否则渲染 `none` 内容。
+
+在遇到可选链的时候使用，拥有完善的 Typescript 类型提示，大幅提升开发体验。
+
+```tsx
+import { Some } from "j20";
+
+let $data: { person?: { name: string } } | undefined;
+
+<Some of={$data?.person} none={<div>No data</div>}>
+  {($person) => <div>Hello {$person.name}</div>}
+  {/* $person 非空而且是信号值 */}
+</Some>;
+```
+
+---
+
+---
+url: /j20/guide/lifecycle.md
+---
+# 生命周期
+
+J20 提供了专门的生命周期 API 来管理组件的挂载和卸载。
+
+## onMount - 组件挂载
+
+在组件挂载到 DOM 后执行回调函数，使用 `requestAnimationFrame` 确保 DOM 渲染完成。
+
+```tsx
+import { onMount } from "j20";
+
+const App = () => {
+  let $count = 0;
+
+  onMount(() => {
+    console.log("Component mounted");
+  });
+
+  const handleClick = () => {
+    $count++;
+  };
+
+  return (
+    <div>
+      <p>Count: {$count}</p>
+      <button onClick={handleClick}>Increment</button>
+    </div>
+  );
+};
+```
+
+### 多次调用
+
+可以在同一个组件中多次调用 `onMount`：
+
+```tsx
+const App = () => {
+  onMount(() => {
+    console.log("Mount handler 1");
+  });
+
+  onMount(() => {
+    console.log("Mount handler 2");
+  });
+
+  return <div>App</div>;
+};
+```
+
+## onDestroy - 组件卸载
+
+在组件卸载时执行回调函数，用于清理副作用、移除事件监听器等。
+
+```tsx
+import { onDestroy } from "j20";
+
+const App = () => {
+  let $count = 0;
+
+  onDestroy(() => {
+    console.log("Component destroyed");
+  });
+
+  const handleClick = () => {
+    $count++;
+  };
+
+  return (
+    <div>
+      <p>Count: {$count}</p>
+      <button onClick={handleClick}>Increment</button>
+    </div>
+  );
+};
+```
+
+### 多个清理函数
+
+支持注册多个清理函数：
+
+```tsx
+const App = () => {
+  onDestroy(() => {
+    console.log("Cleanup 1");
+  });
+
+  onDestroy(() => {
+    console.log("Cleanup 2");
+  });
+
+  onDestroy(() => {
+    console.log("Cleanup 3");
+  });
+
+  return <div>App</div>;
+};
+```
+
+### 事件监听器清理
+
+可于清理事件监听器：
+
+```tsx
+const App = () => {
+  const handleResize = () => {
+    console.log("Window resized");
+  };
+
+  onDestroy(() => {
+    window.removeEventListener("resize", handleResize);
+  });
+
+  onMount(() => {
+    window.addEventListener("resize", handleResize);
+  });
+};
+```
+
+## 执行时机
+
+* **onMount**: 在 DOM 渲染完成后执行（使用 `requestAnimationFrame`）
+* **onDestroy**: 在组件从 DOM 中移除时执行
+
+## 注意事项
+
+### 内存管理
+
+始终不要忘记清理在 `onMount` 中创建的资源：
+
+```tsx
+// ❌ 错误：内存泄漏
+const BadComponent = () => {
+  onMount(() => {
+    // 没有清理定时器
+    setInterval(() => {}, 1000);
+  });
+};
+
+// ✅ 正确：清理资源
+const GoodComponent = () => {
+  let timer;
+  onMount(() => {
+    timer = setInterval(() => {}, 1000);
+  });
+
+  onDestroy(() => {
+    clearInterval(timer);
+  });
+};
+```
+
+## 最佳实践
+
+1. **及时清理**: 在 `onDestroy` 中清理所有创建的资源
+2. **避免嵌套**: 深度嵌套的生命周期会让代码难以维护
+3. **使用第三方库**: 集成第三方库时，在 `onMount` 中初始化，在回调函数或者 `onDestroy` 中销毁
+
+---
+
+---
+url: /j20/guide/component.md
+---
+# 组件
+
+J20 的组件和 React 的组件类似，如果你熟悉 React，那么你可以快速地上手。
+
+```tsx
+const App = () => {
+  const $msg = "hello world";
+
+  return <span>{$msg}</span>;
+};
+```
+
+## 组件状态
+
+J20 的组件状态由信号驱动，因为 J20 创新的编译手段，你可以像普通变量一样无感使用信号。
+
+## 声明信号
+
+使用 `let` 关键字 + `$` 前缀符号来声明一个信号。
+
+信号的值可变，直接赋值可以更新视图。
+
+```tsx
+const App = () => {
+  let $msg = "hello world";
+
+  const onClick = () => {
+    $msg = $msg + " j20";
+  };
+
+  return <span onClick={onClick}>{$msg}</span>;
+};
+```
+
+## 派生信号
+
+使用 `const` 和 `$` 前缀符号来声明一个派生信号，派生信号的值不可变，只读。
+
+```tsx
+const App = () => {
+  let $msg = "hello world";
+  let $count = 1;
+
+  // 字符串拼接
+  const $displayMsg = "display: " + $msg;
+
+  // 数学计算
+  const $double = $count * 2;
+  const $isEven = $count % 2 === 0;
+
+  const onClick = () => {
+    $msg = $msg + " j20";
+    $count++;
+  };
+
+  return (
+    <span onClick={onClick}>
+      {$displayMsg} - Count: {$double} (Even: {$isEven.toString()})
+    </span>
+  );
+};
+```
+
+> 注：信号变量不能使用 `$use` 开头， `$use` 是自定义 hooks 的前缀，它拥有特殊的编译策略。
+
+## 自定义 hooks
+
+自定义 hooks 以 `$use` 为前缀，支持解构，解构变量以 `$` 开头可以保持响应。
+
+```tsx
+const $useCount = () => {
+  let $count = 0;
+
+  return {
+    count: $count, 
+  };
+};
+
+const { count: $count } = $useCount();
+console.log($count);
+
+const $res = $useCount();
+console.log($res.count);
+```
+
+疑问：自定义 hooks 可不可以直接返回 `{ $count }`
+
+```tsx
+const $useCount = () => {
+  let $count = 0;
+
+  return {
+    $count, // $ 开头直接作为属性名，需要谨慎使用，容易和信号混淆。
+  };
+};
+
+const { $count } = $useCount();
+// 干净的解构，方便使用
+console.log($count);
+
+// 错误实践
+// `$res` 是信号
+const $res = $useCount();
+// `.$count` 只是 `$res` 的一个属性（非信号），却带着 $ 前缀，容易混淆。
+console.log($res.$count);
+```
+
+这么写会比较方便书写和解构，但是务必不要滥用，保持干净的解构使用，我们希望 `$` 前缀的含义没有歧义。
+
+注：解构声明的变量名必须是 `$` 开头，如果不是 `$` 开头，则需要设置 `$` 前缀的别名，否则响应丢失。
+
+具体可以了解[响应链传递](/guide/faq#响应链传递)。
+
+## 组件 Props
+
+组件入参是一个派生信号，所以变量名必须以 `$` 开头
+
+```tsx
+function Msg($props: { name: string }) {
+  return <span>{$props.name}</span>;
+}
+
+function App() {
+  let $name = "hello";
+
+  return <Msg name={$name} />;
+}
+```
+
+> 如果 `<Msg name="hello" />` name 是个静态值，那么组件内的 `$name` 信号的值就永远是`"hello"`。
+
+## Props 解构
+
+解构的字段变量名以 `$` 开头才能保持响应性，是只读的派生信号。
+
+```tsx
+function Msg({ name: $name }: { name: string }) {
+  return <span>{$name}</span>;
+}
+
+// 错误用法
+// 如果函数入参名或者解构后的变量名没有 `$` 开头的变量，那么这个函数的入参**不会被编译**
+// 意味着函数的入参是原始值，外部传入什么，函数内部就会拿到什么，可能会造成类型和实际值不一致的情况。
+function Msg({ name }: { name: string }) {
+  return <span>{name}</span>;
+}
+```
+
+## 组件插槽
+
+J20 的插槽的最佳实践是封装成 render 函数，除非是静态的插槽（类似 Web Component 的 slot），凡是需要复用的插槽，都应封装成 render 函数。
+
+```tsx
+ const App = ($props: {
+   header: JSX.Element,
+  option: () => JSX.Element,
+}) => {
+  let $visible = false;
+
+  return (
+    <div>
+      <div class="header">
+        {$props.header}
+      </div>
+      <div>
+         <If of={$visible} else ={<div>{$props.option(false)}</div>}>
+          {$props.option()}
+        </If>
+      </div>
+    </div>
+  );
+};
+
+<App 
+  header={<h1>header</h1>}
+  some={(visible) => <div>{visible ? "none" : "some"}</div>}
+/>
+```
