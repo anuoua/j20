@@ -11,6 +11,7 @@ export * from "./api/untrack";
 export * from "./api/id";
 export * from "./api/onMount";
 export * from "./api/onDestroy";
+export * from "./api/style";
 export * from "./control/For";
 export * from "./control/If";
 export * from "./control/Some";
