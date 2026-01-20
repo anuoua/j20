@@ -4,12 +4,7 @@ import { computed } from "./api/computed";
 import { getCurrentInstance, instanceCreate } from "./h/instance";
 import { SignalLike } from "./api/types";
 import { BRAND } from "./brand";
-
-let host: HTMLElement | undefined;
-
-export const setHost = (h: HTMLElement | undefined) => (host = h);
-
-export const getHost = () => host;
+import { hostStack } from "./h/createWebComponent";
 
 export const registerWebComponent = <C extends WC<any, any>>(Comp: C) => {
   if (!Comp.customElement) {
@@ -28,7 +23,7 @@ export const registerWebComponent = <C extends WC<any, any>>(Comp: C) => {
 export abstract class WebComponentClass extends HTMLElement {
   abstract customElement: CustomElement;
 
-  constructor(public lazy: boolean) {
+  constructor() {
     super();
   }
 
@@ -66,12 +61,8 @@ export const buildClass = (Comp: WC) => {
 
     customElement = customElement;
 
-    lazy: boolean;
-
-    constructor(lazy: boolean) {
+    constructor() {
       super();
-
-      this.lazy = lazy;
 
       if (customElement.tag && customElement.mode) {
         this.#shadow = this.attachShadow({ mode: customElement.mode });
@@ -92,11 +83,11 @@ export const buildClass = (Comp: WC) => {
     }
 
     lazyInit() {
-      setHost(this);
-
       const host = this;
 
-      const [instance, fragment] = instanceCreate(() => {
+      hostStack.push(host);
+
+      const [, fragment] = instanceCreate(() => {
         return Comp(
           computed(() => {
             return new Proxy(this.#props, {
@@ -117,9 +108,7 @@ export const buildClass = (Comp: WC) => {
         );
       }, getCurrentInstance());
 
-      setHost(undefined);
-
-      instance.host = this;
+      hostStack.pop();
 
       if (this.#shadow) {
         this.#shadow.appendChild(fragment);
@@ -164,7 +153,6 @@ export const buildClass = (Comp: WC) => {
       oldValue: string | null,
       newValue: string | null
     ) {
-      if (this.lazy) return;
       const attrs = NewElementClass.observedAttributes;
       const propSignal = this.#props[a2p[name]];
       if (propSignal && attrs.includes(name)) {

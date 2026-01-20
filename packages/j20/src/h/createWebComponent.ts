@@ -3,35 +3,39 @@ import { computed } from "../api/computed";
 import { WC } from "../types";
 import { untrack } from "../api/untrack";
 import { BRAND } from "../brand";
-import { buildClass, setHost, WebComponentClass } from "../web-components";
+import { buildClass, WebComponentClass } from "../web-components";
 import { getChildren } from "./utils";
 
+export const hostStack: Element[] = [];
+
+export const getCurrentHost = () => {
+  return hostStack.at(-1);
+};
+
 export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
-  const runner = () => {
-    const customElement = tag.customElement!;
+  const customElement = tag.customElement!;
 
-    const Exist = customElements.get(customElement.tag);
+  const Exist = customElements.get(customElement.tag);
 
-    let el: WebComponentClass | undefined;
+  let el: WebComponentClass | undefined;
 
-    if (Exist) {
-      if ((Exist as any).brand !== BRAND) {
-        throw new Error(
-          `Custom element [${customElement.tag}] is already registered`
-        );
-      } else {
-        el = new Exist(true) as unknown as WebComponentClass;
-      }
+  if (Exist) {
+    if ((Exist as any).brand !== BRAND) {
+      throw new Error(
+        `Custom element [${customElement.tag}] is already registered`
+      );
     } else {
-      const NewClass = buildClass(tag);
-      customElements.define(customElement.tag, NewClass);
-      el = new NewClass(true);
+      el = new Exist() as unknown as WebComponentClass;
     }
+  } else {
+    const NewClass = buildClass(tag);
+    customElements.define(customElement.tag, NewClass);
+    el = new NewClass();
+  }
 
+  const runner = () => {
     let childrenGetter = () =>
       untrack(() => (props ? props().children : undefined));
-
-    setHost(el);
 
     const ret: any = tag(
       computed(() => {
@@ -44,8 +48,6 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
       })
     );
 
-    setHost(undefined);
-
     if (el.customElement.mode) {
       (el as any).appendToShadowDom(getChildren([].concat(ret)));
       childrenGetter &&
@@ -57,6 +59,11 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
     return el;
   };
 
+  hostStack.push(el);
+
   let [, fragment] = instanceCreate(runner as any);
+
+  hostStack.pop();
+
   return fragment;
 };

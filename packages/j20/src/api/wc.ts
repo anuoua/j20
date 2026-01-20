@@ -1,7 +1,7 @@
-import { getHost } from "../web-components";
+import { getCurrentHost } from "../h/createWebComponent";
 
 export const wc = () => {
-  const host = getHost();
+  const host = getCurrentHost();
 
   if (!host) {
     throw new Error("host not found, please use `wc` in web component");

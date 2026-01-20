@@ -1,19 +1,20 @@
 import { createDom } from "./createDom";
+import { getCurrentHost } from "./createWebComponent";
 import { generateId } from "./utils";
 
 export interface Instance {
   parent?: Instance;
   id: string;
   range: Text[];
-  host?: HTMLElement;
+  host?: Element;
   disposes?: (() => void)[];
   children?: Instance[];
   mounts?: (() => void)[];
 }
 
-const stack: Instance[] = [];
+const instanceStack: Instance[] = [];
 
-export const getCurrentInstance = () => stack.at(-1);
+export const getCurrentInstance = () => instanceStack.at(-1);
 
 // api security guard
 export const securityGetCurrentInstance = () => {
@@ -28,6 +29,7 @@ export const instanceInit = (parent?: Instance) => {
   const instance: Instance = {
     parent: parentInstance,
     id,
+    host: getCurrentHost(),
     range: [document.createTextNode(""), document.createTextNode("")],
   };
 
@@ -47,7 +49,7 @@ export const instanceCreateElement = (
   instance: Instance,
   runner: () => any
 ) => {
-  stack.push(instance);
+  instanceStack.push(instance);
 
   const fragment = createDom(
     document.createDocumentFragment() as unknown as HTMLElement,
@@ -63,9 +65,9 @@ export const instanceCreateElement = (
     instance.mounts = undefined;
   }
 
-  stack.pop();
+  instanceStack.pop();
 
-  if (stack.length === 0) {
+  if (instanceStack.length === 0) {
     requestAnimationFrame(() => {
       mounts.forEach((mount) => mount());
       mounts.length = 0;
