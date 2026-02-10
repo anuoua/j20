@@ -53,11 +53,12 @@ export const buildClass = (Comp: WC) => {
         .filter((i) => i != undefined);
     }
 
+    static brand = BRAND;
+    brand = BRAND;
+
     #shadow: ShadowRoot | undefined;
 
     #props: Record<string, SignalLike> = {};
-
-    brand = BRAND;
 
     customElement = customElement;
 

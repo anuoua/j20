@@ -1,8 +1,10 @@
 import { getCurrentInstance } from "../h/instance";
+import { ExtractClasses } from "../types";
 import { WebComponentClass } from "../web-components";
+import { id } from "./id";
 import { onDestroy } from "./onDestroy";
 
-export const style = (css?: string) => {
+export const sheet = (css?: string) => {
   let instance = getCurrentInstance();
   const sheet = new CSSStyleSheet();
   css && sheet.replaceSync(css);
@@ -25,4 +27,20 @@ export const style = (css?: string) => {
     });
   }
   return sheet;
+};
+
+export const css = <T extends string>(css: T) => {
+  const styleId = id();
+  const replacedCss = css.replace(
+    /\.(\w[\w-]*)\s*?\{/g,
+    (_: string, className: string) => {
+      return `.${className}_${styleId} {`;
+    }
+  );
+  sheet(replacedCss);
+  return new Proxy({} as any, {
+    get: (_, prop: string) => {
+      return `${prop}_${styleId}`;
+    },
+  }) as { [K in ExtractClasses<T>]: string };
 };

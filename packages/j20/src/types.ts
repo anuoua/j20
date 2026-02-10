@@ -34,3 +34,10 @@ export type WC<
       [K in keyof E as `on${Capitalize<K & string>}`]: (e: E[K]) => void;
     }
 ) => JSX.Element);
+
+export type ExtractClasses<T extends string> =
+  T extends `${string}.${infer Name} {${infer Body}${infer _Brace}${infer Rest}`
+    ? Name | ExtractClasses<Body> | ExtractClasses<Rest>
+    : T extends `${string}\n${infer Rest}`
+      ? ExtractClasses<Rest>
+      : never;
