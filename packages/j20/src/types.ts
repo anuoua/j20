@@ -28,9 +28,9 @@ export type WC<
 > = {
   customElement: CustomElement<P>;
 } & ((
-  props: P & {
+  props: JSX.HTMLAttributes<HTMLElement> & {
     children?: JSX.Element;
-  } & {
-    [K in keyof E as `on${Capitalize<K & string>}`]: (e: E[K]) => void;
-  }
+  } & P & {
+      [K in keyof E as `on${Capitalize<K & string>}`]: (e: E[K]) => void;
+    }
 ) => JSX.Element);

@@ -4,7 +4,7 @@ import { WC } from "../types";
 import { untrack } from "../api/untrack";
 import { BRAND } from "../brand";
 import { buildClass, WebComponentClass } from "../web-components";
-import { getChildren } from "./utils";
+import { bindNode, getChildren } from "./utils";
 
 export const hostStack: Element[] = [];
 
@@ -32,6 +32,8 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
     customElements.define(customElement.tag, NewClass);
     el = new NewClass();
   }
+
+  props && bindNode(el, props);
 
   const runner = () => {
     let childrenGetter = () =>

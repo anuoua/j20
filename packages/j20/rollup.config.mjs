@@ -18,9 +18,8 @@ export default defineConfig([
   },
   {
     input: "_dist/index.d.ts",
-    output: [{ file: "dist/index.d.ts", format: "es" }],
+    output: [{ file: "dist/index.d.ts", format: "es", sourcemap: true }],
     plugins: [nodeResolve(),dts()],
-    sourcemap: true,
   },
   {
     input: "_dist/jsx-runtime.js",
@@ -37,8 +36,7 @@ export default defineConfig([
   {
     input: "_dist/jsx-runtime.d.ts",
     external: ["./index"],
-    output: [{ file: "dist/jsx-runtime.d.ts", format: "es" }],
+    output: [{ file: "dist/jsx-runtime.d.ts", format: "es", sourcemap: true }],
     plugins: [dts()],
-    sourcemap: true,
   }
 ]);
