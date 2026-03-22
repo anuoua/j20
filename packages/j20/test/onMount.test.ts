@@ -30,7 +30,7 @@ describe("onMount", () => {
     document.body.appendChild(fragment);
 
     // onMount 使用 requestAnimationFrame，所以需要等待下一帧
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(mountSpy).toHaveBeenCalledTimes(1);
   });
@@ -53,7 +53,7 @@ describe("onMount", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(mountSpy).toHaveBeenCalledTimes(1);
 
@@ -82,7 +82,7 @@ describe("onMount", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(mountSpy).toHaveBeenCalledTimes(1);
 
@@ -111,7 +111,7 @@ describe("onMount", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(mountSpy).toHaveBeenCalledTimes(1);
 
@@ -144,7 +144,7 @@ describe("onMount", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(mountSpy1).toHaveBeenCalledTimes(1);
     expect(mountSpy2).toHaveBeenCalledTimes(1);
@@ -176,13 +176,12 @@ describe("onMount", () => {
     instanceDestroy(instance, instance);
 
     // 等待 requestAnimationFrame
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     // onMount 回调仍然应该被执行
     expect(mountSpy).toHaveBeenCalledTimes(1);
   });
 
-  
   it("应该在实际组件中正常工作", async () => {
     const mountSpy = vi.fn();
 
@@ -198,18 +197,17 @@ describe("onMount", () => {
       })();
     };
 
-    const root = createRoot(App);
-    document.body.appendChild(root.element);
+    const root = createRoot(App, document.body);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(mountSpy).toHaveBeenCalledTimes(1);
     expect(document.body.innerHTML).toContain("App Component");
 
     // 销毁组件不应该报错
     expect(() => {
-      instanceDestroy(root.instance, root.instance);
+      instanceDestroy(root, root);
     }).not.toThrow();
   });
 });

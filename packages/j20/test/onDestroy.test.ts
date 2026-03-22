@@ -32,7 +32,7 @@ describe("onDestroy", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(destroySpy).not.toHaveBeenCalled();
 
@@ -70,7 +70,7 @@ describe("onDestroy", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(destroySpy1).not.toHaveBeenCalled();
     expect(destroySpy2).not.toHaveBeenCalled();
@@ -118,7 +118,7 @@ describe("onDestroy", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(parentDestroySpy).not.toHaveBeenCalled();
     expect(childDestroySpy).not.toHaveBeenCalled();
@@ -153,7 +153,7 @@ describe("onDestroy", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(destroySpy).not.toHaveBeenCalled();
 
@@ -186,17 +186,16 @@ describe("onDestroy", () => {
       })();
     };
 
-    const root = createRoot(App);
-    document.body.appendChild(root.element);
+    const root = createRoot(App, document.body);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(destroySpy).not.toHaveBeenCalled();
     expect(document.body.innerHTML).toContain("App Component");
 
     // 销毁组件
-    instanceDestroy(root.instance, root.instance);
+    instanceDestroy(root, root);
 
     expect(destroySpy).toHaveBeenCalledTimes(1);
   });
@@ -219,7 +218,7 @@ describe("onDestroy", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(destroySpy).not.toHaveBeenCalled();
 
@@ -260,7 +259,7 @@ describe("onDestroy", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(mountSpy).toHaveBeenCalledTimes(1);
     expect(destroySpy).not.toHaveBeenCalled();
@@ -297,7 +296,7 @@ describe("onDestroy", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成和 effect 执行
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(effectSpy).toHaveBeenCalled();
     expect(destroySpy).not.toHaveBeenCalled();
@@ -333,7 +332,7 @@ describe("onDestroy", () => {
     document.body.appendChild(fragment);
 
     // 等待挂载完成
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(destroySpy).not.toHaveBeenCalled();
 
@@ -341,7 +340,7 @@ describe("onDestroy", () => {
     $count.value = 5;
 
     // 等待更新
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(destroySpy).not.toHaveBeenCalled();
 
