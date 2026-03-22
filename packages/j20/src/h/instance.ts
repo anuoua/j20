@@ -6,6 +6,7 @@ export interface Instance {
   parent?: Instance;
   id: string;
   range: Text[];
+  root?: Element;
   host?: Element;
   disposes?: (() => void)[];
   children?: Instance[];

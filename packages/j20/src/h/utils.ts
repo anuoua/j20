@@ -38,16 +38,8 @@ export const getChildren = (propChildren: any[]) => {
   return arr;
 };
 
-let overflow = "";
 let count = 0;
-
-export const generateId = () => {
-  if (count === Number.MAX_SAFE_INTEGER) {
-    overflow += count.toString(32);
-    count = 0;
-  }
-  return `${overflow}${(count++).toString(32)}`;
-};
+export const generateId = () => (++count).toString(32);
 
 export const styleObjectToString = (style: Record<string, string | number>) => {
   let styleString = "";
