@@ -8,6 +8,7 @@ export const sheet = (css?: string) => {
   let instance = getCurrentInstance();
   const sheet = new CSSStyleSheet();
   css && sheet.replaceSync(css);
+  let root: Element | undefined;
   while (instance) {
     if (instance.host) {
       (instance.host as WebComponentClass).addStyleSheet(sheet);
@@ -16,16 +17,36 @@ export const sheet = (css?: string) => {
       });
       break;
     }
+    if (instance.root) {
+      root = instance.root;
+      break;
+    }
     instance = instance?.parent;
   }
-  if (!instance) {
-    document.adoptedStyleSheets.push(sheet);
+
+  if (root) {
+    let node: any = root;
+
+    do {
+      if (node.shadowRoot) {
+        node = node.shadowRoot;
+        break;
+      }
+      if (node === document) {
+        break;
+      }
+      node = node.parentNode;
+    } while (node);
+
+    node.adoptedStyleSheets.push(sheet);
+
     onDestroy(() => {
-      document.adoptedStyleSheets = document.adoptedStyleSheets.filter(
-        (s) => s !== sheet
+      node.adoptedStyleSheets = node.adoptedStyleSheets.filter(
+        (s: CSSStyleSheet) => s !== sheet
       );
     });
   }
+
   return sheet;
 };
 
