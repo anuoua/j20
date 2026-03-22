@@ -28,8 +28,7 @@ export const sheet = (css?: string) => {
     let node: any = root;
 
     do {
-      if (node.shadowRoot) {
-        node = node.shadowRoot;
+      if (node instanceof ShadowRoot) {
         break;
       }
       if (node === document) {
