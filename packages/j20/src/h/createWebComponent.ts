@@ -6,7 +6,7 @@ import { BRAND } from "../brand";
 import { buildClass, WebComponentClass } from "../web-components";
 import { getChildren } from "./utils";
 
-export const hostStack: Element[] = [];
+export const hostStack: WebComponentClass[] = [];
 
 export const getCurrentHost = () => {
   return hostStack.at(-1);

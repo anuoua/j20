@@ -1,3 +1,4 @@
+import { WebComponentClass } from "../web-components";
 import { createDom } from "./createDom";
 import { getCurrentHost } from "./createWebComponent";
 import { generateId } from "./utils";
@@ -7,7 +8,7 @@ export interface Instance {
   id: string;
   range: Text[];
   root?: Element;
-  host?: Element;
+  host?: WebComponentClass;
   disposes?: (() => void)[];
   children?: Instance[];
   mounts?: (() => void)[];

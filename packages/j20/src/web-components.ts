@@ -5,6 +5,7 @@ import { getCurrentInstance, instanceCreate } from "./h/instance";
 import { SignalLike } from "./api/types";
 import { BRAND } from "./brand";
 import { hostStack } from "./h/createWebComponent";
+import { addStyleSheet, removeStyleSheet } from "./api/utils";
 
 export const registerWebComponent = <C extends WC<any, any>>(Comp: C) => {
   if (!Comp.customElement) {
@@ -27,9 +28,9 @@ export abstract class WebComponentClass extends HTMLElement {
     super();
   }
 
-  addStyleSheet(sheet: CSSStyleSheet) {}
+  addStyleSheet(styleSheet: CSSStyleSheet) {}
 
-  removeStyleSheet(sheet: CSSStyleSheet) {}
+  removeStyleSheet(styleSheet: CSSStyleSheet) {}
 }
 
 export const buildClass = (Comp: WC) => {
@@ -136,17 +137,12 @@ export const buildClass = (Comp: WC) => {
       }
     }
 
-    addStyleSheet(sheet: CSSStyleSheet) {
-      if (this.#shadow) {
-        this.#shadow.adoptedStyleSheets.push(sheet);
-      }
+    addStyleSheet(styleSheet: CSSStyleSheet) {
+      if (this.#shadow) addStyleSheet(this.#shadow, styleSheet);
     }
 
-    removeStyleSheet(sheet: CSSStyleSheet) {
-      if (this.#shadow) {
-        this.#shadow.adoptedStyleSheets =
-          this.#shadow.adoptedStyleSheets.filter((s) => s !== sheet);
-      }
+    removeStyleSheet(styleSheet: CSSStyleSheet) {
+      if (this.#shadow) removeStyleSheet(this.#shadow, styleSheet);
     }
 
     attributeChangedCallback(
