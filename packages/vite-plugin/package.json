@@ -17,17 +17,19 @@
   ],
   "author": "anuoua",
   "license": "MIT",
-  "peerDependencies": {
-    "vite": "^6.0.0"
+  "repository": {
+    "url": "git@github.com:anuoua/j20.git"
   },
   "dependencies": {
     "@j20org/jsx-transform": "workspace:*",
-    "signal-compiler": "^0.1.1"
+    "signal-compiler": "^0.1.3"
   },
   "devDependencies": {
     "rimraf": "^5.0.10",
     "rollup": "^4.53.3",
-    "rollup-plugin-dts": "^6.2.3"
+    "rollup-plugin-dts": "^6.2.3",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.1"
   },
   "publishConfig": {
     "access": "public"

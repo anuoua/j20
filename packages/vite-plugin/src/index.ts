@@ -1,21 +1,21 @@
 import { signalCompilerRollup } from "signal-compiler/rollup";
 import { j20JsxTransformRollup } from "@j20org/jsx-transform/rollup";
-import type { PluginOption } from "vite";
+import { type PluginOption } from "vite";
 
 export function j20({
   include = "src/**/*.{js,jsx,ts,tsx}",
-} = {}): PluginOption {
+} = {}): any {
   return [
     {
       name: "j20",
       config: () => {
         return {
-          esbuild: {
-            jsx: "preserve",
+          oxc: {
+            jsx: "preserve"
           },
         };
       },
-    },
+    } satisfies PluginOption,
     signalCompilerRollup({
       include,
       config: {
