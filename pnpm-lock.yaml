@@ -171,6 +171,9 @@ importers:
       rollup-plugin-dts:
         specifier: ^6.2.3
         version: 6.2.3(rollup@4.53.3)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
       vite:
         specifier: ^8.0.1
         version: 8.0.1(@types/node@24.3.0)(jiti@2.6.1)
