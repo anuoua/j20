@@ -6,6 +6,10 @@
     "build": "rimraf dist && tsc -p tsconfig.build.json && rollup -c rollup.config.mjs && rimraf _dist",
     "test": "vitest --run --disableConsoleIntercept"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:anuoua/j20.git"
+  },
   "author": "anuoua",
   "license": "MIT",
   "exports": {
