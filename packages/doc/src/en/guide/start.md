@@ -5,9 +5,9 @@ Use the `createRoot` method to create an application
 ```tsx
 import { createRoot } from "j20";
 
-const root = createRoot(() => <span>hello world</span>);
+const App = () => <span>hello world</span>
 
-document.querySelector("#root").append(root.element);
+createRoot(App, document.querySelector("#root"))
 ```
 
 ## Simple Component
