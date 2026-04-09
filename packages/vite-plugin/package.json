@@ -8,6 +8,10 @@
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json && rollup -c rollup.config.mjs && rimraf _dist"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:anuoua/j20.git"
+  },
   "keywords": [
     "vite",
     "plugin",
@@ -17,9 +21,6 @@
   ],
   "author": "anuoua",
   "license": "MIT",
-  "repository": {
-    "url": "git@github.com:anuoua/j20.git"
-  },
   "dependencies": {
     "@j20org/jsx-transform": "workspace:*",
     "signal-compiler": "^0.1.3"

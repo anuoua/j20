@@ -12,6 +12,8 @@
 - [onDestroy](#ondestroy)
 - [createContext](#createcontext)
 - [$useContext](#usecontext)
+- [createCss](#createcss)
+- [styleSheet](#stylesheet)
 
 ## signal
 
@@ -222,3 +224,11 @@ const countSignal = $($count); // 实际为 Signal<number>，IDE中类型为：S
 
 let $newCount = $(countSignal); // 实际为：Signal<number>，IDE中类型为：number
 ```
+
+## createCss
+
+查看 [样式 - createCss](/guide/style#createcss)
+
+## styleSheet
+
+查看 [样式 - styleSheet](/guide/style#stylesheet)

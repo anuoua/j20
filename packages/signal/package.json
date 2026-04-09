@@ -13,6 +13,10 @@
     "build": "rimraf dist && tsc -p tsconfig.build.json && rollup -c rollup.config.mjs && rimraf _dist",
     "test": "vitest --run --dom"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:anuoua/j20.git"
+  },
   "keywords": [
     "signal",
     "reactive",
