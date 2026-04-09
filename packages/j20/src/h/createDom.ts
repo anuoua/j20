@@ -1,5 +1,4 @@
-import { effect } from "../api/effect";
-import { add, getChildren, unset, update } from "./utils";
+import { getChildren, nodeAttributesEffect } from "./utils";
 
 export const createDom = (
   tag: HTMLElement | SVGElement,
@@ -8,28 +7,7 @@ export const createDom = (
 ) => {
   const node = tag;
 
-  let oldProps: any = {};
-
-  props &&
-    effect(() => {
-      const newProps = { ...props() };
-
-      const newKeys = Object.keys(newProps);
-      const oldKeys = Object.keys(oldProps);
-      const allKeys = new Set([...newKeys, ...oldKeys]);
-
-      for (const key of allKeys) {
-        oldKeys.includes(key)
-          ? newKeys.includes(key)
-            ? Object.is(oldProps[key], newProps[key])
-              ? null
-              : update(node, key, oldProps[key], newProps[key])
-            : unset(node, key, oldProps[key])
-          : add(node, key, newProps[key]);
-      }
-
-      oldProps = newProps;
-    });
+  props && nodeAttributesEffect(node, props);
 
   // 独立 wc 初始化
   (node as any).lazyInit?.();

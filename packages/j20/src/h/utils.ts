@@ -140,3 +140,27 @@ export const bindNode = (node: HTMLElement | SVGElement, props: () => any) => {
     oldProps = newProps;
   });
 };
+
+export const nodeAttributesEffect = (node: HTMLElement | SVGElement, propsFn: () => any) => {
+    let oldProps: any = {};
+
+    effect(() => {
+      const newProps = { ...propsFn() };
+
+      const newKeys = Object.keys(newProps);
+      const oldKeys = Object.keys(oldProps);
+      const allKeys = new Set([...newKeys, ...oldKeys]);
+
+      for (const key of allKeys) {
+        oldKeys.includes(key)
+          ? newKeys.includes(key)
+            ? Object.is(oldProps[key], newProps[key])
+              ? null
+              : update(node, key, oldProps[key], newProps[key])
+            : unset(node, key, oldProps[key])
+          : add(node, key, newProps[key]);
+      }
+
+      oldProps = newProps;
+    });
+}

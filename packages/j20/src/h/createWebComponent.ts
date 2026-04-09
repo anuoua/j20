@@ -4,7 +4,7 @@ import { WC } from "../types";
 import { untrack } from "../api/untrack";
 import { BRAND } from "../brand";
 import { buildClass, WebComponentClass } from "../web-components";
-import { getChildren } from "./utils";
+import { getChildren, nodeAttributesEffect } from "./utils";
 
 export const hostStack: Element[] = [];
 
@@ -37,6 +37,15 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
     let childrenGetter = () =>
       untrack(() => (props ? props().children : undefined));
 
+    let attributesGetter = () => {
+      const passin = props ? props() : {};
+      const attrs = Object.values(tag.customElement.props ?? {}).map((i: any) => i.attribute);
+      return attrs.reduce((pre, cur) => {
+        pre[cur] = passin[cur];
+        return pre;
+      }, {} as any)
+    };
+
     const ret: any = tag(
       computed(() => {
         const retProps = props ? props() : {};
@@ -55,6 +64,8 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
     } else {
       (el as any).appendToBody(getChildren([].concat(ret)));
     }
+
+    nodeAttributesEffect(el, attributesGetter);
 
     return el;
   };
