@@ -37,15 +37,6 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
     let childrenGetter = () =>
       untrack(() => (props ? props().children : undefined));
 
-    let attributesGetter = () => {
-      const passin = props ? props() : {};
-      const attrs = Object.values(tag.customElement.props ?? {}).map((i: any) => i.attribute);
-      return attrs.reduce((pre, cur) => {
-        pre[cur] = passin[cur];
-        return pre;
-      }, {} as any)
-    };
-
     const ret: any = tag(
       computed(() => {
         const retProps = props ? props() : {};
@@ -64,6 +55,18 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
     } else {
       (el as any).appendToBody(getChildren([].concat(ret)));
     }
+
+    let attributesGetter = () => {
+      const attrs = props ? props() : {};
+      const attrList = Object.values(tag.customElement.props ?? {}).map(
+        (i: any) => i.attribute
+      );
+      for (const attr of attrList) {
+        delete attrs[attr];
+      }
+      delete attrs.children;
+      return attrs;
+    };
 
     nodeAttributesEffect(el, attributesGetter);
 
