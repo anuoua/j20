@@ -190,7 +190,6 @@ declare global {
             [k: string]: boolean | undefined;
           }
         | undefined;
-      $ServerOnly?: boolean | undefined;
     }
     type Accessor<T> = () => T;
     interface Directives {}
