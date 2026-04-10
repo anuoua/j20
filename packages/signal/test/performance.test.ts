@@ -160,17 +160,11 @@ describe("Signal Performance", () => {
     // 验证依赖版本号被正确记录
     expect(eff._depVersions.size).toBe(2);
 
-    // 再次运行effect，依赖未变化
-    // 注意：这里只是验证版本号机制，实际effect不会重新运行
-    // 因为我们没有改变信号值
-
-    // 更新一个依赖
     a.value = 3;
 
-    // 验证effect运行两次
     expect(effectRunCount).toBe(2);
 
-    // 验证依赖版本号检查功能
-    expect(eff.hasDepsChanged()).toBe(true);
+    expect(eff._depVersions.size).toBe(2);
+    expect(eff.hasDepsChanged()).toBe(false);
   });
 });

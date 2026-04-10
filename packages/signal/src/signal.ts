@@ -68,17 +68,14 @@ class Signal<T> {
     if (!this._deps.has(reaction)) {
       this._deps.add(reaction);
 
-      // 维护反向依赖关系
       let reactions = depMap.get(this);
       if (!reactions) {
         reactions = new Set();
         depMap.set(this, reactions);
       }
       reactions.add(reaction);
-
-      // 在reaction中记录依赖
-      reaction.track(this);
     }
+    reaction.track(this);
   }
 }
 
@@ -114,8 +111,8 @@ class Computed<T> {
     if (currentReaction) {
       if (!this._deps.has(currentReaction)) {
         this._deps.add(currentReaction);
-        currentReaction.track(this);
       }
+      currentReaction.track(this);
     }
 
     return this._value;
@@ -168,6 +165,7 @@ class Computed<T> {
           if (reactions) {
             reactions.delete(this);
           }
+          source._deps.delete(this);
         }
       });
     }
@@ -217,6 +215,7 @@ class Computed<T> {
       if (reactions) {
         reactions.delete(this);
       }
+      source._deps.delete(this);
     });
 
     this.sources.clear();
@@ -260,6 +259,15 @@ class Effect {
       }
       this.cleanupFn = null;
     }
+
+    this._deps.forEach((dep) => {
+      const reactions = depMap.get(dep);
+      if (reactions) {
+        reactions.delete(this);
+      }
+    });
+    this._deps.clear();
+    this._depVersions.clear();
 
     // 执行effect并收集依赖
     const prevReaction = currentReaction;
