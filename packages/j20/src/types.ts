@@ -35,9 +35,28 @@ export type WC<
     }
 ) => JSX.Element);
 
+type InvalidClassNameChar =
+  | " "
+  | ";"
+  | ":"
+  | "{"
+  | "}"
+  | "\n"
+  | "\t"
+  | "("
+  | ")"
+  | ","
+  | '"'
+  | "'";
+
+type HasInvalidChar<S extends string> =
+  S extends `${string}${InvalidClassNameChar}${string}` ? true : false;
+
 export type ExtractClasses<T extends string> =
-  T extends `${string}.${infer Name} {${infer Body}${infer _Brace}${infer Rest}`
-    ? Name | ExtractClasses<Body> | ExtractClasses<Rest>
+  T extends `${infer _Before}.${infer Name} {${infer Body}${infer _Brace}${infer Rest}`
+    ? HasInvalidChar<Name> extends true
+      ? ExtractClasses<`${Name} {${Body}${_Brace}${Rest}`>
+      : Name | ExtractClasses<Body> | ExtractClasses<Rest>
     : T extends `${string}\n${infer Rest}`
       ? ExtractClasses<Rest>
       : never;
