@@ -11,7 +11,9 @@
   ],
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json && rollup -c rollup.config.mjs && rimraf _dist",
-    "test": "vitest --run --dom"
+    "test": "vitest --run --dom",
+    "bench": "tsx bench/run.ts",
+    "bench:compare": "tsx bench/compare.ts"
   },
   "repository": {
     "type": "git",
@@ -27,11 +29,11 @@
   "devDependencies": {
     "happy-dom": "^10.1.1",
     "rimraf": "^5.0.1",
-    "rollup-plugin-dts": "^6.2.3",
-    "typescript": "^5.1.6",
     "rollup": "^4.48.0",
+    "rollup-plugin-dts": "^6.2.3",
+    "tinybench": "^6.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.1.6",
     "vitest": "^0.33.0"
-  },
-  "dependencies": {
   }
 }
