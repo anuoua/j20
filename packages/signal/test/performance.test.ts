@@ -142,29 +142,23 @@ describe("Signal Performance", () => {
     expect((b as Computed<number>).version).toBe(1);
   });
 
-  it("should optimize effect dependency checking with versions", () => {
+  it("should correctly track effect dependencies after updates", () => {
     const a = signal(1);
     const b = signal(2);
     let effectRunCount = 0;
 
-    // 创建effect
     const eff = effect(() => {
       a.value;
       b.value;
       effectRunCount++;
     }) as Effect;
 
-    // 验证effect运行一次
     expect(effectRunCount).toBe(1);
-
-    // 验证依赖版本号被正确记录
-    expect(eff._depVersions.size).toBe(2);
+    expect(eff._deps.size).toBe(2);
 
     a.value = 3;
 
     expect(effectRunCount).toBe(2);
-
-    expect(eff._depVersions.size).toBe(2);
-    expect(eff.hasDepsChanged()).toBe(false);
+    expect(eff._deps.size).toBe(2);
   });
 });

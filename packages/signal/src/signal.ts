@@ -1,12 +1,8 @@
-// 当前正在执行的effect或computed
 let currentReaction: Reaction | null = null;
 
-// 批处理栈，用于延迟 effect 的执行
 let batchDepth: number = 0;
-// 待执行的 effect 队列
 let pendingEffects: Set<Effect> = new Set();
 
-// 存储所有信号的依赖关系
 const depMap = new WeakMap<
   Signal<unknown> | Computed<unknown>,
   Set<Reaction>
@@ -14,9 +10,6 @@ const depMap = new WeakMap<
 
 type Reaction = Effect | Computed<unknown>;
 
-/**
- * Signal类 - 用于存储响应式数据
- */
 class Signal<T> {
   readonly SIGNAL = true;
   private _value: T;
@@ -28,7 +21,6 @@ class Signal<T> {
   }
 
   get value(): T {
-    // 如果有当前正在执行的reaction，建立依赖关系
     if (currentReaction) {
       this.track(currentReaction);
     }
@@ -41,19 +33,16 @@ class Signal<T> {
     this._value = newValue;
     this._version++;
 
-    // 通知所有依赖项
-    this._deps.forEach((reaction) => {
+    if (this._deps.size === 0) return;
+    const deps = Array.from(this._deps);
+    deps.forEach((reaction) => {
       if (reaction instanceof Computed) {
         reaction.markDirty();
       } else if (reaction.isActive()) {
-        // 对于effect，使用版本检查优化
-        if (reaction._depVersions.has(this) || reaction.hasDepsChanged()) {
-          if (batchDepth > 0) {
-            // 在批处理模式下，延迟执行 effect
-            pendingEffects.add(reaction);
-          } else {
-            reaction.execute();
-          }
+        if (batchDepth > 0) {
+          pendingEffects.add(reaction);
+        } else {
+          reaction.execute();
         }
       }
     });
@@ -63,7 +52,6 @@ class Signal<T> {
     return this._version;
   }
 
-  // 建立依赖关系
   private track(reaction: Reaction): void {
     if (!this._deps.has(reaction)) {
       this._deps.add(reaction);
@@ -79,9 +67,6 @@ class Signal<T> {
   }
 }
 
-/**
- * Computed类 - 用于计算派生值
- */
 class Computed<T> {
   readonly SIGNAL = true;
   private computeFn: () => T;
@@ -94,7 +79,6 @@ class Computed<T> {
 
   constructor(computeFn: () => T) {
     this.computeFn = computeFn;
-    // 使用symbol作为初始值占位符
     this._value = undefined as unknown as T;
   }
 
@@ -107,7 +91,6 @@ class Computed<T> {
       this.compute();
     }
 
-    // 建立依赖关系
     if (currentReaction) {
       if (!this._deps.has(currentReaction)) {
         this._deps.add(currentReaction);
@@ -127,20 +110,17 @@ class Computed<T> {
       throw new Error("Cannot compute disposed computed");
     }
 
-    // 检查循环依赖
-    if (computationStack.includes(this)) {
+    if (computationStack.has(this)) {
       throw new Error("Circular dependency detected in computed values");
     }
 
     this.dirty = false;
 
-    // 保存当前状态
     const prevReaction = currentReaction;
     const prevSources = this.sources;
     this.sources = new Set();
 
-    // 将当前computed加入计算栈
-    computationStack.push(this);
+    computationStack.add(this);
     currentReaction = this;
 
     try {
@@ -150,15 +130,10 @@ class Computed<T> {
       this.dirty = true;
       throw e;
     } finally {
-      // 清理工作
-      const index = computationStack.indexOf(this);
-      if (index !== -1) {
-        computationStack.splice(index, 1);
-      }
+      computationStack.delete(this);
 
       currentReaction = prevReaction;
 
-      // 清理不再依赖的sources
       prevSources.forEach((source) => {
         if (!this.sources.has(source)) {
           const reactions = depMap.get(source);
@@ -175,13 +150,13 @@ class Computed<T> {
     if (this.disposed || this.dirty) return;
     this.dirty = true;
 
-    // 通知依赖项
-    this._deps.forEach((reaction) => {
+    if (this._deps.size === 0) return;
+    const deps = Array.from(this._deps);
+    deps.forEach((reaction) => {
       if (reaction instanceof Computed) {
         reaction.markDirty();
       } else if (reaction.isActive()) {
         if (batchDepth > 0) {
-          // 在批处理模式下，延迟执行 effect
           pendingEffects.add(reaction);
         } else {
           reaction.execute();
@@ -192,24 +167,13 @@ class Computed<T> {
 
   track(source: Signal<unknown> | Computed<unknown>): void {
     if (this.disposed) return;
-
-    if (!this.sources.has(source)) {
-      this.sources.add(source);
-
-      let reactions = depMap.get(source);
-      if (!reactions) {
-        reactions = new Set();
-        depMap.set(source, reactions);
-      }
-      reactions.add(this);
-    }
+    this.sources.add(source);
   }
 
   dispose(): void {
     if (this.disposed) return;
     this.disposed = true;
 
-    // 清理所有依赖关系
     this.sources.forEach((source) => {
       const reactions = depMap.get(source);
       if (reactions) {
@@ -221,27 +185,18 @@ class Computed<T> {
     this.sources.clear();
     this._deps.clear();
 
-    // 清理引用
     this._value = undefined as unknown as T;
     this.computeFn = undefined as unknown as () => T;
   }
 }
 
-// 用于检测循环依赖
-const computationStack: Computed<unknown>[] = [];
+const computationStack = new Set<Computed<unknown>>();
 
-/**
- * Effect类 - 用于执行副作用
- */
 class Effect {
   private effectFn: () => void | (() => void);
   private cleanupFn: (() => void) | null = null;
   public disposed: boolean = false;
   public readonly _deps: Set<Signal<unknown> | Computed<unknown>> = new Set();
-  public readonly _depVersions: Map<
-    Signal<unknown> | Computed<unknown>,
-    number
-  > = new Map();
 
   constructor(effectFn: () => void | (() => void)) {
     this.effectFn = effectFn;
@@ -250,7 +205,6 @@ class Effect {
   execute(): void {
     if (this.disposed) return;
 
-    // 执行清理函数
     if (this.cleanupFn) {
       try {
         this.cleanupFn();
@@ -265,11 +219,10 @@ class Effect {
       if (reactions) {
         reactions.delete(this);
       }
+      dep._deps.delete(this);
     });
     this._deps.clear();
-    this._depVersions.clear();
 
-    // 执行effect并收集依赖
     const prevReaction = currentReaction;
     currentReaction = this;
 
@@ -287,18 +240,16 @@ class Effect {
     if (this.disposed) return;
     this.disposed = true;
 
-    // 清理所有依赖关系
     this._deps.forEach((dep) => {
       const reactions = depMap.get(dep);
       if (reactions) {
         reactions.delete(this);
       }
+      dep._deps.delete(this);
     });
 
     this._deps.clear();
-    this._depVersions.clear();
 
-    // 执行清理函数
     if (this.cleanupFn) {
       try {
         this.cleanupFn();
@@ -315,52 +266,24 @@ class Effect {
 
   track(source: Signal<unknown> | Computed<unknown>): void {
     if (this.disposed) return;
-
-    if (!this._deps.has(source)) {
-      this._deps.add(source);
-
-      // 记录依赖的版本号
-      if ("version" in source) {
-        this._depVersions.set(source, source.version);
-      }
-
-      let reactions = depMap.get(source);
-      if (!reactions) {
-        reactions = new Set();
-        depMap.set(source, reactions);
-      }
-      reactions.add(this);
-    }
-  }
-
-  hasDepsChanged(): boolean {
-    for (const [dep, version] of this._depVersions) {
-      if ("version" in dep && dep.version !== version) {
-        return true;
-      }
-    }
-    return false;
+    this._deps.add(source);
   }
 }
 
-// 创建信号
 function signal<T>(initialValue: T): Signal<T> {
   return new Signal(initialValue);
 }
 
-// 创建计算值
 function computed<T>(computeFn: () => T): Computed<T> {
   return new Computed(computeFn);
 }
 
-// 创建副作用
 function effect(effectFn: () => void | (() => void)): Effect {
   const effectInstance = new Effect(effectFn);
   effectInstance.execute();
   return effectInstance;
 }
 
-// 临时取消追踪
 function untrack<T>(fn: () => T): T {
   const prevReaction = currentReaction;
   currentReaction = null;
@@ -372,7 +295,6 @@ function untrack<T>(fn: () => T): T {
   }
 }
 
-// 批处理 - 延迟 effect 的执行直到批处理结束
 function batch<T>(fn: () => T): T {
   batchDepth++;
 
@@ -381,20 +303,21 @@ function batch<T>(fn: () => T): T {
   } finally {
     batchDepth--;
 
-    // 当批处理结束时，执行所有待处理的 effect
     if (batchDepth === 0) {
       const effects = Array.from(pendingEffects);
       pendingEffects.clear();
 
-      // 执行所有待处理的 effect
       effects.forEach((effect) => {
         if (effect.isActive()) {
-          effect.execute();
+          try {
+            effect.execute();
+          } catch (e) {
+            console.error(e);
+          }
         }
       });
     }
   }
 }
 
-// 导出所有API
 export { signal, computed, effect, untrack, batch, Signal, Computed, Effect };

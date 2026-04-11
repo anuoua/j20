@@ -110,26 +110,19 @@ describe("Signal System", () => {
     expect(lastDValue).toBe(14);
   });
 
-  it("should track effect dependencies with version numbers", () => {
+  it("should track effect dependencies correctly", () => {
     const count = signal(0);
     let effectRunCount = 0;
 
     const eff = effect(() => {
-      // 访问信号但不使用其值
       count.value;
       effectRunCount++;
     }) as Effect;
 
-    // 验证effect运行一次
     expect(effectRunCount).toBe(1);
+    expect(eff._deps.size).toBe(1);
 
-    // 验证依赖版本号被正确记录
-    expect(eff._depVersions.size).toBe(1);
-
-    // 更新信号值
     count.value = 1;
-
-    // 验证effect运行两次
     expect(effectRunCount).toBe(2);
   });
 
@@ -473,5 +466,82 @@ describe("Signal System", () => {
       // 即使 batch 中抛出错误，effect 仍然应该执行
       expect(countEffectRunCount).toBe(2);
     });
+
+    it("should continue executing effects even when one throws", () => {
+      const a = signal(0);
+      const b = signal(0);
+      let effectARunCount = 0;
+      let effectBRunCount = 0;
+
+      effect(() => {
+        a.value;
+        effectARunCount++;
+      });
+
+      effect(() => {
+        b.value;
+        if (b.value > 0) {
+          throw new Error("effect B error");
+        }
+        effectBRunCount++;
+      });
+
+      expect(effectARunCount).toBe(1);
+      expect(effectBRunCount).toBe(1);
+
+      batch(() => {
+        a.value = 1;
+        b.value = 1;
+      });
+
+      expect(effectARunCount).toBe(2);
+      expect(effectBRunCount).toBe(1);
+    });
+  });
+
+  it("should handle conditional dependency switching correctly", () => {
+    const flag = signal(true);
+    const a = signal(1);
+    const b = signal(10);
+    let effectRunCount = 0;
+    let lastValue = 0;
+
+    effect(() => {
+      lastValue = flag.value ? a.value : b.value;
+      effectRunCount++;
+    });
+
+    expect(effectRunCount).toBe(1);
+    expect(lastValue).toBe(1);
+
+    a.value = 2;
+    expect(effectRunCount).toBe(2);
+    expect(lastValue).toBe(2);
+
+    flag.value = false;
+    expect(effectRunCount).toBe(3);
+    expect(lastValue).toBe(10);
+
+    a.value = 100;
+    expect(effectRunCount).toBe(3);
+
+    b.value = 20;
+    expect(effectRunCount).toBe(4);
+    expect(lastValue).toBe(20);
+  });
+
+  it("should throw on circular computed dependency", () => {
+    const s = signal(0);
+    const c = computed(() => {
+      const v = s.value;
+      if (v === 0) {
+        s.value = 1;
+      }
+      return (c as unknown as Computed<number>).value;
+    });
+
+    expect(() => c.value).toThrow(
+      "Circular dependency detected in computed values"
+    );
   });
 });
