@@ -103,29 +103,6 @@ const App = () => {
 - **id** (`string`): A unique identifier for the stylesheet, used for reference counting and deduplication
 - **css** (`string`, optional): CSS text content. If not provided, an empty stylesheet is created
 
-### Getting the CSSStyleSheet Instance
-
-`styleSheet` returns a `CSSStyleSheet` instance for further manipulation.
-
-```tsx
-import { styleSheet } from "j20";
-
-const App = () => {
-  const sheet = styleSheet(
-    "dynamic-style",
-    `
-    .dynamic { color: blue; }
-  `
-  );
-
-  // sheet is a CSSStyleSheet instance
-  // You can use CSSStyleSheet APIs to dynamically modify rules
-  sheet.insertRule(".new-rule { color: green; }", sheet.cssRules.length);
-
-  return <div class="dynamic">Hello J20</div>;
-};
-```
-
 ### Auto-mounting and Cleanup
 
 `styleSheet` automatically detects the current component's runtime environment:

@@ -103,29 +103,6 @@ const App = () => {
 - **id** (`string`)：样式表的唯一标识，用于引用计数和去重
 - **css** (`string`, 可选)：CSS 文本内容，如果不提供则创建空的样式表
 
-### 获取 CSSStyleSheet 实例
-
-`styleSheet` 返回 `CSSStyleSheet` 实例，可以用于进一步操作。
-
-```tsx
-import { styleSheet } from "j20";
-
-const App = () => {
-  const sheet = styleSheet(
-    "dynamic-style",
-    `
-    .dynamic { color: blue; }
-  `
-  );
-
-  // sheet 是 CSSStyleSheet 实例
-  // 可以使用 CSSStyleSheet API 动态修改规则
-  sheet.insertRule(".new-rule { color: green; }", sheet.cssRules.length);
-
-  return <div class="dynamic">Hello J20</div>;
-};
-```
-
 ### 自动挂载与清理
 
 `styleSheet` 会自动检测当前组件的运行环境：
