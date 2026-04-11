@@ -2,7 +2,7 @@ import { getCurrentInstance } from "../h/instance";
 import { ExtractClasses } from "../types";
 import { WebComponentClass } from "../web-components";
 import { onDestroy } from "./onDestroy";
-import { addStyleSheet, removeStyleSheet } from "./utils";
+import { addStyleSheet, createStyleSheet, removeStyleSheet } from "./utils";
 
 let count = BigInt(0);
 
@@ -10,30 +10,30 @@ const getId = () => (++count).toString(32);
 
 const refWeakMap = new WeakMap<
   WebComponentClass,
-  { id: string; refCount: number }[]
+  { id: string; refCount: number; styleSheet: CSSStyleSheet }[]
 >();
 
 export const createCss = <T extends string>(css: T) => {
   const id = getId();
 
   return () => {
-    const styleId = id;
+    const classNameId = `j_${id}`;
     const replacedCss = css.replace(
       /\.(\w[\w-]*)\s*?\{/g,
       (_: string, className: string) => {
-        return `.${className}_${styleId} {`;
+        return `.${className}_${classNameId} {`;
       }
     );
     styleSheet(id, replacedCss);
     return new Proxy({} as any, {
       get: (_, prop: string) => {
-        return `${prop}_${styleId}`;
+        return `${prop}_${classNameId}`;
       },
     }) as { [K in ExtractClasses<T>]: string };
   };
 };
 
-const addReference = (host: WebComponentClass, id: string, add: () => void) => {
+const addReference = (host: WebComponentClass, id: string, css: string) => {
   if (!refWeakMap.get(host)) {
     refWeakMap.set(host, []);
   }
@@ -43,24 +43,19 @@ const addReference = (host: WebComponentClass, id: string, add: () => void) => {
   const state = states.find((state) => state.id === id);
 
   if (!state) {
-    refWeakMap.set(host, [
-      ...states,
-      {
-        id,
-        refCount: 1,
-      },
-    ]);
-    add();
+    const newState = {
+      id,
+      refCount: 1,
+      styleSheet: createStyleSheet(css),
+    };
+    refWeakMap.set(host, [...states, newState]);
+    addStyleSheet(host, newState.styleSheet);
   } else {
     state.refCount++;
   }
 };
 
-const removeReference = (
-  host: WebComponentClass,
-  id: string,
-  remove: () => void
-) => {
+const removeReference = (host: WebComponentClass, id: string) => {
   const states = refWeakMap.get(host) ?? [];
 
   const state = states.find((state) => state.id === id);
@@ -69,30 +64,26 @@ const removeReference = (
     state.refCount--;
 
     if (state.refCount === 0) {
-      remove();
       refWeakMap.set(
         host,
         states.filter((state) => state.id !== id)
       );
+      removeStyleSheet(host, state.styleSheet);
     }
   }
 };
 
-export const styleSheet = (id: string, css?: string) => {
+export const styleSheet = (id: string, css: string) => {
   let instance = getCurrentInstance();
-  const sheet = new CSSStyleSheet();
-  css && sheet.replaceSync(css);
   let root: Element | undefined;
   while (instance) {
     if (instance.host) {
       const host = instance.host;
 
-      addReference(host, id, () => {
-        host.addStyleSheet(sheet);
-      });
+      addReference(host, id, css);
 
       onDestroy(() => {
-        removeReference(host, id, () => host.removeStyleSheet(sheet));
+        removeReference(host, id);
       });
 
       break;
@@ -114,16 +105,10 @@ export const styleSheet = (id: string, css?: string) => {
       node = node.parentNode;
     } while (node);
 
-    addReference(node, id, () => {
-      addStyleSheet(node, sheet);
-    });
+    addReference(node, id, css);
 
     onDestroy(() => {
-      removeReference(node, id, () => {
-        removeStyleSheet(node, sheet);
-      });
+      removeReference(node, id);
     });
   }
-
-  return sheet;
 };
