@@ -1,14 +1,13 @@
 import { WebComponentClass } from "../web-components";
 import { createDom } from "./createDom";
-import { getCurrentHost } from "./createWebComponent";
+import { getCurrentHost, hostStack } from "./createWebComponent";
 import { generateId } from "./utils";
 
 export interface Instance {
   parent?: Instance;
   id: string;
   range: Text[];
-  root?: Element;
-  host?: WebComponentClass;
+  host: WebComponentClass | Document | ShadowRoot;
   disposes?: (() => void)[];
   children?: Instance[];
   mounts?: (() => void)[];
@@ -31,7 +30,7 @@ export const instanceInit = (parent?: Instance) => {
   const instance: Instance = {
     parent: parentInstance,
     id,
-    host: getCurrentHost(),
+    host: getCurrentHost()!,
     range: [document.createTextNode(""), document.createTextNode("")],
   };
 
@@ -80,8 +79,11 @@ export const instanceCreateElement = (
 };
 
 export const instanceCreate = (runner: () => any, parent?: Instance) => {
+  parent && hostStack.push(parent.host);
   const instance = instanceInit(parent);
-  return [instance, instanceCreateElement(instance, runner)] as const;
+  const result = [instance, instanceCreateElement(instance, runner)] as const;
+  parent && hostStack.pop();
+  return result;
 };
 
 export const instanceGetElements = (instance: Instance) => {

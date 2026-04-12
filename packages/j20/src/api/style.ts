@@ -1,22 +1,24 @@
-import { getCurrentInstance } from "../h/instance";
+import { getCurrentHost } from "../h/createWebComponent";
 import { ExtractClasses } from "../types";
 import { WebComponentClass } from "../web-components";
 import { onDestroy } from "./onDestroy";
-import { addStyleSheet, createStyleSheet, removeStyleSheet } from "./utils";
-
-let count = BigInt(0);
-
-const getId = () => (++count).toString(32);
+import {
+  addStyleSheet,
+  createStyleSheet,
+  cssHash,
+  removeStyleSheet,
+} from "./utils";
 
 const refWeakMap = new WeakMap<
-  WebComponentClass,
+  WebComponentClass | Document | ShadowRoot,
   { id: string; refCount: number; styleSheet: CSSStyleSheet }[]
 >();
 
 export const createCss = <T extends string>(css: T) => {
-  const id = getId();
+  let id: string = undefined!;
 
   return () => {
+    if (!id) id = cssHash(css);
     const classNameId = `j_${id}`;
     const replacedCss = css.replace(
       /\.(\w[\w-]*)\s*?\{/g,
@@ -24,7 +26,7 @@ export const createCss = <T extends string>(css: T) => {
         return `.${className}_${classNameId} {`;
       }
     );
-    styleSheet(id, replacedCss);
+    styleSheet(replacedCss, id);
     return new Proxy({} as any, {
       get: (_, prop: string) => {
         return `${prop}_${classNameId}`;
@@ -33,7 +35,11 @@ export const createCss = <T extends string>(css: T) => {
   };
 };
 
-const addReference = (host: WebComponentClass, id: string, css: string) => {
+const addReference = (
+  host: WebComponentClass | Document | ShadowRoot,
+  id: string,
+  css: string
+) => {
   if (!refWeakMap.get(host)) {
     refWeakMap.set(host, []);
   }
@@ -55,7 +61,10 @@ const addReference = (host: WebComponentClass, id: string, css: string) => {
   }
 };
 
-const removeReference = (host: WebComponentClass, id: string) => {
+const removeReference = (
+  host: WebComponentClass | Document | ShadowRoot,
+  id: string
+) => {
   const states = refWeakMap.get(host) ?? [];
 
   const state = states.find((state) => state.id === id);
@@ -73,42 +82,15 @@ const removeReference = (host: WebComponentClass, id: string) => {
   }
 };
 
-export const styleSheet = (id: string, css: string) => {
-  let instance = getCurrentInstance();
-  let root: Element | undefined;
-  while (instance) {
-    if (instance.host) {
-      const host = instance.host;
+export const styleSheet = (css: string, id?: string) => {
+  const cssId = id ?? cssHash(css);
+  const host = getCurrentHost();
 
-      addReference(host, id, css);
+  if (!host) throw new Error("host not found");
 
-      onDestroy(() => {
-        removeReference(host, id);
-      });
+  addReference(host, cssId, css);
 
-      break;
-    }
-    if (instance.root) {
-      root = instance.root;
-      break;
-    }
-    instance = instance?.parent;
-  }
-
-  if (root) {
-    let node: any = root;
-
-    do {
-      if (node instanceof ShadowRoot || node === document) {
-        break;
-      }
-      node = node.parentNode;
-    } while (node);
-
-    addReference(node, id, css);
-
-    onDestroy(() => {
-      removeReference(node, id);
-    });
-  }
+  onDestroy(() => {
+    removeReference(host, cssId);
+  });
 };
