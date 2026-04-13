@@ -1,4 +1,5 @@
 export type * from "../jsx";
+export { cssHash } from "./api/utils";
 export * from "./api/signal";
 export * from "./api/batch";
 export * from "./api/computed";
