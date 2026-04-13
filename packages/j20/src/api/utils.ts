@@ -38,12 +38,11 @@ export const removeStyleSheet = (
   }
 };
 
-// fnv1a
+// djb2 hash
 export const cssHash = (str: string) => {
-  let h = 0x811c9dc5;
+  let h = 5381;
   for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h, 0x01000193);
+    h = (h * 33) ^ str.charCodeAt(i);
   }
-  return (h >>> 0).toString(36);
+  return (h >>> 0).toString(36); // 转为短字符串
 };
