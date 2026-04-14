@@ -88,57 +88,45 @@ const styles = createCssModule(`
   }
 `);
 
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-}
-
-let $todos = [
-  { id: 1, text: "学习j20框架", completed: false },
-  { id: 2, text: "创建todolist应用", completed: false },
-  { id: 3, text: "享受编程乐趣", completed: true },
-];
-
-const addTodo = (text: string) => {
-  if (text.trim() === "") return;
-
-  $todos = [
-    ...$todos,
-    {
-      id: Date.now(),
-      text: text.trim(),
-      completed: false,
-    },
-  ];
-};
-
-const deleteTodo = (id: number) => {
-  $todos = $todos.filter((todo) => todo.id !== id);
-};
-
-const toggleTodo = (id: number) => {
-  $todos = $todos.map((todo) =>
-    todo.id === id ? { ...todo, completed: !todo.completed } : todo
-  );
-};
-
-const clearCompleted = () => {
-  $todos = $todos.filter((todo) => !todo.completed);
-};
-
-const $activeCount = $todos.filter((todo) => !todo.completed).length;
-
 export const App = () => {
-  let $newTodoText = "";
-
   const cns = styles();
 
-  const handleAddTodo = (e: Event & { target: HTMLInputElement }) => {
-    addTodo(e.target.value);
-    e.target.value = "";
-    $newTodoText = "";
+  let $newTodoText = "";
+
+  let $todos = [
+    { id: 1, text: "学习j20框架", completed: false },
+    { id: 2, text: "创建todolist应用", completed: false },
+    { id: 3, text: "享受编程乐趣", completed: true },
+  ];
+
+  const addTodo = (text: string) => {
+    if (text.trim() === "") return;
+
+    $todos = [
+      ...$todos,
+      {
+        id: Date.now(),
+        text: text.trim(),
+        completed: false,
+      },
+    ];
   };
+
+  const deleteTodo = (id: number) => {
+    $todos = $todos.filter((todo) => todo.id !== id);
+  };
+
+  const toggleTodo = (id: number) => {
+    $todos = $todos.map((todo) =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    );
+  };
+
+  const clearCompleted = () => {
+    $todos = $todos.filter((todo) => !todo.completed);
+  };
+
+  const $activeCount = $todos.filter((todo) => !todo.completed).length;
 
   return (
     <div class={cns.main}>
