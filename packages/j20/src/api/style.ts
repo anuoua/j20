@@ -9,27 +9,43 @@ import {
   removeStyleSheet,
 } from "./utils";
 
-const refWeakMap = new WeakMap<
-  WebComponentClass | Document | ShadowRoot,
-  { id: string; refCount: number; styleSheet: CSSStyleSheet }[]
->();
+function replaceTopLevelSelectors(css: string, id: string) {
+  let depth = 0;
+  let result = "";
+  let lastSlice = 0;
+  for (let i = 0; i < css.length; i++) {
+    if (css[i] === "{") {
+      if (depth === 0) {
+        result +=
+          css
+            .slice(lastSlice, i)
+            .replace(/\.(\w[\w-]*)/g, (_, name) => `.${name}_${id}`) + "{";
+        lastSlice = i + 1;
+      }
+      depth++;
+    } else if (css[i] === "}") {
+      depth--;
+      if (depth === 0) {
+        result += css.slice(lastSlice, i + 1);
+        lastSlice = i + 1;
+      }
+    }
+  }
+  result += css.slice(lastSlice);
+  return result;
+}
 
-export const createCss = <T extends string>(css: T) => {
-  let id: string = undefined!;
+export const createCssModule = <T extends string>(css: T) => {
+  let hash: string = undefined!;
+  let replacedCss: string = undefined!;
 
   return () => {
-    if (!id) id = cssHash(css);
-    const classNameId = `j_${id}`;
-    const replacedCss = css.replace(
-      /\.(\w[\w-]*)\s*?\{/g,
-      (_: string, className: string) => {
-        return `.${className}_${classNameId} {`;
-      }
-    );
-    styleSheet(replacedCss, id);
+    if (!hash) hash = cssHash(css);
+    if (!replacedCss) replacedCss = replaceTopLevelSelectors(css, hash);
+    styleSheet(replacedCss, hash);
     return new Proxy({} as any, {
       get: (_, prop: string) => {
-        return `${prop}_${classNameId}`;
+        return `${prop}_${hash}`;
       },
     }) as { [K in ExtractClasses<T>]: string };
   };
@@ -40,24 +56,14 @@ const addReference = (
   id: string,
   css: string
 ) => {
-  if (!refWeakMap.get(host)) {
-    refWeakMap.set(host, []);
-  }
-
-  const states = refWeakMap.get(host) ?? [];
-
-  const state = states.find((state) => state.id === id);
-
-  if (!state) {
-    const newState = {
-      id,
-      refCount: 1,
-      styleSheet: createStyleSheet(css),
-    };
-    refWeakMap.set(host, [...states, newState]);
-    addStyleSheet(host, newState.styleSheet);
+  const currentSheet = (host as any)[id] as any;
+  if (!currentSheet) {
+    const sheet = createStyleSheet(css);
+    (sheet as any).refCount = 1;
+    (host as any)[id] = sheet;
+    addStyleSheet(host, sheet);
   } else {
-    state.refCount++;
+    currentSheet.refCount++;
   }
 };
 
@@ -65,19 +71,15 @@ const removeReference = (
   host: WebComponentClass | Document | ShadowRoot,
   id: string
 ) => {
-  const states = refWeakMap.get(host) ?? [];
+  const currentSheet = (host as any)[id] as any;
 
-  const state = states.find((state) => state.id === id);
+  if (currentSheet) {
+    currentSheet.refCount--;
 
-  if (state) {
-    state.refCount--;
-
-    if (state.refCount === 0) {
-      refWeakMap.set(
-        host,
-        states.filter((state) => state.id !== id)
-      );
-      removeStyleSheet(host, state.styleSheet);
+    if (currentSheet.refCount === 0) {
+      removeStyleSheet(host, currentSheet);
+      delete (currentSheet as any).refCount;
+      delete (host as any)[id];
     }
   }
 };
