@@ -1,4 +1,4 @@
-import { createCss } from "j20";
+import { createCssModule } from "j20";
 
 interface TodoItemProps {
   text: string;
@@ -7,7 +7,7 @@ interface TodoItemProps {
   onDelete?: () => void;
 }
 
-const css = createCss(`
+const styles = createCssModule(`
   .item {
     display: flex;
     align-items: center;
@@ -71,7 +71,7 @@ export const TodoItem = ($props: TodoItemProps) => {
     onDelete: $onDelete = () => {},
   } = $props;
 
-  const cns = css();
+  const cns = styles();
 
   return (
     <div class={cns.item}>

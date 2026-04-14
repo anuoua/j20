@@ -1,7 +1,7 @@
-import { createCss, For } from "j20";
+import { createCssModule, For } from "j20";
 import { TodoItem } from "./TodoItem";
 
-const css = createCss(`
+const styles = createCssModule(`
   .main {
     max-width: 28rem;
     margin-left: auto;
@@ -132,7 +132,7 @@ const $activeCount = $todos.filter((todo) => !todo.completed).length;
 export const App = () => {
   let $newTodoText = "";
 
-  const cns = css();
+  const cns = styles();
 
   const handleAddTodo = (e: Event & { target: HTMLInputElement }) => {
     addTodo(e.target.value);
