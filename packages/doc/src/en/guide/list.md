@@ -21,7 +21,7 @@ let $todos = [{ id: 1, text: 'todo1' }, { id: 2, text: 'todo2' }]
 
 ## Important Concepts
 
-- **trait**: Determines uniqueness (similar to `key` in other frameworks). If not passed, uniqueness is based on the list item itself - i.e., trait defaults to `i => i`
+- **trait**: Determines uniqueness (similar to `key` in other frameworks). Generally it can be omitted, in which case uniqueness is based on the list item itself - i.e., trait defaults to `i => i`. Note: a change in trait value is the only trigger for item updates
 - **todo**: Not a signal - array items are immutable
 - **$index**: Is a signal - changes as items are added/removed from the array
 
