@@ -12,7 +12,7 @@
 - [onDestroy](#ondestroy)
 - [createContext](#createcontext)
 - [$useContext](#usecontext)
-- [createCss](#createcss)
+- [createCssModule](#createcssModule)
 - [styleSheet](#stylesheet)
 
 ## signal
@@ -225,9 +225,9 @@ const countSignal = $($count); // Actually Signal<number>, type in IDE: Signal<n
 let $newCount = $(countSignal); // Actually Signal<number>, type in IDE: number
 ```
 
-## createCss
+## createCssModule
 
-See [Style - createCss](/en/guide/style#createcss)
+See [Style - createCssModule](/en/guide/style#createcssmodule)
 
 ## styleSheet
 

@@ -1,17 +1,17 @@
 # 样式
 
-J20 提供了 `createCss` 和 `styleSheet` 两个 API 来管理组件样式，基于 [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet) 实现，具有高性能和作用域隔离的特点。
+J20 提供了 `createCssModule` 和 `styleSheet` 两个 API 来管理组件样式，基于 [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet) 实现，具有高性能和作用域隔离的特点。
 
-## createCss
+## createCssModule
 
-`createCss` 用于创建带有作用域隔离的 CSS 样式，自动为类名添加唯一后缀，避免样式冲突。
+`createCssModule` 用于创建带有作用域隔离的 CSS 样式，自动为类名添加唯一后缀，避免样式冲突。
 
 ### 基本用法
 
 ```tsx
-import { createCss } from "j20";
+import { createCssModule } from "j20";
 
-const useStyles = createCss(`
+const useStyles = createCssModule(`
   .container {
     color: red;
     font-size: 16px;
@@ -34,7 +34,7 @@ const App = () => {
 
 ### 工作原理
 
-`createCss` 接收一段 CSS 字符串，返回一个函数。调用该函数时：
+`createCssModule` 接收一段 CSS 字符串，返回一个函数。调用该函数时：
 
 1. 自动为 CSS 中的每个类名添加唯一后缀（如 `.container` 变为 `.container_abc123`），实现作用域隔离
 2. 将处理后的样式注入到当前组件所在的 Shadow Root 或 Document 中
@@ -42,12 +42,12 @@ const App = () => {
 
 ### 在多个组件中复用
 
-`createCss` 返回的函数可以在多个组件中调用，样式只会被注入一次（通过引用计数管理），组件销毁时自动清理。
+`createCssModule` 返回的函数可以在多个组件中调用，样式只会被注入一次（通过引用计数管理），组件销毁时自动清理。
 
 ```tsx
-import { createCss } from "j20";
+import { createCssModule } from "j20";
 
-const useStyles = createCss(`
+const useStyles = createCssModule(`
   .btn {
     padding: 8px 16px;
     border-radius: 4px;
@@ -86,12 +86,11 @@ const SecondaryButton = () => {
 import { styleSheet } from "j20";
 
 const App = () => {
-  styleSheet(
-    "my-global-style",
-    `
+  styleSheet(`
     div { box-sizing: border-box; }
     body { margin: 0; }
-  `
+  `,
+  "my-global-style" // 可选
   );
 
   return <div>Hello J20</div>;
@@ -100,8 +99,8 @@ const App = () => {
 
 ### 参数说明
 
-- **id** (`string`)：样式表的唯一标识，用于引用计数和去重
-- **css** (`string`, 可选)：CSS 文本内容，如果不提供则创建空的样式表
+- **css** (`string`)：CSS 文本内容
+- **id** (`string`, 可选)：样式表的唯一标识，用于引用计数和去重
 
 ### 自动挂载与清理
 
@@ -113,7 +112,7 @@ const App = () => {
 
 ## 与 Web Component 样式的关系
 
-除了使用 `createCss` 和 `styleSheet`，Web Component 还支持通过 `customElement.style` 配置静态样式，详见 [Web Component](/guide/web-component)。
+除了使用 `createCssModule` 和 `styleSheet`，Web Component 还支持通过 `customElement.style` 配置静态样式，详见 [Web Component](/guide/web-component)。
 
 ```tsx
 import { WC } from "j20";
@@ -138,5 +137,5 @@ App.customElement = {
 | 方案                  | 适用场景                     | 作用域隔离      |
 | --------------------- | ---------------------------- | --------------- |
 | `customElement.style` | Web Component 专属样式       | Shadow DOM 隔离 |
-| `createCss`           | 跨组件复用的样式，需要隔离   | 类名后缀隔离    |
+| `createCssModule`           | 跨组件复用的样式，需要隔离   | 类名后缀隔离    |
 | `styleSheet`          | 全局样式或需要动态操作的样式 | 无隔离          |

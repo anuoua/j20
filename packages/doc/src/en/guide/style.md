@@ -1,17 +1,17 @@
 # Style
 
-J20 provides two APIs for managing component styles: `createCss` and `styleSheet`. Both are built on [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet) for high performance and scoped style isolation.
+J20 provides two APIs for managing component styles: `createCssModule` and `styleSheet`. Both are built on [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet) for high performance and scoped style isolation.
 
-## createCss
+## createCssModule
 
-`createCss` creates CSS with scoped class names by automatically appending unique suffixes, preventing style collisions.
+`createCssModule` creates CSS with scoped class names by automatically appending unique suffixes, preventing style collisions.
 
 ### Basic Usage
 
 ```tsx
-import { createCss } from "j20";
+import { createCssModule } from "j20";
 
-const useStyles = createCss(`
+const useStyles = createCssModule(`
   .container {
     color: red;
     font-size: 16px;
@@ -34,7 +34,7 @@ const App = () => {
 
 ### How It Works
 
-`createCss` takes a CSS string and returns a function. When called:
+`createCssModule` takes a CSS string and returns a function. When called:
 
 1. Each class name in the CSS is automatically suffixed with a unique identifier (e.g., `.container` becomes `.container_abc123`), achieving scope isolation
 2. The processed styles are injected into the current component's Shadow Root or Document
@@ -42,12 +42,12 @@ const App = () => {
 
 ### Reusing Across Components
 
-The function returned by `createCss` can be called in multiple components. Styles are injected only once (managed via reference counting) and are automatically cleaned up when all referencing components are destroyed.
+The function returned by `createCssModule` can be called in multiple components. Styles are injected only once (managed via reference counting) and are automatically cleaned up when all referencing components are destroyed.
 
 ```tsx
-import { createCss } from "j20";
+import { createCssModule } from "j20";
 
-const useStyles = createCss(`
+const useStyles = createCssModule(`
   .btn {
     padding: 8px 16px;
     border-radius: 4px;
@@ -86,12 +86,11 @@ const SecondaryButton = () => {
 import { styleSheet } from "j20";
 
 const App = () => {
-  styleSheet(
-    "my-global-style",
-    `
+  styleSheet(`
     div { box-sizing: border-box; }
     body { margin: 0; }
-  `
+  `,
+  "my-global-style" // optional
   );
 
   return <div>Hello J20</div>;
@@ -100,8 +99,8 @@ const App = () => {
 
 ### Parameters
 
-- **id** (`string`): A unique identifier for the stylesheet, used for reference counting and deduplication
-- **css** (`string`, optional): CSS text content. If not provided, an empty stylesheet is created
+- **css** (`string`): CSS text content
+- **id** (`string`, optional): A unique identifier for the stylesheet, used for reference counting and deduplication
 
 ### Auto-mounting and Cleanup
 
@@ -113,7 +112,7 @@ const App = () => {
 
 ## Relationship with Web Component Styles
 
-In addition to `createCss` and `styleSheet`, Web Components support static styles via the `customElement.style` configuration. See [Web Component](/en/guide/web-component) for details.
+In addition to `createCssModule` and `styleSheet`, Web Components support static styles via the `customElement.style` configuration. See [Web Component](/en/guide/web-component) for details.
 
 ```tsx
 import { WC } from "j20";
@@ -138,5 +137,5 @@ When to use each approach:
 | Approach              | Use Case                                              | Scope Isolation             |
 | --------------------- | ----------------------------------------------------- | --------------------------- |
 | `customElement.style` | Web Component-specific styles                         | Shadow DOM isolation        |
-| `createCss`           | Reusable styles across components that need isolation | Class name suffix isolation |
+| `createCssModule`           | Reusable styles across components that need isolation | Class name suffix isolation |
 | `styleSheet`          | Global styles or styles needing dynamic manipulation  | No isolation                |
