@@ -284,32 +284,32 @@ declare global {
         | undefined;
       onUnload?: EventHandlerUnion<T, Event> | undefined;
 
-      onafterprint?: EventHandlerUnion<T, Event> | undefined;
-      onbeforeprint?: EventHandlerUnion<T, Event> | undefined;
-      onbeforeunload?: EventHandlerUnion<T, BeforeUnloadEvent> | undefined;
-      ongamepadconnected?: EventHandlerUnion<T, GamepadEvent> | undefined;
-      ongamepaddisconnected?: EventHandlerUnion<T, GamepadEvent> | undefined;
-      onhashchange?: EventHandlerUnion<T, HashChangeEvent> | undefined;
-      onlanguagechange?: EventHandlerUnion<T, Event> | undefined;
-      onmessage?: EventHandlerUnion<T, MessageEvent> | undefined;
-      onmessageerror?: EventHandlerUnion<T, MessageEvent> | undefined;
-      onoffline?: EventHandlerUnion<T, Event> | undefined;
-      ononline?: EventHandlerUnion<T, Event> | undefined;
-      onpagehide?: EventHandlerUnion<T, PageTransitionEvent> | undefined;
-      // TODO `PageRevealEvent` is currently undefined in TS
-      onpagereveal?: EventHandlerUnion<T, Event> | undefined;
-      onpageshow?: EventHandlerUnion<T, PageTransitionEvent> | undefined;
-      // TODO `PageSwapEvent` is currently undefined in TS
-      onpageswap?: EventHandlerUnion<T, Event> | undefined;
-      onpopstate?: EventHandlerUnion<T, PopStateEvent> | undefined;
-      onrejectionhandled?:
-        | EventHandlerUnion<T, PromiseRejectionEvent>
-        | undefined;
-      onstorage?: EventHandlerUnion<T, StorageEvent> | undefined;
-      onunhandledrejection?:
-        | EventHandlerUnion<T, PromiseRejectionEvent>
-        | undefined;
-      onunload?: EventHandlerUnion<T, Event> | undefined;
+      // onafterprint?: EventHandlerUnion<T, Event> | undefined;
+      // onbeforeprint?: EventHandlerUnion<T, Event> | undefined;
+      // onbeforeunload?: EventHandlerUnion<T, BeforeUnloadEvent> | undefined;
+      // ongamepadconnected?: EventHandlerUnion<T, GamepadEvent> | undefined;
+      // ongamepaddisconnected?: EventHandlerUnion<T, GamepadEvent> | undefined;
+      // onhashchange?: EventHandlerUnion<T, HashChangeEvent> | undefined;
+      // onlanguagechange?: EventHandlerUnion<T, Event> | undefined;
+      // onmessage?: EventHandlerUnion<T, MessageEvent> | undefined;
+      // onmessageerror?: EventHandlerUnion<T, MessageEvent> | undefined;
+      // onoffline?: EventHandlerUnion<T, Event> | undefined;
+      // ononline?: EventHandlerUnion<T, Event> | undefined;
+      // onpagehide?: EventHandlerUnion<T, PageTransitionEvent> | undefined;
+      // // TODO `PageRevealEvent` is currently undefined in TS
+      // onpagereveal?: EventHandlerUnion<T, Event> | undefined;
+      // onpageshow?: EventHandlerUnion<T, PageTransitionEvent> | undefined;
+      // // TODO `PageSwapEvent` is currently undefined in TS
+      // onpageswap?: EventHandlerUnion<T, Event> | undefined;
+      // onpopstate?: EventHandlerUnion<T, PopStateEvent> | undefined;
+      // onrejectionhandled?:
+      //   | EventHandlerUnion<T, PromiseRejectionEvent>
+      //   | undefined;
+      // onstorage?: EventHandlerUnion<T, StorageEvent> | undefined;
+      // onunhandledrejection?:
+      //   | EventHandlerUnion<T, PromiseRejectionEvent>
+      //   | undefined;
+      // onunload?: EventHandlerUnion<T, Event> | undefined;
 
       "on:afterprint"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       "on:beforeprint"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
@@ -457,107 +457,107 @@ declare global {
       onWheel?: EventHandlerUnion<T, WheelEvent> | undefined;
     }
     /** @type {GlobalEventHandlers} */
-    interface CustomEventHandlersLowerCase<T> {
-      onabort?: EventHandlerUnion<T, UIEvent> | undefined;
-      onanimationcancel?: EventHandlerUnion<T, AnimationEvent> | undefined;
-      onanimationend?: EventHandlerUnion<T, AnimationEvent> | undefined;
-      onanimationiteration?: EventHandlerUnion<T, AnimationEvent> | undefined;
-      onanimationstart?: EventHandlerUnion<T, AnimationEvent> | undefined;
-      onauxclick?: EventHandlerUnion<T, PointerEvent> | undefined;
-      onbeforeinput?: InputEventHandlerUnion<T, InputEvent> | undefined;
-      onbeforetoggle?: EventHandlerUnion<T, ToggleEvent> | undefined;
-      onblur?: FocusEventHandlerUnion<T, FocusEvent> | undefined;
-      oncancel?: EventHandlerUnion<T, Event> | undefined;
-      oncanplay?: EventHandlerUnion<T, Event> | undefined;
-      oncanplaythrough?: EventHandlerUnion<T, Event> | undefined;
-      onchange?: ChangeEventHandlerUnion<T, Event> | undefined;
-      onclick?: EventHandlerUnion<T, MouseEvent> | undefined;
-      // TODO `CommandEvent` is currently undefined in TS
-      oncommand?: EventHandlerUnion<T, Event> | undefined;
-      oncompositionend?: EventHandlerUnion<T, CompositionEvent> | undefined;
-      oncompositionstart?: EventHandlerUnion<T, CompositionEvent> | undefined;
-      oncompositionupdate?: EventHandlerUnion<T, CompositionEvent> | undefined;
-      oncontextmenu?: EventHandlerUnion<T, PointerEvent> | undefined;
-      oncopy?: EventHandlerUnion<T, ClipboardEvent> | undefined;
-      oncuechange?: EventHandlerUnion<T, Event> | undefined;
-      oncut?: EventHandlerUnion<T, ClipboardEvent> | undefined;
-      ondblclick?: EventHandlerUnion<T, MouseEvent> | undefined;
-      ondrag?: EventHandlerUnion<T, DragEvent> | undefined;
-      ondragend?: EventHandlerUnion<T, DragEvent> | undefined;
-      ondragenter?: EventHandlerUnion<T, DragEvent> | undefined;
-      ondragexit?: EventHandlerUnion<T, DragEvent> | undefined;
-      ondragleave?: EventHandlerUnion<T, DragEvent> | undefined;
-      ondragover?: EventHandlerUnion<T, DragEvent> | undefined;
-      ondragstart?: EventHandlerUnion<T, DragEvent> | undefined;
-      ondrop?: EventHandlerUnion<T, DragEvent> | undefined;
-      ondurationchange?: EventHandlerUnion<T, Event> | undefined;
-      onemptied?: EventHandlerUnion<T, Event> | undefined;
-      onended?: EventHandlerUnion<T, Event> | undefined;
-      onerror?: EventHandlerUnion<T, ErrorEvent> | undefined;
-      onfocus?: FocusEventHandlerUnion<T, FocusEvent> | undefined;
-      onfocusin?: FocusEventHandlerUnion<T, FocusEvent> | undefined;
-      onfocusout?: FocusEventHandlerUnion<T, FocusEvent> | undefined;
-      ongotpointercapture?: EventHandlerUnion<T, PointerEvent> | undefined;
-      oninput?: InputEventHandlerUnion<T, InputEvent> | undefined;
-      oninvalid?: EventHandlerUnion<T, Event> | undefined;
-      onkeydown?: EventHandlerUnion<T, KeyboardEvent> | undefined;
-      onkeypress?: EventHandlerUnion<T, KeyboardEvent> | undefined;
-      onkeyup?: EventHandlerUnion<T, KeyboardEvent> | undefined;
-      onload?: EventHandlerUnion<T, Event> | undefined;
-      onloadeddata?: EventHandlerUnion<T, Event> | undefined;
-      onloadedmetadata?: EventHandlerUnion<T, Event> | undefined;
-      onloadstart?: EventHandlerUnion<T, Event> | undefined;
-      onlostpointercapture?: EventHandlerUnion<T, PointerEvent> | undefined;
-      onmousedown?: EventHandlerUnion<T, MouseEvent> | undefined;
-      onmouseenter?: EventHandlerUnion<T, MouseEvent> | undefined;
-      onmouseleave?: EventHandlerUnion<T, MouseEvent> | undefined;
-      onmousemove?: EventHandlerUnion<T, MouseEvent> | undefined;
-      onmouseout?: EventHandlerUnion<T, MouseEvent> | undefined;
-      onmouseover?: EventHandlerUnion<T, MouseEvent> | undefined;
-      onmouseup?: EventHandlerUnion<T, MouseEvent> | undefined;
-      onpaste?: EventHandlerUnion<T, ClipboardEvent> | undefined;
-      onpause?: EventHandlerUnion<T, Event> | undefined;
-      onplay?: EventHandlerUnion<T, Event> | undefined;
-      onplaying?: EventHandlerUnion<T, Event> | undefined;
-      onpointercancel?: EventHandlerUnion<T, PointerEvent> | undefined;
-      onpointerdown?: EventHandlerUnion<T, PointerEvent> | undefined;
-      onpointerenter?: EventHandlerUnion<T, PointerEvent> | undefined;
-      onpointerleave?: EventHandlerUnion<T, PointerEvent> | undefined;
-      onpointermove?: EventHandlerUnion<T, PointerEvent> | undefined;
-      onpointerout?: EventHandlerUnion<T, PointerEvent> | undefined;
-      onpointerover?: EventHandlerUnion<T, PointerEvent> | undefined;
-      onpointerup?: EventHandlerUnion<T, PointerEvent> | undefined;
-      onprogress?: EventHandlerUnion<T, ProgressEvent> | undefined;
-      onratechange?: EventHandlerUnion<T, Event> | undefined;
-      onreset?: EventHandlerUnion<T, Event> | undefined;
-      onresize?: EventHandlerUnion<T, UIEvent> | undefined;
-      onscroll?: EventHandlerUnion<T, Event> | undefined;
-      onscrollend?: EventHandlerUnion<T, Event> | undefined;
-      onsecuritypolicyviolation?:
-        | EventHandlerUnion<T, SecurityPolicyViolationEvent>
-        | undefined;
-      onseeked?: EventHandlerUnion<T, Event> | undefined;
-      onseeking?: EventHandlerUnion<T, Event> | undefined;
-      onselect?: EventHandlerUnion<T, Event> | undefined;
-      onselectionchange?: EventHandlerUnion<T, Event> | undefined;
-      onslotchange?: EventHandlerUnion<T, Event> | undefined;
-      onstalled?: EventHandlerUnion<T, Event> | undefined;
-      onsubmit?: EventHandlerUnion<T, SubmitEvent> | undefined;
-      onsuspend?: EventHandlerUnion<T, Event> | undefined;
-      ontimeupdate?: EventHandlerUnion<T, Event> | undefined;
-      ontoggle?: EventHandlerUnion<T, ToggleEvent> | undefined;
-      ontouchcancel?: EventHandlerUnion<T, TouchEvent> | undefined;
-      ontouchend?: EventHandlerUnion<T, TouchEvent> | undefined;
-      ontouchmove?: EventHandlerUnion<T, TouchEvent> | undefined;
-      ontouchstart?: EventHandlerUnion<T, TouchEvent> | undefined;
-      ontransitioncancel?: EventHandlerUnion<T, TransitionEvent> | undefined;
-      ontransitionend?: EventHandlerUnion<T, TransitionEvent> | undefined;
-      ontransitionrun?: EventHandlerUnion<T, TransitionEvent> | undefined;
-      ontransitionstart?: EventHandlerUnion<T, TransitionEvent> | undefined;
-      onvolumechange?: EventHandlerUnion<T, Event> | undefined;
-      onwaiting?: EventHandlerUnion<T, Event> | undefined;
-      onwheel?: EventHandlerUnion<T, WheelEvent> | undefined;
-    }
+    // interface CustomEventHandlersLowerCase<T> {
+    //   onabort?: EventHandlerUnion<T, UIEvent> | undefined;
+    //   onanimationcancel?: EventHandlerUnion<T, AnimationEvent> | undefined;
+    //   onanimationend?: EventHandlerUnion<T, AnimationEvent> | undefined;
+    //   onanimationiteration?: EventHandlerUnion<T, AnimationEvent> | undefined;
+    //   onanimationstart?: EventHandlerUnion<T, AnimationEvent> | undefined;
+    //   onauxclick?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   onbeforeinput?: InputEventHandlerUnion<T, InputEvent> | undefined;
+    //   onbeforetoggle?: EventHandlerUnion<T, ToggleEvent> | undefined;
+    //   onblur?: FocusEventHandlerUnion<T, FocusEvent> | undefined;
+    //   oncancel?: EventHandlerUnion<T, Event> | undefined;
+    //   oncanplay?: EventHandlerUnion<T, Event> | undefined;
+    //   oncanplaythrough?: EventHandlerUnion<T, Event> | undefined;
+    //   onchange?: ChangeEventHandlerUnion<T, Event> | undefined;
+    //   onclick?: EventHandlerUnion<T, MouseEvent> | undefined;
+    //   // TODO `CommandEvent` is currently undefined in TS
+    //   oncommand?: EventHandlerUnion<T, Event> | undefined;
+    //   oncompositionend?: EventHandlerUnion<T, CompositionEvent> | undefined;
+    //   oncompositionstart?: EventHandlerUnion<T, CompositionEvent> | undefined;
+    //   oncompositionupdate?: EventHandlerUnion<T, CompositionEvent> | undefined;
+    //   oncontextmenu?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   oncopy?: EventHandlerUnion<T, ClipboardEvent> | undefined;
+    //   oncuechange?: EventHandlerUnion<T, Event> | undefined;
+    //   oncut?: EventHandlerUnion<T, ClipboardEvent> | undefined;
+    //   ondblclick?: EventHandlerUnion<T, MouseEvent> | undefined;
+    //   ondrag?: EventHandlerUnion<T, DragEvent> | undefined;
+    //   ondragend?: EventHandlerUnion<T, DragEvent> | undefined;
+    //   ondragenter?: EventHandlerUnion<T, DragEvent> | undefined;
+    //   ondragexit?: EventHandlerUnion<T, DragEvent> | undefined;
+    //   ondragleave?: EventHandlerUnion<T, DragEvent> | undefined;
+    //   ondragover?: EventHandlerUnion<T, DragEvent> | undefined;
+    //   ondragstart?: EventHandlerUnion<T, DragEvent> | undefined;
+    //   ondrop?: EventHandlerUnion<T, DragEvent> | undefined;
+    //   ondurationchange?: EventHandlerUnion<T, Event> | undefined;
+    //   onemptied?: EventHandlerUnion<T, Event> | undefined;
+    //   onended?: EventHandlerUnion<T, Event> | undefined;
+    //   onerror?: EventHandlerUnion<T, ErrorEvent> | undefined;
+    //   onfocus?: FocusEventHandlerUnion<T, FocusEvent> | undefined;
+    //   onfocusin?: FocusEventHandlerUnion<T, FocusEvent> | undefined;
+    //   onfocusout?: FocusEventHandlerUnion<T, FocusEvent> | undefined;
+    //   ongotpointercapture?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   oninput?: InputEventHandlerUnion<T, InputEvent> | undefined;
+    //   oninvalid?: EventHandlerUnion<T, Event> | undefined;
+    //   onkeydown?: EventHandlerUnion<T, KeyboardEvent> | undefined;
+    //   onkeypress?: EventHandlerUnion<T, KeyboardEvent> | undefined;
+    //   onkeyup?: EventHandlerUnion<T, KeyboardEvent> | undefined;
+    //   onload?: EventHandlerUnion<T, Event> | undefined;
+    //   onloadeddata?: EventHandlerUnion<T, Event> | undefined;
+    //   onloadedmetadata?: EventHandlerUnion<T, Event> | undefined;
+    //   onloadstart?: EventHandlerUnion<T, Event> | undefined;
+    //   onlostpointercapture?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   onmousedown?: EventHandlerUnion<T, MouseEvent> | undefined;
+    //   onmouseenter?: EventHandlerUnion<T, MouseEvent> | undefined;
+    //   onmouseleave?: EventHandlerUnion<T, MouseEvent> | undefined;
+    //   onmousemove?: EventHandlerUnion<T, MouseEvent> | undefined;
+    //   onmouseout?: EventHandlerUnion<T, MouseEvent> | undefined;
+    //   onmouseover?: EventHandlerUnion<T, MouseEvent> | undefined;
+    //   onmouseup?: EventHandlerUnion<T, MouseEvent> | undefined;
+    //   onpaste?: EventHandlerUnion<T, ClipboardEvent> | undefined;
+    //   onpause?: EventHandlerUnion<T, Event> | undefined;
+    //   onplay?: EventHandlerUnion<T, Event> | undefined;
+    //   onplaying?: EventHandlerUnion<T, Event> | undefined;
+    //   onpointercancel?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   onpointerdown?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   onpointerenter?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   onpointerleave?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   onpointermove?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   onpointerout?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   onpointerover?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   onpointerup?: EventHandlerUnion<T, PointerEvent> | undefined;
+    //   onprogress?: EventHandlerUnion<T, ProgressEvent> | undefined;
+    //   onratechange?: EventHandlerUnion<T, Event> | undefined;
+    //   onreset?: EventHandlerUnion<T, Event> | undefined;
+    //   onresize?: EventHandlerUnion<T, UIEvent> | undefined;
+    //   onscroll?: EventHandlerUnion<T, Event> | undefined;
+    //   onscrollend?: EventHandlerUnion<T, Event> | undefined;
+    //   onsecuritypolicyviolation?:
+    //     | EventHandlerUnion<T, SecurityPolicyViolationEvent>
+    //     | undefined;
+    //   onseeked?: EventHandlerUnion<T, Event> | undefined;
+    //   onseeking?: EventHandlerUnion<T, Event> | undefined;
+    //   onselect?: EventHandlerUnion<T, Event> | undefined;
+    //   onselectionchange?: EventHandlerUnion<T, Event> | undefined;
+    //   onslotchange?: EventHandlerUnion<T, Event> | undefined;
+    //   onstalled?: EventHandlerUnion<T, Event> | undefined;
+    //   onsubmit?: EventHandlerUnion<T, SubmitEvent> | undefined;
+    //   onsuspend?: EventHandlerUnion<T, Event> | undefined;
+    //   ontimeupdate?: EventHandlerUnion<T, Event> | undefined;
+    //   ontoggle?: EventHandlerUnion<T, ToggleEvent> | undefined;
+    //   ontouchcancel?: EventHandlerUnion<T, TouchEvent> | undefined;
+    //   ontouchend?: EventHandlerUnion<T, TouchEvent> | undefined;
+    //   ontouchmove?: EventHandlerUnion<T, TouchEvent> | undefined;
+    //   ontouchstart?: EventHandlerUnion<T, TouchEvent> | undefined;
+    //   ontransitioncancel?: EventHandlerUnion<T, TransitionEvent> | undefined;
+    //   ontransitionend?: EventHandlerUnion<T, TransitionEvent> | undefined;
+    //   ontransitionrun?: EventHandlerUnion<T, TransitionEvent> | undefined;
+    //   ontransitionstart?: EventHandlerUnion<T, TransitionEvent> | undefined;
+    //   onvolumechange?: EventHandlerUnion<T, Event> | undefined;
+    //   onwaiting?: EventHandlerUnion<T, Event> | undefined;
+    //   onwheel?: EventHandlerUnion<T, WheelEvent> | undefined;
+    // }
 
     interface CustomEventHandlersNamespaced<T> {
       "on:abort"?: EventHandlerWithOptionsUnion<T, UIEvent> | undefined;
@@ -761,7 +761,7 @@ declare global {
         OnAttributes<T>,
         OnCaptureAttributes<T>,
         CustomEventHandlersCamelCase<T>,
-        CustomEventHandlersLowerCase<T>,
+        // CustomEventHandlersLowerCase<T>,
         CustomEventHandlersNamespaced<T> {
       children?: Element | undefined;
       innerHTML?: string;
