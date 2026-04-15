@@ -248,10 +248,12 @@ declare global {
       onFullscreenChange?: EventHandlerUnion<T, Event> | undefined;
       onFullscreenError?: EventHandlerUnion<T, Event> | undefined;
 
-      "on:fullscreenchange"?:
+      onNativeFullscreenchange?:
         | EventHandlerWithOptionsUnion<T, Event>
         | undefined;
-      "on:fullscreenerror"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeFullscreenerror?:
+        | EventHandlerWithOptionsUnion<T, Event>
+        | undefined;
 
       onfullscreenchange?: EventHandlerUnion<T, Event> | undefined;
       onfullscreenerror?: EventHandlerUnion<T, Event> | undefined;
@@ -311,48 +313,54 @@ declare global {
       //   | undefined;
       // onunload?: EventHandlerUnion<T, Event> | undefined;
 
-      "on:afterprint"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:beforeprint"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:beforeunload"?:
+      onNativeAfterprint?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeBeforeprint?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeBeforeunload?:
         | EventHandlerWithOptionsUnion<T, BeforeUnloadEvent>
         | undefined;
-      "on:gamepadconnected"?:
+      onNativeGamepadconnected?:
         | EventHandlerWithOptionsUnion<T, GamepadEvent>
         | undefined;
-      "on:gamepaddisconnected"?:
+      onNativeGamepaddisconnected?:
         | EventHandlerWithOptionsUnion<T, GamepadEvent>
         | undefined;
-      "on:hashchange"?:
+      onNativeHashchange?:
         | EventHandlerWithOptionsUnion<T, HashChangeEvent>
         | undefined;
-      "on:languagechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:message"?: EventHandlerWithOptionsUnion<T, MessageEvent> | undefined;
-      "on:messageerror"?:
+      onNativeLanguagechange?:
+        | EventHandlerWithOptionsUnion<T, Event>
+        | undefined;
+      onNativeMessage?:
         | EventHandlerWithOptionsUnion<T, MessageEvent>
         | undefined;
-      "on:offline"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:online"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:pagehide"?:
+      onNativeMessageerror?:
+        | EventHandlerWithOptionsUnion<T, MessageEvent>
+        | undefined;
+      onNativeOffline?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeOnline?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativePagehide?:
         | EventHandlerWithOptionsUnion<T, PageTransitionEvent>
         | undefined;
       // TODO `PageRevealEvent` is currently undefined in TS
-      "on:pagereveal"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:pageshow"?:
+      onNativePagereveal?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativePageshow?:
         | EventHandlerWithOptionsUnion<T, PageTransitionEvent>
         | undefined;
       // TODO `PageSwapEvent` is currently undefined in TS
-      "on:pageswap"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:popstate"?:
+      onNativePageswap?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativePopstate?:
         | EventHandlerWithOptionsUnion<T, PopStateEvent>
         | undefined;
-      "on:rejectionhandled"?:
+      onNativeRejectionhandled?:
         | EventHandlerWithOptionsUnion<T, PromiseRejectionEvent>
         | undefined;
-      "on:storage"?: EventHandlerWithOptionsUnion<T, StorageEvent> | undefined;
-      "on:unhandledrejection"?:
+      onNativeStorage?:
+        | EventHandlerWithOptionsUnion<T, StorageEvent>
+        | undefined;
+      onNativeUnhandledrejection?:
         | EventHandlerWithOptionsUnion<T, PromiseRejectionEvent>
         | undefined;
-      "on:unload"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeUnload?: EventHandlerWithOptionsUnion<T, Event> | undefined;
     }
 
     interface CustomEventHandlersCamelCase<T> {
@@ -560,195 +568,239 @@ declare global {
     // }
 
     interface CustomEventHandlersNamespaced<T> {
-      "on:abort"?: EventHandlerWithOptionsUnion<T, UIEvent> | undefined;
-      "on:animationcancel"?:
+      onNativeAbort?: EventHandlerWithOptionsUnion<T, UIEvent> | undefined;
+      onNativeAnimationcancel?:
         | EventHandlerWithOptionsUnion<T, AnimationEvent>
         | undefined;
-      "on:animationend"?:
+      onNativeAnimationend?:
         | EventHandlerWithOptionsUnion<T, AnimationEvent>
         | undefined;
-      "on:animationiteration"?:
+      onNativeAnimationiteration?:
         | EventHandlerWithOptionsUnion<T, AnimationEvent>
         | undefined;
-      "on:animationstart"?:
+      onNativeAnimationstart?:
         | EventHandlerWithOptionsUnion<T, AnimationEvent>
         | undefined;
-      "on:auxclick"?: EventHandlerWithOptionsUnion<T, PointerEvent> | undefined;
-      "on:beforeinput"?:
+      onNativeAuxclick?:
+        | EventHandlerWithOptionsUnion<T, PointerEvent>
+        | undefined;
+      onNativeBeforeinput?:
         | EventHandlerWithOptionsUnion<
             T,
             InputEvent,
             InputEventHandler<T, InputEvent>
           >
         | undefined;
-      "on:beforetoggle"?:
+      onNativeBeforetoggle?:
         | EventHandlerWithOptionsUnion<T, ToggleEvent>
         | undefined;
-      "on:blur"?:
+      onNativeBlur?:
         | EventHandlerWithOptionsUnion<
             T,
             FocusEvent,
             FocusEventHandler<T, FocusEvent>
           >
         | undefined;
-      "on:cancel"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:canplay"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:canplaythrough"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:change"?:
+      onNativeCancel?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeCanplay?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeCanplaythrough?:
+        | EventHandlerWithOptionsUnion<T, Event>
+        | undefined;
+      onNativeChange?:
         | EventHandlerWithOptionsUnion<T, Event, ChangeEventHandler<T, Event>>
         | undefined;
-      "on:click"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
+      onNativeClick?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
       // TODO `CommandEvent` is currently undefined in TS
-      "on:command"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:compositionend"?:
+      onNativeCommand?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeCompositionend?:
         | EventHandlerWithOptionsUnion<T, CompositionEvent>
         | undefined;
-      "on:compositionstart"?:
+      onNativeCompositionstart?:
         | EventHandlerWithOptionsUnion<T, CompositionEvent>
         | undefined;
-      "on:compositionupdate"?:
+      onNativeCompositionupdate?:
         | EventHandlerWithOptionsUnion<T, CompositionEvent>
         | undefined;
-      "on:contextmenu"?:
+      onNativeContextmenu?:
         | EventHandlerWithOptionsUnion<T, PointerEvent>
         | undefined;
-      "on:copy"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
-      "on:cuechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:cut"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
-      "on:dblclick"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
-      "on:drag"?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
-      "on:dragend"?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
-      "on:dragenter"?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
-      "on:dragexit"?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
-      "on:dragleave"?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
-      "on:dragover"?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
-      "on:dragstart"?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
-      "on:drop"?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
-      "on:durationchange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:emptied"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:ended"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:error"?: EventHandlerWithOptionsUnion<T, ErrorEvent> | undefined;
-      "on:focus"?:
+      onNativeCopy?:
+        | EventHandlerWithOptionsUnion<T, ClipboardEvent>
+        | undefined;
+      onNativeCuechange?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeCut?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
+      onNativeDblclick?:
+        | EventHandlerWithOptionsUnion<T, MouseEvent>
+        | undefined;
+      onNativeDrag?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
+      onNativeDragend?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
+      onNativeDragenter?:
+        | EventHandlerWithOptionsUnion<T, DragEvent>
+        | undefined;
+      onNativeDragexit?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
+      onNativeDragleave?:
+        | EventHandlerWithOptionsUnion<T, DragEvent>
+        | undefined;
+      onNativeDragover?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
+      onNativeDragstart?:
+        | EventHandlerWithOptionsUnion<T, DragEvent>
+        | undefined;
+      onNativeDrop?: EventHandlerWithOptionsUnion<T, DragEvent> | undefined;
+      onNativeDurationchange?:
+        | EventHandlerWithOptionsUnion<T, Event>
+        | undefined;
+      onNativeEmptied?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeEnded?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeError?: EventHandlerWithOptionsUnion<T, ErrorEvent> | undefined;
+      onNativeFocus?:
         | EventHandlerWithOptionsUnion<
             T,
             FocusEvent,
             FocusEventHandler<T, FocusEvent>
           >
         | undefined;
-      "on:focusin"?:
+      onNativeFocusin?:
         | EventHandlerWithOptionsUnion<
             T,
             FocusEvent,
             FocusEventHandler<T, FocusEvent>
           >
         | undefined;
-      "on:focusout"?:
+      onNativeFocusout?:
         | EventHandlerWithOptionsUnion<
             T,
             FocusEvent,
             FocusEventHandler<T, FocusEvent>
           >
         | undefined;
-      "on:gotpointercapture"?:
+      onNativeGotpointercapture?:
         | EventHandlerWithOptionsUnion<T, PointerEvent>
         | undefined;
-      "on:input"?:
+      onNativeInput?:
         | EventHandlerWithOptionsUnion<
             T,
             InputEvent,
             InputEventHandler<T, InputEvent>
           >
         | undefined;
-      "on:invalid"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:keydown"?: EventHandlerWithOptionsUnion<T, KeyboardEvent> | undefined;
-      "on:keypress"?:
+      onNativeInvalid?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeKeydown?:
         | EventHandlerWithOptionsUnion<T, KeyboardEvent>
         | undefined;
-      "on:keyup"?: EventHandlerWithOptionsUnion<T, KeyboardEvent> | undefined;
-      "on:load"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:loadeddata"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:loadedmetadata"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:loadstart"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:lostpointercapture"?:
+      onNativeKeypress?:
+        | EventHandlerWithOptionsUnion<T, KeyboardEvent>
+        | undefined;
+      onNativeKeyup?:
+        | EventHandlerWithOptionsUnion<T, KeyboardEvent>
+        | undefined;
+      onNativeLoad?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeLoadeddata?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeLoadedmetadata?:
+        | EventHandlerWithOptionsUnion<T, Event>
+        | undefined;
+      onNativeLoadstart?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeLostpointercapture?:
         | EventHandlerWithOptionsUnion<T, PointerEvent>
         | undefined;
-      "on:mousedown"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
-      "on:mouseenter"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
-      "on:mouseleave"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
-      "on:mousemove"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
-      "on:mouseout"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
-      "on:mouseover"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
-      "on:mouseup"?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
-      "on:paste"?: EventHandlerWithOptionsUnion<T, ClipboardEvent> | undefined;
-      "on:pause"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:play"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:playing"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:pointercancel"?:
+      onNativeMousedown?:
+        | EventHandlerWithOptionsUnion<T, MouseEvent>
+        | undefined;
+      onNativeMouseenter?:
+        | EventHandlerWithOptionsUnion<T, MouseEvent>
+        | undefined;
+      onNativeMouseleave?:
+        | EventHandlerWithOptionsUnion<T, MouseEvent>
+        | undefined;
+      onNativeMousemove?:
+        | EventHandlerWithOptionsUnion<T, MouseEvent>
+        | undefined;
+      onNativeMouseout?:
+        | EventHandlerWithOptionsUnion<T, MouseEvent>
+        | undefined;
+      onNativeMouseover?:
+        | EventHandlerWithOptionsUnion<T, MouseEvent>
+        | undefined;
+      onNativeMouseup?: EventHandlerWithOptionsUnion<T, MouseEvent> | undefined;
+      onNativePaste?:
+        | EventHandlerWithOptionsUnion<T, ClipboardEvent>
+        | undefined;
+      onNativePause?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativePlay?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativePlaying?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativePointercancel?:
         | EventHandlerWithOptionsUnion<T, PointerEvent>
         | undefined;
-      "on:pointerdown"?:
+      onNativePointerdown?:
         | EventHandlerWithOptionsUnion<T, PointerEvent>
         | undefined;
-      "on:pointerenter"?:
+      onNativePointerenter?:
         | EventHandlerWithOptionsUnion<T, PointerEvent>
         | undefined;
-      "on:pointerleave"?:
+      onNativePointerleave?:
         | EventHandlerWithOptionsUnion<T, PointerEvent>
         | undefined;
-      "on:pointermove"?:
+      onNativePointermove?:
         | EventHandlerWithOptionsUnion<T, PointerEvent>
         | undefined;
-      "on:pointerout"?:
+      onNativePointerout?:
         | EventHandlerWithOptionsUnion<T, PointerEvent>
         | undefined;
-      "on:pointerover"?:
+      onNativePointerover?:
         | EventHandlerWithOptionsUnion<T, PointerEvent>
         | undefined;
-      "on:pointerup"?:
+      onNativePointerup?:
         | EventHandlerWithOptionsUnion<T, PointerEvent>
         | undefined;
-      "on:progress"?:
+      onNativeProgress?:
         | EventHandlerWithOptionsUnion<T, ProgressEvent>
         | undefined;
-      "on:ratechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:reset"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:resize"?: EventHandlerWithOptionsUnion<T, UIEvent> | undefined;
-      "on:scroll"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:scrollend"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:securitypolicyviolation"?:
+      onNativeRatechange?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeReset?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeResize?: EventHandlerWithOptionsUnion<T, UIEvent> | undefined;
+      onNativeScroll?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeScrollend?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeSecuritypolicyviolation?:
         | EventHandlerWithOptionsUnion<T, SecurityPolicyViolationEvent>
         | undefined;
-      "on:seeked"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:seeking"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:select"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:selectionchange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:slotchange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:stalled"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:submit"?: EventHandlerWithOptionsUnion<T, SubmitEvent> | undefined;
-      "on:suspend"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:timeupdate"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:toggle"?: EventHandlerWithOptionsUnion<T, ToggleEvent> | undefined;
-      "on:touchcancel"?:
+      onNativeSeeked?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeSeeking?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeSelect?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeSelectionchange?:
+        | EventHandlerWithOptionsUnion<T, Event>
+        | undefined;
+      onNativeSlotchange?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeStalled?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeSubmit?: EventHandlerWithOptionsUnion<T, SubmitEvent> | undefined;
+      onNativeSuspend?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeTimeupdate?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeToggle?: EventHandlerWithOptionsUnion<T, ToggleEvent> | undefined;
+      onNativeTouchcancel?:
         | EventHandlerWithOptionsUnion<T, TouchEvent>
         | undefined;
-      "on:touchend"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
-      "on:touchmove"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
-      "on:touchstart"?: EventHandlerWithOptionsUnion<T, TouchEvent> | undefined;
-      "on:transitioncancel"?:
+      onNativeTouchend?:
+        | EventHandlerWithOptionsUnion<T, TouchEvent>
+        | undefined;
+      onNativeTouchmove?:
+        | EventHandlerWithOptionsUnion<T, TouchEvent>
+        | undefined;
+      onNativeTouchstart?:
+        | EventHandlerWithOptionsUnion<T, TouchEvent>
+        | undefined;
+      onNativeTransitioncancel?:
         | EventHandlerWithOptionsUnion<T, TransitionEvent>
         | undefined;
-      "on:transitionend"?:
+      onNativeTransitionend?:
         | EventHandlerWithOptionsUnion<T, TransitionEvent>
         | undefined;
-      "on:transitionrun"?:
+      onNativeTransitionrun?:
         | EventHandlerWithOptionsUnion<T, TransitionEvent>
         | undefined;
-      "on:transitionstart"?:
+      onNativeTransitionstart?:
         | EventHandlerWithOptionsUnion<T, TransitionEvent>
         | undefined;
-      "on:volumechange"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:waiting"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
-      "on:wheel"?: EventHandlerWithOptionsUnion<T, WheelEvent> | undefined;
+      onNativeVolumechange?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeWaiting?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeWheel?: EventHandlerWithOptionsUnion<T, WheelEvent> | undefined;
     }
 
     interface DOMAttributes<T>
@@ -1431,11 +1483,13 @@ declare global {
       width?: number | string | undefined;
 
       onContextLost?: EventHandlerUnion<T, Event> | undefined;
-      "on:contextlost"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeContextlost?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       oncontextlost?: EventHandlerUnion<T, Event> | undefined;
 
       onContextRestored?: EventHandlerUnion<T, Event> | undefined;
-      "on:contextrestored"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeContextrestored?:
+        | EventHandlerWithOptionsUnion<T, Event>
+        | undefined;
       oncontextrestored?: EventHandlerUnion<T, Event> | undefined;
 
       /**
@@ -1499,11 +1553,11 @@ declare global {
       tabindex?: never;
 
       onClose?: EventHandlerUnion<T, Event> | undefined;
-      "on:close"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeClose?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       onclose?: EventHandlerUnion<T, Event> | undefined;
 
       onCancel?: EventHandlerUnion<T, Event> | undefined;
-      "on:cancel"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeCancel?: EventHandlerWithOptionsUnion<T, Event> | undefined;
       oncancel?: EventHandlerUnion<T, Event> | undefined;
     }
     interface EmbedHTMLAttributes<T> extends HTMLAttributes<T> {
@@ -1541,7 +1595,7 @@ declare global {
         | undefined;
 
       onFormData?: EventHandlerUnion<T, FormDataEvent> | undefined;
-      "on:formdata"?:
+      onNativeFormdata?:
         | EventHandlerWithOptionsUnion<T, FormDataEvent>
         | undefined;
       onformdata?: EventHandlerUnion<T, FormDataEvent> | undefined;
@@ -1884,13 +1938,15 @@ declare global {
       src?: string | undefined;
 
       onEncrypted?: EventHandlerUnion<T, MediaEncryptedEvent> | undefined;
-      "on:encrypted"?:
+      onNativeEncrypted?:
         | EventHandlerWithOptionsUnion<T, MediaEncryptedEvent>
         | undefined;
       onencrypted?: EventHandlerUnion<T, MediaEncryptedEvent> | undefined;
 
       onWaitingForKey?: EventHandlerUnion<T, Event> | undefined;
-      "on:waitingforkey"?: EventHandlerWithOptionsUnion<T, Event> | undefined;
+      onNativeWaitingforkey?:
+        | EventHandlerWithOptionsUnion<T, Event>
+        | undefined;
       onwaitingforkey?: EventHandlerUnion<T, Event> | undefined;
 
       crossOrigin?: HTMLCrossorigin | undefined;
@@ -2280,7 +2336,7 @@ declare global {
       onEnterPictureInPicture?:
         | EventHandlerUnion<T, PictureInPictureEvent>
         | undefined;
-      "on:enterpictureinpicture"?:
+      onNativeEnterpictureinpicture?:
         | EventHandlerWithOptionsUnion<T, PictureInPictureEvent>
         | undefined;
       onenterpictureinpicture?:
@@ -2290,7 +2346,7 @@ declare global {
       onLeavePictureInPicture?:
         | EventHandlerUnion<T, PictureInPictureEvent>
         | undefined;
-      "on:leavepictureinpicture"?:
+      onNativeLeavepictureinpicture?:
         | EventHandlerWithOptionsUnion<T, PictureInPictureEvent>
         | undefined;
       onleavepictureinpicture?:

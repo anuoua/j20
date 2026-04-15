@@ -1,13 +1,18 @@
 import { effect } from "../api/effect";
 import { getCurrentInstance } from "./instance";
 
-export const isEvent = (eventName: string) => {
-  return eventName.startsWith("on");
-};
+export const exist = (val: any) => val !== undefined;
 
-export const getEventName = (eventName: string) => {
-  return eventName.slice(2).toLowerCase();
-};
+export const isEvent = (eventName: string) => eventName.startsWith("on");
+
+export const isNativeEvent = (eventName: string) =>
+  eventName.startsWith("onNative");
+
+export const getNativeEventName = (eventName: string) =>
+  eventName.slice(8).toLowerCase();
+
+export const getEventName = (eventName: string) =>
+  eventName.slice(2).toLowerCase();
 
 export const getChildren = (propChildren: any[]) => {
   const arr: any[] = [];
@@ -56,7 +61,11 @@ export const update = (
   oldValue: any,
   newValue: any
 ) => {
-  if (isEvent(key)) {
+  if (isNativeEvent(key)) {
+    node.removeEventListener(getNativeEventName(key), oldValue.handleEvent);
+    const { handleEvent, ...restValues } = newValue;
+    node.addEventListener(getNativeEventName(key), handleEvent, restValues);
+  } else if (isEvent(key)) {
     node.removeEventListener(getEventName(key), oldValue);
     node.addEventListener(getEventName(key), newValue);
   } else {
@@ -79,7 +88,9 @@ export const unset = (
   key: string,
   oldValue: any
 ) => {
-  if (isEvent(key)) {
+  if (isNativeEvent(key)) {
+    node.removeEventListener(getNativeEventName(key), oldValue.handleEvent);
+  } else if (isEvent(key)) {
     node.removeEventListener(getEventName(key), oldValue);
   } else if (key === "ref") {
     oldValue.current = null;
@@ -93,7 +104,10 @@ export const add = (
   key: string,
   newValue: any
 ) => {
-  if (isEvent(key)) {
+  if (isNativeEvent(key)) {
+    const { handleEvent, ...restValues } = newValue;
+    node.addEventListener(getNativeEventName(key), handleEvent, restValues);
+  } else if (isEvent(key)) {
     node.addEventListener(getEventName(key), newValue);
   } else if (key === "ref") {
     const instance = getCurrentInstance();
@@ -117,50 +131,35 @@ export const add = (
   }
 };
 
-export const bindNode = (node: HTMLElement | SVGElement, props: () => any) => {
+export const nodeAttributesEffect = (
+  node: HTMLElement | SVGElement,
+  propsFn: () => any
+) => {
   let oldProps: any = {};
-  effect(() => {
-    const newProps = { ...props() };
 
-    const newKeys = Object.keys(newProps);
-    const oldKeys = Object.keys(oldProps);
-    const allKeys = new Set([...newKeys, ...oldKeys]);
+  effect(() => {
+    const newProps = { ...propsFn() };
+
+    const allKeys = new Set([
+      ...Object.keys(newProps),
+      ...Object.keys(oldProps),
+    ]);
 
     for (const key of allKeys) {
-      if (key === "children") continue;
-      oldKeys.includes(key)
-        ? newKeys.includes(key)
-          ? Object.is(oldProps[key], newProps[key])
+      const oldValue = oldProps[key];
+      const newValue = newProps[key];
+
+      exist(oldValue)
+        ? exist(newValue)
+          ? Object.is(oldValue, newValue)
             ? null
-            : update(node, key, oldProps[key], newProps[key])
-          : unset(node, key, oldProps[key])
-        : add(node, key, newProps[key]);
+            : update(node, key, oldValue, newValue)
+          : unset(node, key, oldValue)
+        : exist(newValue)
+          ? add(node, key, newValue)
+          : null;
     }
 
     oldProps = newProps;
   });
 };
-
-export const nodeAttributesEffect = (node: HTMLElement | SVGElement, propsFn: () => any) => {
-    let oldProps: any = {};
-
-    effect(() => {
-      const newProps = { ...propsFn() };
-
-      const newKeys = Object.keys(newProps);
-      const oldKeys = Object.keys(oldProps);
-      const allKeys = new Set([...newKeys, ...oldKeys]);
-
-      for (const key of allKeys) {
-        oldKeys.includes(key)
-          ? newKeys.includes(key)
-            ? Object.is(oldProps[key], newProps[key])
-              ? null
-              : update(node, key, oldProps[key], newProps[key])
-            : unset(node, key, oldProps[key])
-          : add(node, key, newProps[key]);
-      }
-
-      oldProps = newProps;
-    });
-}
