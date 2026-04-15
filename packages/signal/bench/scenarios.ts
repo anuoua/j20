@@ -1,4 +1,4 @@
-import { signal, computed, effect, batch } from "../src/index.ts";
+import { signal, computed, effect, batch } from "../src/index";
 import type { Signal } from "../src/index.ts";
 import type { Computed } from "../src/index.ts";
 import type { Effect } from "../src/index.ts";

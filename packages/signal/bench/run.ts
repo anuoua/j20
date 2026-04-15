@@ -2,7 +2,7 @@ import { Bench } from "tinybench";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createScenarios } from "./scenarios.ts";
+import { createScenarios } from "./scenarios";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
