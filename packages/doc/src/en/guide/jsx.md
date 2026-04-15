@@ -29,10 +29,35 @@ Object form:
 Style object keys match native CSS style names - **not React's camelCase naming**.
 
 ```tsx
-<div style={{ "color": "red", "font-size": "16px" }}>content</div>
+<div style={{ color: "red", "font-size": "16px" }}>content</div>
 ```
 
 > String form is recommended - closer to native HTML.
+
+## Event Binding
+
+J20 supports event binding just like React, using camelCase event names such as `onClick`.
+
+```tsx
+<div onClick={() => alert("hello")}>content</div>
+```
+
+It also supports lower-level native event binding. For example, when you need event capture, you can use the `onNativeEvent` form.
+
+```tsx
+<div
+  onNativeClick={{
+    handleEvent(e) {
+      alert("hello");
+    },
+    capture: true, // capture phase
+    once: true, // execute only once
+    passive: true, // won't prevent default behavior
+  }}
+>
+  content
+</div>
+```
 
 ## Interpolation
 
@@ -44,14 +69,14 @@ In J20, strings and numbers are directly converted to text nodes.
 
 ```tsx
 let text = "hello world";
-<span>{text}</span>
+<span>{text}</span>;
 ```
 
 If text is a [signal](/en/guide/component#declaring-signals), it updates with the reactive variable.
 
 ```tsx
 let $text = "hello world";
-<span>{$text}</span>
+<span>{$text}</span>;
 ```
 
 ### Element Node Interpolation
@@ -61,7 +86,7 @@ Element node interpolation does not update with signal variable changes.
 ```tsx
 let $visible = false;
 let $el = $visible ? <div>el</div> : null;
-<div>{$el}</div>
+<div>{$el}</div>;
 ```
 
 For node switching, J20 provides `<If>`, `<Switch>`, and `<Replace>` components. See [Conditional Rendering](/en/guide/conditional).
