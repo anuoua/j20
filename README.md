@@ -34,7 +34,8 @@ tsconfig.json
 {
     "compilerOptions": {
         "jsx": "react-jsx",
-        "jsxImportSource": "j20"
+        "jsxImportSource": "j20",
+        "moduleResolution": "bundler"
     }
 }
 ```
@@ -61,9 +62,9 @@ export default defineConfig({
 ```tsx
 import { createRoot } from "j20";
 
-const root = createRoot(() => <span>hello world</span>);
+const App = () => <span>hello world</span>;
 
-document.querySelector("#root").append(root.element);
+createRoot(App, document.querySelector("#root"));
 ```
 
 ## 更多
