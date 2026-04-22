@@ -11,7 +11,7 @@ J20 provides two APIs for managing component styles: `createCssModule` and `styl
 ```tsx
 import { createCssModule } from "j20";
 
-const useStyles = createCssModule(`
+const styles = createCssModule(`
   .container {
     color: red;
     font-size: 16px;
@@ -22,11 +22,11 @@ const useStyles = createCssModule(`
 `);
 
 const App = () => {
-  const classes = useStyles();
+  const cns = styles();
 
   return (
-    <div class={classes.container}>
-      <span class={classes.title}>Hello J20</span>
+    <div class={cns.container}>
+      <span class={cns.title}>Hello J20</span>
     </div>
   );
 };
@@ -38,7 +38,7 @@ const App = () => {
 
 1. Each class name in the CSS is automatically suffixed with a unique identifier (e.g., `.container` becomes `.container_abc123`), achieving scope isolation
 2. The processed styles are injected into the current component's Shadow Root or Document
-3. A Proxy object is returned whose properties automatically resolve to the suffixed class names, so `classes.container` gives you the transformed class name directly
+3. A Proxy object is returned whose properties automatically resolve to the suffixed class names, so `cns.container` gives you the transformed class name directly
 
 ### Reusing Across Components
 
@@ -47,7 +47,7 @@ The function returned by `createCssModule` can be called in multiple components.
 ```tsx
 import { createCssModule } from "j20";
 
-const useStyles = createCssModule(`
+const styles = createCssModule(`
   .btn {
     padding: 8px 16px;
     border-radius: 4px;
@@ -64,16 +64,46 @@ const useStyles = createCssModule(`
 `);
 
 const PrimaryButton = () => {
-  const classes = useStyles();
-  return <button class={`${classes.btn} ${classes.primary}`}>Primary</button>;
+  const cns = styles();
+  return <button class={`${cns.btn} ${cns.primary}`}>Primary</button>;
 };
 
 const SecondaryButton = () => {
-  const classes = useStyles();
+  const cns = styles();
   return (
-    <button class={`${classes.btn} ${classes.secondary}`}>Secondary</button>
+    <button class={`${cns.btn} ${cns.secondary}`}>Secondary</button>
   );
 };
+```
+
+### Best Practices
+
+**Use snake_case for class names, avoid hyphens.** Since `createCssModule` returns a Proxy object, hyphenated class names require bracket notation like `cns["say-hello"]`, while snake_case allows dot notation `cns.say_hello`:
+
+```tsx
+const styles = createCssModule(`
+  .say-hello { color: red; }
+  .say_hello { color: red; }
+`);
+
+const App = () => {
+  const cns = styles();
+  return (
+    <div>
+      <span class={cns["say-hello"]}>Not recommended</span>
+      <span class={cns.say_hello}>Recommended</span>
+    </div>
+  );
+};
+```
+
+**Keep class names flat, avoid nested selectors.** `createCssModule` adds suffixes to top-level class names, but class names within nested selectors may not be processed correctly, causing styles to break:
+
+```tsx
+const styles = createCssModule(`
+  .active .item { color: red; }
+  .active_item { color: red; }
+`);
 ```
 
 ## styleSheet
@@ -89,18 +119,19 @@ const App = () => {
   styleSheet(`
     div { box-sizing: border-box; }
     body { margin: 0; }
+    .msg { font-size: 16px; }
   `,
   "my-global-style" // optional
   );
 
-  return <div>Hello J20</div>;
+  return <div class="msg">Hello J20</div>;
 };
 ```
 
 ### Parameters
 
 - **css** (`string`): CSS text content
-- **id** (`string`, optional): A unique identifier for the stylesheet, used for reference counting and deduplication
+- **id** (`string`, optional): A unique identifier for the stylesheet, used for reference counting and deduplication. Defaults to a hash generated from the CSS content
 
 ### Auto-mounting and Cleanup
 
