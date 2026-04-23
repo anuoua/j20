@@ -16,7 +16,7 @@ export const registerWebComponent = <C extends WC<any, any>>(Comp: C) => {
     throw new Error("Custom element tag is already defined");
   }
 
-  const NewClass = buildClass(Comp);
+  const NewClass = buildClass(Comp, true);
 
   customElements.define(Comp.customElement.tag, NewClass);
 };
@@ -33,7 +33,7 @@ export abstract class WebComponentClass extends HTMLElement {
   removeStyleSheet(styleSheet: CSSStyleSheet) {}
 }
 
-export const buildClass = (Comp: WC) => {
+export const buildClass = (Comp: WC, standalone = false) => {
   const { customElement } = Comp;
   const { a2p, a2v } = buildMap(customElement);
 
@@ -82,6 +82,8 @@ export const buildClass = (Comp: WC) => {
         },
         {} as Record<string, SignalLike>
       );
+
+      if (standalone) this.lazyInit();
     }
 
     lazyInit() {
