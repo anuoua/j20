@@ -153,8 +153,8 @@ importers:
         specifier: workspace:*
         version: link:../jsx-transform
       signal-compiler:
-        specifier: ^0.1.3
-        version: 0.1.3
+        specifier: ^0.1.4
+        version: 0.1.4
     devDependencies:
       rimraf:
         specifier: ^5.0.10
@@ -2116,8 +2116,8 @@ packages:
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
 
-  signal-compiler@0.1.3:
-    resolution: {integrity: sha512-+6wqLH2LLu7PwUZMqS8w2WBXERSQs8An0wFE3C4r3GxoxxMPn3AQrfIXa9kzb8r6ztv/Hk3VFAcl8jtad8+pwA==}
+  signal-compiler@0.1.4:
+    resolution: {integrity: sha512-/kvNB14O0C0634U3PXPSY8IMpNyv5VELdegA7nZUeXPihwj9FSX+SkfmATWCLfCw958EJsnt+h9TZAiurX0w5g==}
 
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
@@ -4433,7 +4433,7 @@ snapshots:
 
   siginfo@2.0.0: {}
 
-  signal-compiler@0.1.3:
+  signal-compiler@0.1.4:
     dependencies:
       '@babel/core': 7.24.9
       '@babel/helper-annotate-as-pure': 7.27.3
