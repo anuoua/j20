@@ -26,4 +26,4 @@ export * from "./h/createRoot";
 export * from "./h/instance";
 export * from "./jsx-runtime";
 export * from "./types";
-export { registerWebComponent } from "./web-components";
+export { registerWebComponent, WebComponentClass } from "./web-components";

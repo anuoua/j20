@@ -7,7 +7,7 @@ export interface Instance {
   parent?: Instance;
   id: string;
   range: Text[];
-  host: WebComponentClass | Document | ShadowRoot;
+  host: WebComponentClass | Document;
   disposes?: (() => void)[];
   children?: Instance[];
   mounts?: (() => void)[];

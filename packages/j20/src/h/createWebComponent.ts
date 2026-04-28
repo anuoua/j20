@@ -6,7 +6,7 @@ import { BRAND } from "../brand";
 import { buildClass, WebComponentClass } from "../web-components";
 import { getChildren, nodeAttributesEffect } from "./utils";
 
-export const hostStack: (WebComponentClass | Document | ShadowRoot)[] = [];
+export const hostStack: (WebComponentClass | Document)[] = [];
 
 export const getCurrentHost = () => {
   return hostStack.at(-1);
