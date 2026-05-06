@@ -162,10 +162,16 @@ class Computed<T> {
         if (batchDepth > 0) {
           pendingEffects.add(reaction);
         } else {
-          reaction.execute();
+          pendingEffects.add(reaction);
+          flushEffects();
         }
       }
     });
+  }
+
+  recomputeIfDirty(): void {
+    if (!this.dirty) return;
+    this.compute();
   }
 
   track(source: Signal<unknown> | Computed<unknown>): void {
@@ -195,18 +201,65 @@ class Computed<T> {
 
 const computationStack = new Set<Computed<unknown>>();
 
+let flushing = false;
+function flushEffects(): void {
+  if (flushing) return;
+  flushing = true;
+  try {
+    while (pendingEffects.size > 0) {
+      const effects = Array.from(pendingEffects);
+      pendingEffects.clear();
+      effects.forEach((eff) => {
+        if (eff.isActive()) {
+          try {
+            eff.execute();
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      });
+    }
+  } finally {
+    flushing = false;
+  }
+}
+
 class Effect {
   private effectFn: () => void | (() => void);
   private cleanupFn: (() => void) | null = null;
   public disposed: boolean = false;
   public readonly _deps: Set<Signal<unknown> | Computed<unknown>> = new Set();
+  private lastDepVersions: Map<Signal<unknown> | Computed<unknown>, number> = new Map();
 
   constructor(effectFn: () => void | (() => void)) {
     this.effectFn = effectFn;
   }
 
+  private depsChanged(): boolean {
+    for (const [dep, lastVersion] of this.lastDepVersions) {
+      if (dep instanceof Computed) {
+        dep.recomputeIfDirty();
+      }
+      if (dep.version !== lastVersion) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private saveDepVersions(): void {
+    this.lastDepVersions.clear();
+    this._deps.forEach((dep) => {
+      this.lastDepVersions.set(dep, dep.version);
+    });
+  }
+
   execute(): void {
     if (this.disposed) return;
+
+    if (this.lastDepVersions.size > 0 && !this.depsChanged()) {
+      return;
+    }
 
     if (this.cleanupFn) {
       try {
@@ -236,6 +289,7 @@ class Effect {
       }
     } finally {
       currentReaction = prevReaction;
+      this.saveDepVersions();
     }
   }
 
@@ -252,6 +306,7 @@ class Effect {
     });
 
     this._deps.clear();
+    this.lastDepVersions.clear();
 
     if (this.cleanupFn) {
       try {
@@ -307,18 +362,7 @@ function batch<T>(fn: () => T): T {
     batchDepth--;
 
     if (batchDepth === 0) {
-      const effects = Array.from(pendingEffects);
-      pendingEffects.clear();
-
-      effects.forEach((effect) => {
-        if (effect.isActive()) {
-          try {
-            effect.execute();
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      });
+      flushEffects();
     }
   }
 }

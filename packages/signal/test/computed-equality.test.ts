@@ -2,7 +2,7 @@ import { it, describe, expect } from "vitest";
 import { signal, computed, effect, batch } from "../src";
 
 describe("Computed equality optimization", () => {
-  it("should not notify downstream when computed value unchanged (primitive)", () => {
+  it("should not re-run effect when computed value unchanged (primitive)", () => {
     const source = signal({ c: 1, d: 2 });
     const derived = computed(() => source.value.c);
     let effectRunCount = 0;
@@ -18,10 +18,10 @@ describe("Computed equality optimization", () => {
     // source reference changes, but c stays the same
     source.value = { c: 1, d: 3 };
     expect(derived.value).toBe(1);
-    expect(effectRunCount).toBe(2); // effect runs once due to markDirty, but no cascading
+    expect(effectRunCount).toBe(1);
   });
 
-  it("should notify downstream when computed value changes", () => {
+  it("should re-run effect when computed value changes", () => {
     const source = signal({ c: 1, d: 2 });
     const derived = computed(() => source.value.c);
     let effectRunCount = 0;
@@ -62,7 +62,7 @@ describe("Computed equality optimization", () => {
     expect(derived.version).toBe(versionBefore + 1);
   });
 
-  it("should not trigger nested computed when intermediate value unchanged", () => {
+  it("should not trigger nested effect when intermediate computed value unchanged", () => {
     const source = signal({ c: 1, d: 2 });
     const mid = computed(() => source.value.c);
     const top = computed(() => mid.value * 10);
@@ -79,8 +79,7 @@ describe("Computed equality optimization", () => {
     // c unchanged => mid unchanged => top unchanged
     source.value = { c: 1, d: 99 };
     expect(top.value).toBe(10);
-    // effect still runs due to markDirty propagation, but version unchanged
-    expect(effectRunCount).toBe(2);
+    expect(effectRunCount).toBe(1);
   });
 
   it("should work with batch - no extra runs when value unchanged", () => {
@@ -102,7 +101,7 @@ describe("Computed equality optimization", () => {
     });
 
     expect(derived.value).toBe(1);
-    expect(effectRunCount).toBe(2);
+    expect(effectRunCount).toBe(1);
   });
 
   it("should work with batch - recompute when value changes", () => {
@@ -140,7 +139,7 @@ describe("Computed equality optimization", () => {
 
     source.value = { name: "foo", age: 2 };
     expect(name.value).toBe("foo");
-    expect(effectRunCount).toBe(2);
+    expect(effectRunCount).toBe(1);
   });
 
   it("should handle boolean equality", () => {
@@ -157,7 +156,7 @@ describe("Computed equality optimization", () => {
 
     source.value = { active: true, count: 1 };
     expect(active.value).toBe(true);
-    expect(effectRunCount).toBe(2);
+    expect(effectRunCount).toBe(1);
   });
 
   it("should handle NaN equality (NaN === NaN for Object.is)", () => {
@@ -174,8 +173,8 @@ describe("Computed equality optimization", () => {
 
     source.value = { val: NaN };
     expect(Number.isNaN(derived.value)).toBe(true);
-    // Object.is(NaN, NaN) is true, so version should not change
-    expect(effectRunCount).toBe(2);
+    // Object.is(NaN, NaN) is true, so effect should not re-run
+    expect(effectRunCount).toBe(1);
   });
 
   it("should handle reference equality for objects", () => {
@@ -194,7 +193,7 @@ describe("Computed equality optimization", () => {
     // same object reference
     source.value = { ref: inner };
     expect(ref.value).toBe(inner);
-    expect(effectRunCount).toBe(2);
+    expect(effectRunCount).toBe(1);
   });
 
   it("should detect reference change for objects", () => {
