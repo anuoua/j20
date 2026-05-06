@@ -124,8 +124,11 @@ class Computed<T> {
     currentReaction = this;
 
     try {
-      this._value = this.computeFn();
-      this._version++;
+      const newValue = this.computeFn();
+      if (!Object.is(this._value, newValue)) {
+        this._value = newValue;
+        this._version++;
+      }
     } catch (e) {
       this.dirty = true;
       throw e;
