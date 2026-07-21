@@ -10,6 +10,7 @@ export interface Scenario {
 }
 
 const FAN_OUT_COUNT = 200;
+const WIDE_FAN_OUT_COUNT = 1000;
 const CHAIN_DEPTH = 50;
 const BATCH_SIGNALS = 20;
 
@@ -21,6 +22,8 @@ export function createScenarios(): Scenario[] {
     signalFanOut(),
     deepComputedChain(),
     batchMultipleUpdates(),
+    diamondDependency(),
+    wideFanOut(),
   ];
 }
 
@@ -159,6 +162,45 @@ function rawSignalOps(): Scenario {
     },
     fn() {
       s.value = s.value + 1;
+    },
+  };
+}
+
+function diamondDependency(): Scenario {
+  let root: Signal<number>;
+
+  return {
+    name: "diamond-dependency",
+    beforeAll() {
+      root = signal(1);
+      const b = computed(() => root.value * 2);
+      const c = computed(() => root.value * 3);
+      const leaf = computed(() => b.value + c.value);
+      effect(() => {
+        leaf.value;
+      });
+    },
+    fn() {
+      root.value = root.value + 1;
+    },
+  };
+}
+
+function wideFanOut(): Scenario {
+  let root: Signal<number>;
+
+  return {
+    name: "wide-fan-out-1000",
+    beforeAll() {
+      root = signal(0);
+      for (let i = 0; i < WIDE_FAN_OUT_COUNT; i++) {
+        effect(() => {
+          root.value;
+        });
+      }
+    },
+    fn() {
+      root.value = root.value + 1;
     },
   };
 }

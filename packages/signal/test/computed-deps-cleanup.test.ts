@@ -18,13 +18,13 @@ describe("Computed dependency cleanup", () => {
 
     expect(c.value).toBe("a1");
     expect(computeCount).toBe(1);
-    expect(a._deps.has(c as Computed<unknown>)).toBe(true);
+    expect(a._observers.includes(c as Computed<unknown>)).toBe(true);
 
     flag.value = false;
     expect(c.value).toBe("b2");
     expect(computeCount).toBe(2);
 
-    expect(a._deps.has(c as Computed<unknown>)).toBe(false);
+    expect(a._observers.includes(c as Computed<unknown>)).toBe(false);
 
     a.value = "a2";
     expect(computeCount).toBe(2);
@@ -62,10 +62,10 @@ describe("Computed dependency cleanup", () => {
     const c = computed(() => a.value * 2);
 
     expect(c.value).toBe(2);
-    expect(a._deps.has(c as Computed<unknown>)).toBe(true);
+    expect(a._observers.includes(c as Computed<unknown>)).toBe(true);
 
     (c as Computed<number>).dispose();
 
-    expect(a._deps.has(c as Computed<unknown>)).toBe(false);
+    expect(a._observers.includes(c as Computed<unknown>)).toBe(false);
   });
 });

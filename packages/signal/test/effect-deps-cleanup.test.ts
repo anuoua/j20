@@ -1,5 +1,5 @@
 import { it, describe, expect } from "vitest";
-import { signal, effect } from "../src";
+import { signal, effect, Effect } from "../src";
 
 describe("Effect dependency cleanup", () => {
   it("should remove stale dependencies when effect re-runs", () => {
@@ -44,16 +44,16 @@ describe("Effect dependency cleanup", () => {
 
     const eff = effect(() => {
       runCount++;
-      signals[flag.value].value;
-    }) as any;
+      signals[flag.value]!.value;
+    }) as Effect;
 
-    expect(eff._deps.size).toBe(2);
+    expect(eff._sources.length).toBe(2);
 
     flag.value = 1;
-    expect(eff._deps.size).toBe(2);
+    expect(eff._sources.length).toBe(2);
 
     flag.value = 2;
-    expect(eff._deps.size).toBe(2);
+    expect(eff._sources.length).toBe(2);
 
     expect(runCount).toBe(3);
   });

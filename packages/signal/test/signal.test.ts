@@ -120,7 +120,7 @@ describe("Signal System", () => {
     }) as Effect;
 
     expect(effectRunCount).toBe(1);
-    expect(eff._deps.size).toBe(1);
+    expect(eff._sources.length).toBe(1);
 
     count.value = 1;
     expect(effectRunCount).toBe(2);
@@ -136,9 +136,9 @@ describe("Signal System", () => {
     }) as Effect;
 
     // 验证依赖关系被正确建立
-    expect(count._deps.size).toBe(1); // computed依赖count
-    expect(doubled._deps.size).toBe(1); // effect依赖computed
-    expect(eff._deps.size).toBe(1); // effect依赖computed
+    expect(count._observers.length).toBe(1); // computed依赖count
+    expect(doubled._observers.length).toBe(1); // effect依赖computed
+    expect(eff._sources.length).toBe(1); // effect依赖computed
   });
 
   it("should handle computed disposal", () => {
@@ -152,7 +152,7 @@ describe("Signal System", () => {
     (doubled as Computed<number>).dispose();
 
     // 验证disposed状态
-    expect(doubled.disposed).toBe(true);
+    expect(doubled._disposed).toBe(true);
 
     // 尝试访问disposed computed应该抛出错误
     expect(() => {
@@ -532,7 +532,7 @@ describe("Signal System", () => {
 
   it("should throw on circular computed dependency", () => {
     const s = signal(0);
-    const c = computed(() => {
+    const c: Computed<number> = computed<number>(() => {
       const v = s.value;
       if (v === 0) {
         s.value = 1;

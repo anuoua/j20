@@ -19,7 +19,7 @@ describe("Signal Performance", () => {
     expect(effectRunCount).toBe(1);
 
     // 验证依赖关系只建立一次
-    expect(count._deps.size).toBe(1);
+    expect(count._observers.length).toBe(1);
 
     // 更新信号
     count.value = 1;
@@ -154,11 +154,11 @@ describe("Signal Performance", () => {
     }) as Effect;
 
     expect(effectRunCount).toBe(1);
-    expect(eff._deps.size).toBe(2);
+    expect(eff._sources.length).toBe(2);
 
     a.value = 3;
 
     expect(effectRunCount).toBe(2);
-    expect(eff._deps.size).toBe(2);
+    expect(eff._sources.length).toBe(2);
   });
 });
