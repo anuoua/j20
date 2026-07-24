@@ -151,19 +151,61 @@ export const nodeAttributesEffect = (
   node: HTMLElement | SVGElement,
   propsFn: () => any
 ) => {
-  let oldProps: any = {};
+  const propsObj = propsFn();
 
-  effect(() => {
-    const newProps = { ...propsFn() };
+  if (!propsObj) return;
 
-    const allKeys = new Set([
-      ...Object.keys(newProps),
-      ...Object.keys(oldProps),
-    ]);
+  const keys = Object.keys(propsObj);
 
-    for (const key of allKeys) {
-      const oldValue = oldProps[key];
-      const newValue = newProps[key];
+  // When every property is an accessor (the common case from the JSX
+  // compiler — each prop is a reactive getter), create one effect per key
+  // so a change to one prop never re-evaluates the others.
+  //
+  // If any property is a plain value (e.g. from a spread like {...rest}),
+  // fall back to a single coarse-grained effect that re-reads propsFn() to
+  // handle potentially dynamic keys correctly.
+  const allGetters = keys.every((key) => {
+    const desc = Object.getOwnPropertyDescriptor(propsObj, key);
+    return !!desc?.get;
+  });
+
+  if (!allGetters) {
+    let oldProps: any = {};
+
+    effect(() => {
+      const newProps = { ...propsFn() };
+
+      const allKeys = new Set([
+        ...Object.keys(newProps),
+        ...Object.keys(oldProps),
+      ]);
+
+      for (const key of allKeys) {
+        const oldValue = oldProps[key];
+        const newValue = newProps[key];
+
+        exist(oldValue)
+          ? exist(newValue)
+            ? Object.is(oldValue, newValue)
+              ? null
+              : update(node, key, oldValue, newValue)
+            : unset(node, key, oldValue)
+          : exist(newValue)
+            ? add(node, key, newValue)
+            : null;
+      }
+
+      oldProps = newProps;
+    });
+    return;
+  }
+
+  // Fine-grained: one effect per prop key
+  const oldValues: Record<string, any> = {};
+  for (const key of keys) {
+    effect(() => {
+      const newValue = propsObj[key];
+      const oldValue = oldValues[key];
 
       exist(oldValue)
         ? exist(newValue)
@@ -174,8 +216,8 @@ export const nodeAttributesEffect = (
         : exist(newValue)
           ? add(node, key, newValue)
           : null;
-    }
 
-    oldProps = newProps;
-  });
+      oldValues[key] = newValue;
+    });
+  }
 };
