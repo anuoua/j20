@@ -21,16 +21,17 @@ export const registerWebComponent = <C extends WC<any, any>>(Comp: C) => {
   customElements.define(Comp.customElement.tag, NewClass);
 };
 
-export abstract class WebComponentClass extends HTMLElement {
-  abstract customElement: CustomElement;
-
-  constructor() {
-    super();
-  }
-
-  addStyleSheet(styleSheet: CSSStyleSheet) {}
-
-  removeStyleSheet(styleSheet: CSSStyleSheet) {}
+export interface WebComponentClass extends HTMLElement {
+  customElement: CustomElement;
+  brand: string;
+  lazyInit(): void;
+  appendToShadowDom(elements: HTMLElement[]): void;
+  appendToLightDom(elements: HTMLElement[]): void;
+  appendToBody(elements: HTMLElement[]): void;
+  addStyleSheet(styleSheet: CSSStyleSheet): void;
+  removeStyleSheet(styleSheet: CSSStyleSheet): void;
+  addConnectedCallback(callback: () => void): void;
+  addDisconnectedCallback(callback: () => void): void;
 }
 
 export const buildClass = (Comp: WC, standalone = false) => {

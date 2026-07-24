@@ -20,6 +20,7 @@ export const getChildren = (propChildren: any[]) => {
     const child = propChildren[i];
     if (typeof child === "function") {
       let textNode: Text | undefined;
+      let current: Node | undefined;
       const effectInstance = effect(() => {
         const el = child();
         if (typeof el === "number" || typeof el === "string") {
@@ -27,10 +28,21 @@ export const getChildren = (propChildren: any[]) => {
             textNode.nodeValue = el + "";
           } else {
             textNode = document.createTextNode(el + "");
-            arr.push(textNode);
+            if (current?.parentNode) {
+              current.parentNode.replaceChild(textNode, current);
+            } else {
+              arr.push(textNode);
+            }
           }
-        } else {
-          arr.push(el);
+          current = textNode;
+        } else if (el != null) {
+          if (current?.parentNode) {
+            current.parentNode.replaceChild(el, current);
+          } else {
+            arr.push(el);
+          }
+          current = el;
+          textNode = undefined;
         }
       });
       if (!textNode) {

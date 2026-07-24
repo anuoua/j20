@@ -9,6 +9,9 @@ import {
 } from "../h/instance";
 import { untrack } from "../api/untrack";
 
+const __DEV__ =
+  typeof process !== "undefined" && process.env?.NODE_ENV !== "production";
+
 function insertAfter(parentNode: Node, newNode: Node, targetNode: Node) {
   parentNode?.insertBefore(newNode, targetNode.nextSibling);
 }
@@ -51,8 +54,7 @@ export const For = <T>(p: ListProps<T>) => {
     const trait = props.trait ?? defaultTrait;
     const newList = props.of;
 
-    // @ts-expect-error
-    if (import.meta.env.DEV) {
+    if (__DEV__) {
       const traitMap = new Map<any, T[]>();
       const duplicates: T[] = [];
 
