@@ -62,7 +62,9 @@ export const update = (
   newValue: any
 ) => {
   if (isNativeEvent(key)) {
-    node.removeEventListener(getNativeEventName(key), oldValue.handleEvent);
+    node.removeEventListener(getNativeEventName(key), oldValue.handleEvent, {
+      capture: !!oldValue.capture,
+    });
     const { handleEvent, ...restValues } = newValue;
     node.addEventListener(getNativeEventName(key), handleEvent, restValues);
   } else if (isEvent(key)) {
@@ -89,7 +91,9 @@ export const unset = (
   oldValue: any
 ) => {
   if (isNativeEvent(key)) {
-    node.removeEventListener(getNativeEventName(key), oldValue.handleEvent);
+    node.removeEventListener(getNativeEventName(key), oldValue.handleEvent, {
+      capture: !!oldValue.capture,
+    });
   } else if (isEvent(key)) {
     node.removeEventListener(getEventName(key), oldValue);
   } else if (key === "ref") {

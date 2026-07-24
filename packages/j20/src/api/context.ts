@@ -11,7 +11,7 @@ const contextWeakMap = new WeakMap<Instance, any>();
 const context = <T>(Context: { defaultValue: T }) => {
   const instance = securityGetCurrentInstance();
 
-  let index = instance?.parent;
+  let index: Instance | undefined = instance;
 
   while (index) {
     if (contextWeakMap.has(index)) {
@@ -19,9 +19,8 @@ const context = <T>(Context: { defaultValue: T }) => {
       if (ctx === Context) {
         return value;
       }
-    } else {
-      index = index.parent;
     }
+    index = index.parent;
   }
 
   return Context.defaultValue;
