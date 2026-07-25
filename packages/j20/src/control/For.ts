@@ -10,7 +10,8 @@ import {
 import { untrack } from "../api/untrack";
 
 const __DEV__ =
-  typeof process !== "undefined" && process.env?.NODE_ENV !== "production";
+  typeof (globalThis as any).process !== "undefined" &&
+  (globalThis as any).process.env?.NODE_ENV !== "production";
 
 function insertAfter(parentNode: Node, newNode: Node, targetNode: Node) {
   parentNode?.insertBefore(newNode, targetNode.nextSibling);

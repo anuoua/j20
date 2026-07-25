@@ -94,7 +94,7 @@ export default defineConfig({
         ],
       },
       {
-        text: "示例",
+        text: "参考",
         items: [{ text: "API 参考", link: "/guide/api" }],
       },
     ],

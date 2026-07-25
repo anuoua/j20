@@ -367,7 +367,7 @@ describe("Concurrent Updates", () => {
         () => ({
           disabled: $disabled.value,
           style: {
-            backgroundColor: $bg.value,
+            "background-color": $bg.value,
             color: $text.value,
           },
         }),
@@ -379,7 +379,7 @@ describe("Concurrent Updates", () => {
     const element = body.querySelector("div") as HTMLElement;
 
     let styleAttr = element.getAttribute("style");
-    expect(styleAttr).toContain("backgroundColor: red");
+    expect(styleAttr).toContain("background-color: red");
     expect(styleAttr).toContain("color: white");
 
     // 同时更新多个属性
@@ -389,7 +389,7 @@ describe("Concurrent Updates", () => {
 
     expect(element.getAttribute("disabled")).toBe("");
     styleAttr = element.getAttribute("style");
-    expect(styleAttr).toContain("backgroundColor: blue");
+    expect(styleAttr).toContain("background-color: blue");
     expect(styleAttr).toContain("color: black");
 
     // 继续并发更新
@@ -399,7 +399,7 @@ describe("Concurrent Updates", () => {
 
     expect(element.hasAttribute("disabled")).toBe(false);
     styleAttr = element.getAttribute("style");
-    expect(styleAttr).toContain("backgroundColor: green");
+    expect(styleAttr).toContain("background-color: green");
     expect(styleAttr).toContain("color: yellow");
   });
 

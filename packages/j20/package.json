@@ -32,7 +32,7 @@
     "test": "vitest --run --dom"
   },
   "dependencies": {
-    "csstype": "^3.1.2"
+    "csstype": "^3.2.3"
   },
   "devDependencies": {
     "@j20org/signal": "workspace:*",

@@ -369,7 +369,7 @@ describe("Edge Cases", () => {
           () => ({
             style: {
               content: '"hello world"',
-              fontFamily: "'Arial', sans-serif",
+              "font-family": "'Arial', sans-serif",
             },
           }),
           undefined
@@ -380,7 +380,7 @@ describe("Edge Cases", () => {
       const element = body.querySelector("div") as HTMLElement;
       const styleAttr = element.getAttribute("style");
       expect(styleAttr).toContain('content: "hello world"');
-      expect(styleAttr).toContain("fontFamily: 'Arial', sans-serif");
+      expect(styleAttr).toContain("font-family: 'Arial', sans-serif");
     });
 
     it("should handle zero values in style", () => {
@@ -414,8 +414,8 @@ describe("Edge Cases", () => {
           div,
           () => ({
             style: {
-              marginTop: -10,
-              letterSpacing: -1,
+              "margin-top": -10,
+              "letter-spacing": -1,
             },
           }),
           undefined
@@ -425,8 +425,8 @@ describe("Edge Cases", () => {
       document.body.appendChild(fragment);
       const element = body.querySelector("div") as HTMLElement;
       const styleAttr = element.getAttribute("style");
-      expect(styleAttr).toContain("marginTop: -10");
-      expect(styleAttr).toContain("letterSpacing: -1");
+      expect(styleAttr).toContain("margin-top: -10");
+      expect(styleAttr).toContain("letter-spacing: -1");
     });
   });
 
