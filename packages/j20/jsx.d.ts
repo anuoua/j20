@@ -821,7 +821,7 @@ declare global {
       textContent?: string | number;
     }
 
-    interface CSSProperties extends csstype.PropertiesHyphen {
+    interface CSSProperties extends csstype.Properties {
       // Override
       [key: `-${string}`]: string | number | undefined;
     }

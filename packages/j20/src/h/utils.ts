@@ -58,11 +58,14 @@ export const getChildren = (propChildren: any[]) => {
 let count = 0;
 export const generateId = () => (++count).toString(32);
 
+const toKebab = (key: string): string =>
+  key.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase());
+
 export const styleObjectToString = (style: Record<string, string | number>) => {
   let styleString = "";
   for (const key in style) {
     const value = style[key];
-    styleString += `${key}: ${value}; `;
+    styleString += `${toKebab(key)}: ${value}; `;
   }
   return styleString.trim();
 };

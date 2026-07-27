@@ -369,7 +369,7 @@ describe("Edge Cases", () => {
           () => ({
             style: {
               content: '"hello world"',
-              "font-family": "'Arial', sans-serif",
+              fontFamily: "'Arial', sans-serif",
             },
           }),
           undefined
@@ -414,8 +414,8 @@ describe("Edge Cases", () => {
           div,
           () => ({
             style: {
-              "margin-top": -10,
-              "letter-spacing": -1,
+              marginTop: -10,
+              letterSpacing: -1,
             },
           }),
           undefined

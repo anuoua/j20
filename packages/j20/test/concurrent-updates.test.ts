@@ -367,7 +367,7 @@ describe("Concurrent Updates", () => {
         () => ({
           disabled: $disabled.value,
           style: {
-            "background-color": $bg.value,
+            backgroundColor: $bg.value,
             color: $text.value,
           },
         }),

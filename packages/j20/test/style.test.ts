@@ -40,7 +40,7 @@ describe("Style Object Handling", () => {
         () => ({
           style: {
             color: "blue",
-            "font-size": "18px",
+            fontSize: "18px",
             margin: "10px",
           },
         }),
@@ -86,7 +86,7 @@ describe("Style Object Handling", () => {
     // 更新 style 对象
     styleObj.value = {
       color: "red",
-      "background-color": "yellow",
+      backgroundColor: "yellow",
     };
 
     element = body.querySelector("div") as HTMLElement;
@@ -106,7 +106,7 @@ describe("Style Object Handling", () => {
           class: "container",
           style: {
             display: "flex",
-            "justify-content": "center",
+            justifyContent: "center",
           },
         }),
         undefined
