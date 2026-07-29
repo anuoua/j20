@@ -12,12 +12,12 @@
   "license": "ISC",
   "private": true,
   "packageManager": "pnpm@10.5.2",
-  "dependencies": {
-    "@j20org/vite-plugin": "workspace:*",
-    "j20": "workspace:*",
-    "vite": "^8.0.1"
-  },
   "devDependencies": {
+    "@j20org/vite-plugin": "workspace:*",
+    "@stylec/runtime": "0.0.8",
+    "@stylec/vite": "0.0.8",
+    "j20": "workspace:*",
+    "vite": "^8.0.1",
     "typescript": "^5.9.3"
   }
 }
