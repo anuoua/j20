@@ -1,7 +1,6 @@
 import { For, styleSheet } from "j20";
-import { TodoItem } from "./TodoItem";
+import { TodoItem } from "../TodoItem/TodoItem";
 import { css, classes } from "./Todo.stylec";
-import { override } from "./TodoItem.stylec";
 
 export const App = () => {
   styleSheet(css);
@@ -85,11 +84,6 @@ export const App = () => {
         <For of={$todos}>
           {(todo, $index) => (
             <TodoItem
-              override={override({
-                item: {
-                  background: "red",
-                },
-              })}
               text={`${todo.text}, 序号: ${$index}`}
               completed={todo.completed}
               onToggle={() => toggleTodo(todo.id)}
