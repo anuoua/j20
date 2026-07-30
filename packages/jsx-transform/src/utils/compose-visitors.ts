@@ -1,45 +1,52 @@
 import type { Visitor } from "@babel/core";
 
-export const composeVisitors = (visitors: Visitor[]) => {
-  const visitorStore: {
-    [K in keyof Visitor]: Visitor[K][];
-  } = {};
+type VisitFn = (path: any, state: any) => void;
 
-  visitors.forEach((v) => {
-    Object.keys(v).forEach((k) => {
-      const key = k as keyof Visitor;
-      if (key in visitorStore) {
-        // @ts-expect-error
-        visitorStore[key].push(v[key]);
-      } else {
-        // @ts-expect-error
-        visitorStore[key] = [v[key]];
+interface NodeHandlers {
+  enter?: VisitFn[];
+  exit?: VisitFn[];
+}
+
+const pushEnter = (handlers: NodeHandlers, fn: VisitFn): void => {
+  (handlers.enter ??= []).push(fn);
+};
+
+export const composeVisitors = (visitors: Visitor[]): Visitor => {
+  const buckets = new Map<string, NodeHandlers>();
+
+  for (const visitor of visitors) {
+    for (const key in visitor) {
+      const handler = (visitor as Record<string, any>)[key];
+      if (!handler) continue;
+
+      let bucket = buckets.get(key);
+      if (!bucket) {
+        bucket = {};
+        buckets.set(key, bucket);
       }
-    });
-  });
 
-  const visitor: Visitor = {};
+      if (typeof handler === "function") {
+        pushEnter(bucket, handler);
+      } else {
+        if (handler.enter) pushEnter(bucket, handler.enter);
+        if (handler.exit) {
+          (bucket.exit ??= []).push(handler.exit);
+        }
+      }
+    }
+  }
 
-  Object.keys(visitorStore).forEach((k) => {
-    const key = k as keyof Visitor;
-    // @ts-expect-error
-    visitor[key] = {
-      // @ts-expect-error
-      enter: (...args) =>
-        visitorStore[key]?.forEach((i: any) =>
-          i.enter
-            ? i.enter(...args)
-            : typeof i === "function"
-              ? i(...args)
-              : null
-        ),
-      // @ts-expect-error
-      exit: (...args) =>
-        visitorStore[key]?.forEach((i: any) =>
-          i.exit ? i.exit(...args) : null
-        ),
+  const merged: Record<
+    string,
+    { enter: VisitFn; exit: VisitFn }
+  > = {};
+
+  for (const [key, { enter, exit }] of buckets) {
+    merged[key] = {
+      enter: (path, state) => enter?.forEach((fn) => fn.call(state, path, state)),
+      exit: (path, state) => exit?.forEach((fn) => fn.call(state, path, state)),
     };
-  });
+  }
 
-  return visitor;
+  return merged as unknown as Visitor;
 };

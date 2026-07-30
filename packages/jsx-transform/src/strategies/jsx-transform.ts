@@ -1,87 +1,207 @@
 import * as babelCore from "@babel/core";
-import type { types as T } from "@babel/core";
-import * as g from "@babel/generator";
+import type { types as T, NodePath } from "@babel/core";
+import type { PluginState } from "../types";
+import { getState } from "../utils/state";
+import { isConflictSvgTag, isSvgTagName } from "../utils/svg";
 
-const { types: t, template } = babelCore;
+const { types: t } = babelCore;
 
-const svgTags = [
-  "animate",
-  "animateMotion",
-  "animateTransform",
-  "circle",
-  "clipPath",
-  "defs",
-  "desc",
-  "ellipse",
-  "feBlend",
-  "feColorMatrix",
-  "feComponentTransfer",
-  "feComposite",
-  "feConvolveMatrix",
-  "feDiffuseLighting",
-  "feDisplacementMap",
-  "feDistantLight",
-  "feDropShadow",
-  "feFlood",
-  "feFuncA",
-  "feFuncB",
-  "feFuncG",
-  "feFuncR",
-  "feGaussianBlur",
-  "feImage",
-  "feMerge",
-  "feMergeNode",
-  "feMorphology",
-  "feOffset",
-  "fePointLight",
-  "feSpecularLighting",
-  "feSpotLight",
-  "feTile",
-  "feTurbulence",
-  "filter",
-  "foreignObject",
-  "g",
-  "image",
-  "line",
-  "linearGradient",
-  "marker",
-  "mask",
-  "metadata",
-  "mpath",
-  "path",
-  "pattern",
-  "polygon",
-  "polyline",
-  "radialGradient",
-  "rect",
-  "script",
-  "set",
-  "stop",
-  // "svg",
-  "switch",
-  "symbol",
-  "text",
-  "textPath",
-  "tspan",
-  "use",
-  "view",
-];
+/**
+ * A lowercase-leading tag name is a DOM ("compat") tag; everything else
+ * (capitalised identifier, member expression, the synthetic fragment tag) is
+ * treated as a component.
+ */
+const isDomTagName = (name: string): boolean => /^[a-z]/.test(name);
 
-const conflictSvgTags = ["title", "script", "style", "a"];
+const jsxMemberToExpression = (
+  node: T.JSXMemberExpression | T.JSXIdentifier
+): T.Expression => {
+  if (node.type === "JSXIdentifier") return t.identifier(node.name);
+  return t.memberExpression(
+    jsxMemberToExpression(node.object),
+    t.identifier(node.property.name),
+    false
+  );
+};
 
-export const jsxTransform = () // babel: typeof babelCore
-: babelCore.Visitor => {
+const hasSvgAncestor = (path: NodePath<T.JSXElement>): boolean => {
+  let parent: NodePath | null = path.parentPath;
+  while (parent) {
+    if (parent.isJSXElement()) {
+      const name = parent.node.openingElement.name;
+      if (name.type === "JSXIdentifier" && name.name === "svg") return true;
+    }
+    parent = parent.parentPath;
+  }
+  return false;
+};
+
+const getter = (key: string, value: T.Expression): T.ObjectMethod =>
+  t.objectMethod(
+    "get",
+    t.identifier(key),
+    [],
+    t.blockStatement([t.returnStatement(value)])
+  );
+
+type PrimitiveAttr = { key: string; value: string | number | boolean };
+
+const formatStaticAttrs = (attrs: PrimitiveAttr[]): string => {
+  if (attrs.length === 0) return "";
+  return (
+    " " +
+    attrs
+      .map((a) =>
+        typeof a.value === "boolean" ? a.key : `${a.key}="${a.value}"`
+      )
+      .join(" ")
+  );
+};
+
+const collectChildren = (
+  path: NodePath<T.JSXElement>,
+  isDom: boolean
+): T.Expression[] => {
+  const children: T.Expression[] = [];
+  for (const childPath of path.get("children")) {
+    const node = childPath.node;
+    switch (node.type) {
+      case "JSXText": {
+        const text = node.value.replace(/\n\s*/g, "");
+        if (text) children.push(t.stringLiteral(text));
+        break;
+      }
+      case "JSXExpressionContainer": {
+        const expr = node.expression;
+        if (expr.type === "JSXEmptyExpression") break;
+        if (
+          expr.type === "StringLiteral" ||
+          expr.type === "NumericLiteral"
+        ) {
+          children.push(expr);
+        } else if (isDom) {
+          // wrap reactive expression so the runtime can track it
+          children.push(t.arrowFunctionExpression([], expr));
+        } else {
+          children.push(expr);
+        }
+        break;
+      }
+      case "JSXSpreadChild": {
+        children.push(
+          t.spreadElement(node.expression) as unknown as T.Expression
+        );
+        break;
+      }
+      default:
+        // nested JSX elements have already been replaced by their call
+        // expression by the time the parent's exit runs (bottom-up).
+        children.push(node as T.Expression);
+    }
+  }
+  return children;
+};
+
+const childrenValue = (children: T.Expression[]): T.Expression =>
+  children.length > 1 ? t.arrayExpression(children) : children[0]!;
+
+interface CallParts {
+  isDom: boolean;
+  tagExpr: T.Expression;
+  members: (T.ObjectMethod | T.SpreadElement)[];
+  children: T.Expression[];
+}
+
+const buildCall = (
+  callee: T.Identifier,
+  { isDom, tagExpr, members, children }: CallParts
+): T.CallExpression => {
+  const hasAttrs = members.length > 0;
+  const propsArrow = (extra: T.ObjectMethod[]): T.Expression =>
+    t.arrowFunctionExpression([], t.objectExpression([...members, ...extra]));
+
+  // DOM node: children are the 3rd argument.
+  if (isDom) {
+    if (children.length > 0) {
+      return t.callExpression(callee, [
+        tagExpr,
+        hasAttrs ? propsArrow([]) : t.identifier("undefined"),
+        t.arrowFunctionExpression([], childrenValue(children)),
+      ]);
+    }
+    return hasAttrs
+      ? t.callExpression(callee, [tagExpr, propsArrow([])])
+      : t.callExpression(callee, [tagExpr]);
+  }
+
+  // Component: children live as a `children` getter inside props.
+  if (children.length > 0) {
+    return t.callExpression(callee, [
+      tagExpr,
+      propsArrow([getter("children", childrenValue(children))]),
+    ]);
+  }
+  return hasAttrs
+    ? t.callExpression(callee, [tagExpr, propsArrow([])])
+    : t.callExpression(callee, [tagExpr]);
+};
+
+const isTemplateDecl = (stmt: T.Statement): boolean => {
+  if (stmt.type !== "VariableDeclaration") return false;
+  const id = stmt.declarations[0]?.id;
+  return !!id && id.type === "Identifier" && id.name.startsWith("__tmpl");
+};
+
+const addTemplate = (
+  path: NodePath<T.JSXElement>,
+  state: PluginState,
+  content: string
+): T.Identifier => {
+  const programPath = path.find((p) => p.isProgram()) as
+    | NodePath<T.Program>
+    | null;
+  if (!programPath) throw new Error("program node not found");
+
+  state.templateCount += 1;
+  const n = state.templateCount;
+
+  const existing = state.templateMap[content];
+  const isAlias = existing !== undefined;
+  if (!isAlias) state.templateMap[content] = n;
+
+  const init: T.Expression = isAlias
+    ? t.identifier(`__tmpl${existing}`)
+    : t.callExpression(t.identifier(state.templateVarName), [
+        t.templateLiteral(
+          [t.templateElement({ raw: content, cooked: content }, true)],
+          []
+        ),
+      ]);
+
+  const decl = t.variableDeclaration("const", [
+    t.variableDeclarator(t.identifier(`__tmpl${n}`), init),
+  ]);
+
+  const body = programPath.node.body;
+  const lastTemplate = body.findLastIndex(isTemplateDecl);
+  const lastImport = body.findLastIndex(
+    (s) => s.type === "ImportDeclaration"
+  );
+  body.splice(Math.max(lastTemplate, lastImport) + 1, 0, decl);
+
+  return t.identifier(`__tmpl${n}`);
+};
+
+export const jsxTransform = (): babelCore.Visitor => {
   return {
     JSXFragment: {
       enter(path) {
+        const { fragmentVarName } = getState(path);
+        const tag = t.jsxIdentifier(fragmentVarName);
         path.replaceWith(
           t.jsxElement(
-            t.jsxOpeningElement(
-              t.jsxIdentifier(path.state.fragmentVarName),
-              [],
-              false
-            ),
-            t.jsxClosingElement(t.jsxIdentifier(path.state.fragmentVarName)),
+            t.jsxOpeningElement(tag, [], false),
+            t.jsxClosingElement(tag),
             path.node.children,
             false
           )
@@ -91,275 +211,101 @@ export const jsxTransform = () // babel: typeof babelCore
 
     JSXElement: {
       exit(path) {
-        const name = path.get("openingElement").get("name");
+        const state = getState(path);
+        const nameNode = path.node.openingElement.name;
 
-        let isCompatTag = false;
+        let isDom: boolean;
+        let tagExpr: T.Expression;
         let tagName = "";
 
-        switch (name.node.type) {
-          case "JSXIdentifier": {
-            isCompatTag = t.react.isCompatTag(name.node.name);
-            tagName = name.node.name;
+        switch (nameNode.type) {
+          case "JSXIdentifier":
+            isDom = isDomTagName(nameNode.name);
+            tagName = nameNode.name;
+            tagExpr = t.identifier(nameNode.name);
             break;
-          }
-          case "JSXMemberExpression": {
-            isCompatTag = false;
-            tagName = buildJSXMemberExpressionTagName(name as any);
+          case "JSXMemberExpression":
+            isDom = false;
+            tagExpr = jsxMemberToExpression(nameNode);
             break;
-          }
-          case "JSXNamespacedName": {
+          default:
             throw new Error("JSXNamespacedName is not supported");
+        }
+
+        const children = collectChildren(path, isDom);
+
+        const primitiveAttrs: PrimitiveAttr[] = [];
+        const members: (T.ObjectMethod | T.SpreadElement)[] = [];
+
+        for (const attrPath of path.get("openingElement").get("attributes")) {
+          const attr = attrPath.node;
+          switch (attr.type) {
+            case "JSXAttribute": {
+              if (attr.name.type !== "JSXIdentifier") {
+                throw new Error(
+                  "JSX attribute names with namespaces are not supported"
+                );
+              }
+              const key = attr.name.name;
+              const raw = attr.value;
+              if (!raw) {
+                if (isDom) {
+                  primitiveAttrs.push({ key, value: true });
+                } else {
+                  members.push(getter(key, t.booleanLiteral(true)));
+                }
+                break;
+              }
+              const value: T.Expression | T.JSXEmptyExpression =
+                raw.type === "JSXExpressionContainer" ? raw.expression : raw;
+              if (value.type === "JSXEmptyExpression") break;
+              if (
+                isDom &&
+                (value.type === "StringLiteral" ||
+                  value.type === "NumericLiteral")
+              ) {
+                primitiveAttrs.push({ key, value: value.value });
+              } else {
+                members.push(getter(key, value as T.Expression));
+              }
+              break;
+            }
+            case "JSXSpreadAttribute":
+              members.push(t.spreadElement(attr.argument));
+              break;
+            default:
+              break;
           }
         }
 
         let isSvg = false;
-
-        if (name.node.type === "JSXIdentifier") {
-          if (svgTags.includes(name.node.name)) {
+        if (nameNode.type === "JSXIdentifier") {
+          if (isSvgTagName(nameNode.name)) {
             isSvg = true;
-          }
-          if (
-            conflictSvgTags.includes(name.node.name) &&
-            path.parent.type === "JSXElement" &&
-            path.parent.openingElement.name.type === "JSXIdentifier" &&
-            path.parent.openingElement.name.name === "svg"
+          } else if (
+            isConflictSvgTag(nameNode.name) &&
+            hasSvgAncestor(path)
           ) {
             isSvg = true;
           }
         }
 
-        const children: T.Expression[] = [];
-
-        for (const child of path.get("children")) {
-          switch (child.node.type) {
-            case "JSXText": {
-              const text = child.node.value.replace(/\n\s*/g, "");
-              text && children.push(t.stringLiteral(text));
-              break;
-            }
-            case "JSXExpressionContainer": {
-              if (
-                child.node.expression.type === "StringLiteral" ||
-                child.node.expression.type === "NumericLiteral"
-              ) {
-                children.push(child.node.expression);
-              } else if (child.node.expression.type !== "JSXEmptyExpression")
-                children.push(
-                  isCompatTag
-                    ? template.expression(`() => %%EXP%%`)({
-                        EXP: child.node.expression,
-                      })
-                    : child.node.expression
-                );
-              break;
-            }
-            case "JSXElement": {
-              children.push(child.node);
-              break;
-            }
-            case "JSXSpreadChild": {
-              children.push(
-                t.spreadElement(
-                  child.node.expression
-                ) as unknown as T.Expression
-              );
-              break;
-            }
-            default: {
-              children.push(child.node);
-              break;
-            }
-          }
+        if (isDom) {
+          const content = `<${tagName}${formatStaticAttrs(primitiveAttrs)}>`;
+          tagExpr = t.callExpression(
+            addTemplate(path, state, content),
+            isSvg ? [t.booleanLiteral(true)] : []
+          );
         }
 
-        let primitiveAttrs: Record<string, string | boolean | number>[] = [];
-        let attrs: (T.ObjectMethod | T.SpreadElement)[] = [];
-        for (const attr of path.get("openingElement").get("attributes")) {
-          switch (attr.node.type) {
-            case "JSXAttribute": {
-              if (attr.node.name.type === "JSXIdentifier") {
-                if (attr.node.value) {
-                  const value =
-                    attr.node.value.type === "JSXExpressionContainer"
-                      ? attr.node.value.expression
-                      : attr.node.value;
-                  if (value.type !== "JSXEmptyExpression") {
-                    if (
-                      isCompatTag &&
-                      (value.type === "StringLiteral" ||
-                        value.type === "NumericLiteral")
-                    ) {
-                      primitiveAttrs.push({
-                        key: attr.node.name.name,
-                        value: value.value,
-                      });
-                    } else {
-                      attrs.push(
-                        t.objectMethod(
-                          "get",
-                          t.identifier(attr.node.name.name),
-                          [],
-                          t.blockStatement([t.returnStatement(value)])
-                        )
-                      );
-                    }
-                  }
-                } else {
-                  if (isCompatTag) {
-                    primitiveAttrs.push({
-                      key: attr.node.name.name,
-                      value: true,
-                    });
-                  } else {
-                    attrs.push(
-                      t.objectMethod(
-                        "get",
-                        t.identifier(attr.node.name.name),
-                        [],
-                        t.blockStatement([
-                          t.returnStatement(t.booleanLiteral(true)),
-                        ])
-                      )
-                    );
-                  }
-                }
-              }
-              break;
-            }
-            case "JSXSpreadAttribute": {
-              attrs.push(t.spreadElement(attr.node.argument));
-              break;
-            }
-          }
-        }
+        const callee = t.identifier(
+          children.length > 1 ? state.jsxsVarName : state.jsxVarName
+        );
 
-        const primitiveAttrsStr = primitiveAttrs
-          .map((attr) => {
-            const key = attr.key;
-            const value = attr.value;
-            return typeof value === "boolean" ? `${key}` : `${key}="${value}"`;
-          })
-          .join(" ");
-
-        const attrsAst = template.expression(`%%ATTRS%%`)({
-          ATTRS: t.objectExpression(attrs),
-        });
-
-        const attrsStr =
-          attrs.length > 0 ? g.generate(attrsAst).code.slice(1, -1) : "";
-
-        let jsx: T.Expression;
-        let jsxTag: any;
-        if (isCompatTag) {
-          const temp = `\`<${tagName}${primitiveAttrsStr ? ` ${primitiveAttrsStr}` : ""}>\``;
-          const id = addTemplate(path, temp);
-          jsxTag = t.callExpression(id, isSvg ? [t.booleanLiteral(true)] : []);
-        } else {
-          jsxTag = t.identifier(tagName);
-        }
-        if (children.length > 0) {
-          const multiple = children.length > 1;
-          if (isCompatTag) {
-            jsx = template.expression(`
-                            ${multiple ? path.state.jsxsVarName : path.state.jsxVarName}(%%TAG%%, ${attrsStr ? `() => ({ ${attrsStr}})` : "undefined"}, () => %%CHILDREN%%)
-                        `)({
-              CHILDREN: multiple ? t.arrayExpression(children) : children[0],
-              TAG: jsxTag,
-            });
-          } else {
-            jsx = template.expression(`
-                            ${multiple ? path.state.jsxsVarName : path.state.jsxVarName}(%%TAG%%, ${attrsStr || children.length ? `() => ({ ${attrsStr ? attrsStr + "," : ""} get children() { return %%CHILDREN%% } })` : ""})
-                        `)({
-              CHILDREN: multiple ? t.arrayExpression(children) : children[0],
-              TAG: jsxTag,
-            });
-          }
-        } else {
-          jsx = template.expression(`
-                        ${path.state.jsxVarName}(%%TAG%%${attrsStr ? `,() => ({${attrsStr}})` : ""})
-                    `)({
-            TAG: jsxTag,
-          });
-        }
-
-        path.replaceWith(jsx);
+        path.replaceWith(
+          buildCall(callee, { isDom, tagExpr, members, children })
+        );
       },
     },
   };
-};
-
-const buildJSXMemberExpressionTagName = (
-  name: babelCore.NodePath<T.JSXMemberExpression>
-) => {
-  const arr: string[] = [];
-  let path: babelCore.NodePath<T.JSXMemberExpression | T.JSXIdentifier> = name;
-  while (true) {
-    arr.push(path.get("property").node.name);
-    const objectNode = path.get("object").node;
-    if (objectNode.type === "JSXMemberExpression") {
-      path = path.get("object");
-    } else if (objectNode.type === "JSXIdentifier") {
-      arr.push(objectNode.name);
-      break;
-    }
-  }
-  return arr.reverse().join(".");
-};
-
-const addTemplate = (
-  path: babelCore.NodePath<T.JSXElement>,
-  templateContent: string
-) => {
-  const { types: t, template } = babelCore;
-
-  const programPath = path.find((p) =>
-    p.isProgram()
-  ) as babelCore.NodePath<T.Program>;
-
-  const lastTemplateVariableIndex = programPath.node.body.findLastIndex(
-    (i) =>
-      i.type === "VariableDeclaration" &&
-      i.declarations[0]?.id.type === "Identifier" &&
-      i.declarations[0].id.name.startsWith("__tmpl")
-  );
-
-  const lastImportIndex = programPath.node.body.findLastIndex(
-    (i) => i.type === "ImportDeclaration"
-  );
-
-  const lastIndex =
-    lastTemplateVariableIndex === -1
-      ? lastImportIndex === -1
-        ? 0
-        : lastImportIndex
-      : lastTemplateVariableIndex;
-
-  path.state.templateCount = (path.state.templateCount ?? 0) + 1;
-
-  const existTemplateCount = path.state.templateMap?.[templateContent];
-
-  const isExist = existTemplateCount != undefined;
-
-  if (!isExist) {
-    path.state.templateMap = {
-      ...path.state.templateMap,
-      [templateContent]: path.state.templateCount,
-    };
-  }
-
-  const templateStatement = isExist
-    ? (template.statement(
-        `const __tmpl${path.state.templateCount} = __tmpl${existTemplateCount}`
-      )() as T.VariableDeclaration)
-    : (template.statement(
-        `const __tmpl${path.state.templateCount} = ${path.state.templateVarName}(${templateContent})`
-      )() as T.VariableDeclaration);
-
-  if (lastIndex === -1) {
-    programPath.node.body.unshift(templateStatement);
-  } else {
-    programPath.node.body.splice(lastIndex + 1, 0, templateStatement);
-  }
-
-  return templateStatement.declarations[0]?.id as T.Identifier;
 };

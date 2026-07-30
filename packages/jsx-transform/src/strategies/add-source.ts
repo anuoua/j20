@@ -1,52 +1,28 @@
 import * as babelCore from "@babel/core";
 import { addNamed } from "@babel/helper-module-imports";
-import type { Config } from "../types";
+import type { Config, PluginState } from "../types";
 
 export const autoImport = (
-  babel: typeof babelCore,
+  _babel: typeof babelCore,
   config: Config
 ): babelCore.Visitor => {
-  const { types: t, template } = babel;
-
   return {
     Program(path) {
-      path.state = {};
+      const ensure = (name: string): string => {
+        if (path.scope.getBinding(name)) return name;
+        return addNamed(path, name, config.importSource, { nameHint: name }).name;
+      };
 
-      if (!path.scope.getBinding("jsx")) {
-        const id = addNamed(path, "jsx", config.importSource, {
-          nameHint: "jsx",
-        });
-        path.state.jsxVarName = id.name;
-      } else {
-        path.state.jsxVarName = "jsx";
-      }
+      const state: PluginState = {
+        jsxVarName: ensure("jsx"),
+        jsxsVarName: ensure("jsxs"),
+        fragmentVarName: ensure("Fragment"),
+        templateVarName: ensure("template"),
+        templateCount: 0,
+        templateMap: {},
+      };
 
-      if (!path.scope.getBinding("jsxs")) {
-        const id = addNamed(path, "jsxs", config.importSource, {
-          nameHint: "jsxs",
-        });
-        path.state.jsxsVarName = id.name;
-      } else {
-        path.state.jsxsVarName = "jsxs";
-      }
-
-      if (!path.scope.getBinding("Fragment")) {
-        const id = addNamed(path, "Fragment", config.importSource, {
-          nameHint: "Fragment",
-        });
-        path.state.fragmentVarName = id.name;
-      } else {
-        path.state.fragmentVarName = "Fragment";
-      }
-
-      if (!path.scope.getBinding("template")) {
-        const id = addNamed(path, "template", config.importSource, {
-          nameHint: "template",
-        });
-        path.state.templateVarName = id.name;
-      } else {
-        path.state.templateVarName = "template";
-      }
+      path.state = state;
     },
   };
 };
