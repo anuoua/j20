@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "pull:signal-compiler": "git subtree pull --prefix=packages/signal-compiler git@github.com:anuoua/signal-compiler.git main",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "pnpm -r build --filter '!doc' --filter '!example' && changeset publish"
@@ -14,6 +13,6 @@
   "license": "ISC",
   "devDependencies": {
     "@changesets/cli": "^2.31.1",
-    "prettier": "^3.6.2"
+    "prettier": "^3.9.6"
   }
 }
