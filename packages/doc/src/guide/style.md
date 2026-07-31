@@ -2,7 +2,7 @@
 
 J20 提供了 `styleSheet` API 来管理组件样式，基于 [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet) 实现，具有高性能的特点。
 
-如需作用域隔离的 CSS-in-JS 方案，请使用生态包 [`@j20org/cssinjs`](/ecosystem/cssinjs)。
+如需作用域隔离的 CSS-in-JS 方案，请使用生态包 [Stylec](/guide/ecosystem)。
 
 ## styleSheet
 
@@ -66,5 +66,5 @@ App.customElement = {
 | 方案                  | 适用场景                     | 作用域隔离      |
 | --------------------- | ---------------------------- | --------------- |
 | `customElement.style` | Web Component 专属样式       | Shadow DOM 隔离 |
-| `@j20org/cssinjs`     | 跨组件复用的样式，需要隔离   | 类名后缀隔离    |
+| `stylec`              | 跨组件复用的样式，需要隔离   | 类名哈希隔离    |
 | `styleSheet`          | 全局样式或需要动态操作的样式 | 无隔离          |

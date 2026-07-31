@@ -1,6 +1,4 @@
 import { defineConfig } from "vitepress";
-import llmstxt from "vitepress-plugin-llms";
-import { copyOrDownloadAsMarkdownButtons } from "vitepress-plugin-llms";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -9,14 +7,6 @@ export default defineConfig({
 
   title: "J20",
   description: "Document for j20",
-  vite: {
-    plugins: [llmstxt() as any],
-  },
-  markdown: {
-    config(md) {
-      md.use(copyOrDownloadAsMarkdownButtons);
-    },
-  },
   locales: {
     root: {
       label: "Chinese",
@@ -39,7 +29,6 @@ export default defineConfig({
             text: "Guide",
             items: [
               { text: "Introduction", link: "/en/guide/introduction" },
-              { text: "LLMs", link: "/en/guide/llms" },
               { text: "Installation", link: "/en/guide/install" },
               { text: "Getting Started", link: "/en/guide/start" },
               { text: "JSX Syntax", link: "/en/guide/jsx" },
@@ -56,6 +45,10 @@ export default defineConfig({
           {
             text: "Reference",
             items: [{ text: "API Reference", link: "/en/guide/api" }],
+          },
+          {
+            text: "Ecosystem",
+            items: [{ text: "Stylec", link: "/en/guide/ecosystem" }],
           },
         ],
 
@@ -79,7 +72,6 @@ export default defineConfig({
         text: "指南",
         items: [
           { text: "介绍", link: "/guide/introduction" },
-          { text: "LLMs", link: "/guide/llms" },
           { text: "安装", link: "/guide/install" },
           { text: "开始", link: "/guide/start" },
           { text: "JSX", link: "/guide/jsx" },
@@ -96,6 +88,10 @@ export default defineConfig({
       {
         text: "参考",
         items: [{ text: "API 参考", link: "/guide/api" }],
+      },
+      {
+        text: "生态系统",
+        items: [{ text: "Stylec", link: "/guide/ecosystem" }],
       },
     ],
 

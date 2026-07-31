@@ -2,7 +2,7 @@
 
 J20 provides the `styleSheet` API for managing component styles, built on [Constructable Stylesheets](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet) for high performance.
 
-For scoped CSS-in-JS with class name isolation, use the ecosystem package [`@j20org/cssinjs`](/en/ecosystem/cssinjs).
+For scoped CSS-in-JS with class name isolation, use the ecosystem package [Stylec](/en/guide/ecosystem).
 
 ## styleSheet
 
@@ -66,5 +66,5 @@ When to use each approach:
 | Approach              | Use Case                                              | Scope Isolation             |
 | --------------------- | ----------------------------------------------------- | --------------------------- |
 | `customElement.style` | Web Component-specific styles                         | Shadow DOM isolation        |
-| `@j20org/cssinjs`     | Reusable styles across components that need isolation | Class name suffix isolation |
+| `stylec`              | Reusable styles across components that need isolation | Class name hash isolation   |
 | `styleSheet`          | Global styles or styles needing dynamic manipulation  | No isolation                |
