@@ -54,9 +54,9 @@ const App = ($props: { name: string }) => {
 
 ### 样式
 
-- `createCssModule(css)` — 作用域隔离的 CSS，类名自动添加唯一后缀
-- `styleSheet(css, id?)` — 全局样式注入
-- `customElement.style` — Web Component Shadow DOM 样式
+- `styleSheet(css, id?)` — 注入样式，自动挂载到 Shadow Root 或 Document 并引用计数清理
+- `customElement.style` — Web Component Shadow DOM 静态样式
+- 需要作用域隔离的 CSS-in-JS 时，使用生态包 [Stylec](references/ecosystem.md)
 
 ### Web Component
 
@@ -109,13 +109,14 @@ const Ctx = createContext(defaultValue);
 | [references/introduction.md](references/introduction.md)   | 框架介绍与特点                          |
 | [references/install.md](references/install.md)             | 安装与项目配置（TypeScript、Vite）      |
 | [references/start.md](references/start.md)                 | 创建应用与简单组件                      |
-| [references/jsx.md](references/jsx.md)                     | JSX 语法（class、style、插值）          |
+| [references/jsx.md](references/jsx.md)                     | JSX 语法（class、style、事件、插值）    |
 | [references/component.md](references/component.md)         | 组件、信号、Props、自定义 Hooks、插槽   |
 | [references/conditional.md](references/conditional.md)     | 条件渲染（If、Switch、Some）            |
 | [references/list.md](references/list.md)                   | 列表渲染（For 组件）                    |
 | [references/replace.md](references/replace.md)             | 动态渲染（Replace 组件）                |
-| [references/style.md](references/style.md)                 | 样式管理（createCssModule、styleSheet） |
+| [references/style.md](references/style.md)                 | 样式管理（styleSheet、customElement.style） |
 | [references/lifecycle.md](references/lifecycle.md)         | 生命周期（onMount、onDestroy）          |
 | [references/web-component.md](references/web-component.md) | Web Component 创建与使用                |
+| [references/ecosystem.md](references/ecosystem.md)         | 生态（Stylec 编译时 CSS-in-JS）         |
 | [references/api.md](references/api.md)                     | API 完整参考                            |
 | [references/faq.md](references/faq.md)                     | 常见问题（响应链传递、`$` 前缀原理）    |
