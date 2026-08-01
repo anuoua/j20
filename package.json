@@ -6,7 +6,7 @@
   "scripts": {
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "pnpm -r build --filter '!doc' --filter '!example' && changeset publish"
+    "release": "pnpm --filter '!doc' --filter '!example' -r build && changeset publish"
   },
   "keywords": [],
   "author": "",
