@@ -27,7 +27,7 @@ export const Replace = <T>(p: ReplaceProps<T>) => {
     get children() {
       return (item: any) => {
         const children = props.value.children;
-        return typeof children === "function" ? children(item) : children;
+        return typeof children === "function" ? children(item.value) : children;
       };
     },
   }));

@@ -25,7 +25,7 @@ describe("Edge Cases", () => {
             of: items.value,
             children: (item: any) => {
               const div = document.createElement("div");
-              div.textContent = item.toString();
+              div.textContent = item.value.toString();
               return div;
             },
           }),
@@ -47,7 +47,7 @@ describe("Edge Cases", () => {
             of: items.value,
             children: (item: any) => {
               const div = document.createElement("div");
-              div.textContent = item.toString();
+              div.textContent = item.value.toString();
               return div;
             },
           }),
@@ -75,7 +75,7 @@ describe("Edge Cases", () => {
             of: items.value,
             children: (item: any) => {
               const div = document.createElement("div");
-              div.textContent = item.toString();
+              div.textContent = item.value.toString();
               return div;
             },
           }),
@@ -101,7 +101,7 @@ describe("Edge Cases", () => {
             of: items.value,
             children: (item: any) => {
               const div = document.createElement("div");
-              div.textContent = item.toString();
+              div.textContent = item.value.toString();
               return div;
             },
           }),
@@ -128,7 +128,7 @@ describe("Edge Cases", () => {
             trait: (item: any) => item.id,
             children: (item: any) => {
               const div = document.createElement("div");
-              div.textContent = item.name;
+              div.textContent = item.value.name;
               return div;
             },
           }),
@@ -158,7 +158,7 @@ describe("Edge Cases", () => {
             trait: (item: any) => item.id,
             children: (item: any) => {
               const div = document.createElement("div");
-              div.textContent = item.text;
+              div.textContent = item.value.text;
               return div;
             },
           }),
@@ -196,7 +196,7 @@ describe("Edge Cases", () => {
             trait: (item: any) => item.id,
             children: (item: any) => {
               const div = document.createElement("div");
-              div.textContent = item.nested.value;
+              div.textContent = item.value.nested.value;
               return div;
             },
           }),

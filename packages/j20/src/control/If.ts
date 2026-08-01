@@ -23,7 +23,8 @@ export const If: FC<IfProps> = (p) => {
       return arr.value;
     },
     get children() {
-      return (bool: 1 | 0) => {
+      return (item: any) => {
+        const bool = item.value;
         const propsValues = props.value;
         const children = propsValues.children;
         if (children && typeof children === "function") {

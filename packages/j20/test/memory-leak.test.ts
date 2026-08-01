@@ -152,7 +152,7 @@ describe("Memory Leak Prevention", () => {
           of: items.value,
           children: (item: any) => {
             const div = document.createElement("div");
-            div.textContent = item.toString();
+            div.textContent = item.value.toString();
             return div;
           },
         }),
