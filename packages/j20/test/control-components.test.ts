@@ -1,6 +1,7 @@
 import { it, beforeEach, describe, expect, vi } from "vitest";
 import { createElement } from "../src/h/createElement";
 import { signal } from "../src/api/signal";
+import { effect } from "../src/api/effect";
 import { For } from "../src/control/For";
 import { If } from "../src/control/If";
 import { Switch, Case, Default } from "../src/control/Switch";
@@ -24,7 +25,7 @@ describe("Control Components", () => {
           of: items.value,
           children: (item: any) => {
             const div = document.createElement("div");
-            div.textContent = item.toString();
+            div.textContent = item.value.toString();
             return div;
           },
         }),
@@ -202,7 +203,7 @@ describe("Control Components", () => {
           trait: (item: any) => item.id, // 使用 id 作为 trait
           children: (item: any) => {
             const div = document.createElement("div");
-            div.textContent = item.name;
+            div.textContent = item.value.name;
             return div;
           },
         }),
@@ -222,5 +223,73 @@ describe("Control Components", () => {
 
     // 恢复 console.warn
     warnSpy.mockRestore();
+  });
+
+  it("should support direct item signal write with write-through", () => {
+    const items = signal<Array<{ id: number; text: string }>>([
+      { id: 1, text: "a" },
+    ]);
+
+    let rowSignal: any;
+
+    const [instance, fragment] = instanceCreate(() => {
+      return createElement(
+        For as any,
+        () => ({
+          of: items.value,
+          trait: (item: any) => item.id,
+          children: (item: any) => {
+            rowSignal = item;
+            const div = document.createElement("div");
+            effect(() => {
+              div.textContent = item.value.text;
+            });
+            return div;
+          },
+        }),
+        undefined
+      );
+    });
+
+    document.body.appendChild(fragment);
+    expect(body.innerHTML).toContain("<div>a</div>");
+
+    // 直接写 item 信号：只更新本行，且 write-through 到源数组
+    rowSignal.value = { id: 1, text: "updated" };
+
+    expect(body.innerHTML).toContain("<div>updated</div>");
+    expect(items.value[0].text).toBe("updated");
+  });
+
+  it("should sync row content when an item is replaced with the same trait", () => {
+    const items = signal<Array<{ id: number; text: string }>>([
+      { id: 1, text: "a" },
+    ]);
+
+    const [instance, fragment] = instanceCreate(() => {
+      return createElement(
+        For as any,
+        () => ({
+          of: items.value,
+          trait: (item: any) => item.id,
+          children: (item: any) => {
+            const div = document.createElement("div");
+            effect(() => {
+              div.textContent = item.value.text;
+            });
+            return div;
+          },
+        }),
+        undefined
+      );
+    });
+
+    document.body.appendChild(fragment);
+    expect(body.innerHTML).toContain("<div>a</div>");
+
+    // 同 trait 的新对象：复用实例，但内容要同步
+    items.value = [{ id: 1, text: "b" }];
+
+    expect(body.innerHTML).toContain("<div>b</div>");
   });
 });

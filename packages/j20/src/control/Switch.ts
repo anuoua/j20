@@ -27,7 +27,7 @@ export const Switch: FC<SwitchProps> = (p) => {
     of: res.value ? [res.value] : [],
     trait: (item: any) => item.id,
     get children() {
-      return (item: any) => item.children;
+      return (item: any) => item.value.children;
     },
   }));
 };

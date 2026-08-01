@@ -70,7 +70,7 @@ describe("Concurrent Updates", () => {
               return createElement(
                 div,
                 () => ({}),
-                () => [() => (item * $multiplier.value).toString()]
+                () => [() => (item.value * $multiplier.value).toString()]
               );
             };
           },
@@ -199,7 +199,7 @@ describe("Concurrent Updates", () => {
               children: (item: any) => {
                 const div = document.createElement("div");
                 div.className = "list1";
-                div.textContent = item.toString();
+                div.textContent = item.value.toString();
                 return div;
               },
             }),
@@ -212,7 +212,7 @@ describe("Concurrent Updates", () => {
               children: (item: any) => {
                 const div = document.createElement("div");
                 div.className = "list2";
-                div.textContent = item.toString();
+                div.textContent = item.value.toString();
                 return div;
               },
             }),
@@ -470,8 +470,8 @@ describe("Concurrent Updates", () => {
                     () => [
                       () => {
                         const all = $selectAll.value;
-                        return `id: ${item.id}, checked: ${
-                          item.checked || all
+                        return `id: ${item.value.id}, checked: ${
+                          item.value.checked || all
                         }`;
                       },
                     ]

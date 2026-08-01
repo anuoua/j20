@@ -1,5 +1,5 @@
 import { effect } from "../api/effect";
-import { signal } from "../api/signal";
+import { Signal, signal } from "../api/signal";
 import {
   Instance,
   instanceCreate,
@@ -21,6 +21,31 @@ const isSame = (a: any, b: any, trait: (item: any) => any) => {
   return Object.is(trait(a), trait(b));
 };
 
+// 可写的行信号：`$item = newValue` 会先更新本行渲染，再通过 writeBack
+// 写回源数组，保证 `$todos` 始终是唯一数据源（详见 /guide/perf）。
+// 注意：diff 同步内容走 `setFromDiff`，绕开 writeBack，避免在 diff
+// effect 里读取 index 信号产生多余依赖。
+class RowSignal<T> extends Signal<T> {
+  writeBack: ((value: T) => void) | undefined;
+
+  constructor(value: T) {
+    super(value);
+  }
+
+  get value(): T {
+    return super.value;
+  }
+
+  set value(value: T) {
+    super.value = value;
+    this.writeBack?.(value);
+  }
+
+  setFromDiff(value: T) {
+    super.value = value;
+  }
+}
+
 export interface ListProps<T> {
   of: T[];
   children: (i: T, index: number) => JSX.Element;
@@ -34,7 +59,7 @@ interface ListPropsInner<T> {
 interface ListItem<T> {
   instance: Instance;
   index: { value: number };
-  item: T;
+  item: RowSignal<T>;
 }
 
 const defaultTrait = (a: any) => a as any;
@@ -54,6 +79,31 @@ export const For = <T>(p: ListProps<T>) => {
     const props = (p as unknown as ListPropsInner<T>).value;
     const trait = props.trait ?? defaultTrait;
     const newList = props.of;
+
+    // 创建单个槽位：索引信号 + 可写 item 信号 + 子实例。
+    // item 信号写回源数组（write-through），保持数组为唯一数据源。
+    const makeSlot = (item: T, index: number) => {
+      const indexSignal = signal(index);
+      const itemSignal = new RowSignal<T>(item);
+      const [newInstance, newInstanceFragment] = instanceCreate(() => {
+        const newChild = untrack(() =>
+          props.children(itemSignal as unknown as T, indexSignal as unknown as number)
+        );
+        return newChild;
+      }, currentInstance);
+
+      const slot: ListItem<T> = {
+        instance: newInstance,
+        index: indexSignal,
+        item: itemSignal,
+      };
+
+      itemSignal.writeBack = (v) => {
+        if (oldList) oldList[slot.index.value] = v;
+      };
+
+      return { slot, fragment: newInstanceFragment };
+    };
 
     if (__DEV__) {
       const traitMap = new Map<any, T[]>();
@@ -127,35 +177,24 @@ export const For = <T>(p: ListProps<T>) => {
     if (i > e1) {
       if (i <= e2) {
         for (; i <= e2; i++) {
-          const newIndex = signal(i);
-          const [newInstance, newInstanceFragment] = instanceCreate(() => {
-            const newChild = untrack(() =>
-              props.children(newList[i], newIndex as unknown as number)
-            );
-            return newChild;
-          }, currentInstance);
-
+          const { slot, fragment } = makeSlot(newList[i], i);
           if (!initialized) {
-            initElements.push(newInstanceFragment);
+            initElements.push(fragment);
           } else {
             if (i > 0) {
               const prev = newListItems[i - 1]?.instance;
               const prevEl = prev?.range[1] ?? currentInstance.range[0];
-              insertAfter(prevEl.parentNode!, newInstanceFragment, prevEl);
+              insertAfter(prevEl.parentNode!, fragment, prevEl);
             } else {
               const parentNode = currentInstance.range[0].parentNode;
               parentNode?.insertBefore(
-                newInstanceFragment,
+                fragment,
                 currentInstance.range[0]
               );
             }
           }
 
-          newListItems[i] = {
-            index: newIndex,
-            item: newList[i],
-            instance: newInstance,
-          };
+          newListItems[i] = slot;
         }
       }
     }
@@ -254,21 +293,11 @@ export const For = <T>(p: ListProps<T>) => {
 
         if (newIndexToOldIndexMap[i] === 0) {
           // 创建新节点
-          const newIdx = signal(newIndex);
-          const [newInstance, newInstanceFragment] = instanceCreate(() => {
-            const newChild = untrack(() =>
-              props.children(newItem, newIdx as unknown as number)
-            );
-            return newChild;
-          }, currentInstance);
+          const { slot, fragment } = makeSlot(newItem, newIndex);
 
           // 插入到 DOM
-          anchor.parentNode?.insertBefore(newInstanceFragment, anchor);
-          newListItems[newIndex] = {
-            index: newIdx,
-            item: newItem,
-            instance: newInstance,
-          };
+          anchor.parentNode?.insertBefore(fragment, anchor);
+          newListItems[newIndex] = slot;
         } else if (moved) {
           // 需要移动
           if (j < 0 || i !== increasingNewIndexSequence[j]) {
@@ -292,6 +321,7 @@ export const For = <T>(p: ListProps<T>) => {
     oldListItems = newListItems;
     currentInstance.children = newListItems.map((item, index) => {
       item.index.value = index;
+      item.item.setFromDiff(newList[index]);
       return item.instance;
     });
   });

@@ -43,9 +43,13 @@ const App = ($props: { name: string }) => {
 
 ```tsx
 <For of={$list} trait={(i) => i.id}>
-  {(item, $index) => <div>{item.text}</div>}
+  {($item, $index) => <div>{$item.text}</div>}
 </For>
 ```
+
+- `trait` 确定唯一性，默认 `i => i`
+- item 参数以 `$` 开头（如 `$item`）保持响应性；`$index` 是信号，随增删改变
+- 单行内容更新等性能优化见 [references/perf.md](references/perf.md)
 
 ### 生命周期
 
@@ -96,6 +100,7 @@ const Ctx = createContext(defaultValue);
 
 - 信号变量不能使用 `$use` 开头（`$use` 是自定义 hooks 前缀）
 - 解构变量必须以 `$` 开头才能保持响应性
+- For children 的 `$item` 信号只在行作用域可用，子组件触发更新需通过回调闭包捕获
 - 元素节点插值不会随信号更新，需使用 `<If>` / `<Replace>` 等组件
 - Web Component 仅支持 `string | number | boolean` 类型的 props
 - 自定义事件命名映射规则与 DOM 一致：`delete` → `onDelete`
@@ -112,7 +117,8 @@ const Ctx = createContext(defaultValue);
 | [references/jsx.md](references/jsx.md)                     | JSX 语法（class、style、事件、插值）    |
 | [references/component.md](references/component.md)         | 组件、信号、Props、自定义 Hooks、插槽   |
 | [references/conditional.md](references/conditional.md)     | 条件渲染（If、Switch、Some）            |
-| [references/list.md](references/list.md)                   | 列表渲染（For 组件）                    |
+| [references/list.md](references/list.md)                   | 列表渲染（For 组件、trait 与 item 分工） |
+| [references/perf.md](references/perf.md)                   | 性能优化（可写 item 信号、单行更新）    |
 | [references/replace.md](references/replace.md)             | 动态渲染（Replace 组件）                |
 | [references/style.md](references/style.md)                 | 样式管理（styleSheet、customElement.style） |
 | [references/lifecycle.md](references/lifecycle.md)         | 生命周期（onMount、onDestroy）          |

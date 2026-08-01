@@ -25,7 +25,8 @@ function Some<T>(p: SomeProps<T>): JSX.Element {
       return arr.value;
     },
     get children() {
-      return (bool: 1 | 0) => {
+      return (item: any) => {
+        const bool = item.value;
         const propsValues = props.value;
         const { children } = propsValues;
         if (bool) {
