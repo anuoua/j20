@@ -1,4 +1,4 @@
-import { styleSheet } from "j20";
+import { If, effect, ref, styleSheet } from "j20";
 import { css, classes as originClasses, override } from "./TodoItem.stylec";
 
 interface TodoItemProps {
@@ -7,6 +7,7 @@ interface TodoItemProps {
   override?: ReturnType<typeof override> | undefined;
   onToggle?: () => void;
   onDelete?: () => void;
+  onTextChange?: (text: string) => void;
 }
 
 export const TodoItem = ($props: TodoItemProps) => {
@@ -15,8 +16,19 @@ export const TodoItem = ($props: TodoItemProps) => {
     completed: $completed,
     onToggle: $onToggle = () => {},
     onDelete: $onDelete = () => {},
+    onTextChange: $onTextChange = () => {},
     override,
   } = $props;
+
+  let $editing = false;
+
+  const inputRef = ref<HTMLInputElement>();
+
+  effect(() => {
+    if ($editing) {
+      queueMicrotask(() => inputRef.current?.focus());
+    }
+  });
 
   styleSheet(override?.css ?? css);
 
@@ -32,9 +44,37 @@ export const TodoItem = ($props: TodoItemProps) => {
           onChange={() => $onToggle()}
         />
 
-        <span class={$completed ? classes.text_completed : classes.text}>
-          {$text}
-        </span>
+        <If
+          of={$editing}
+          else={
+            <span
+              class={$completed ? classes.text_completed : classes.text}
+              onDblClick={() => {
+                $editing = true;
+              }}
+            >
+              {$text}
+            </span>
+          }
+        >
+          <input
+            type="text"
+            class={classes.edit_input}
+            ref={inputRef}
+            value={$text}
+            onInput={(e: Event & { target: HTMLInputElement }) => {
+              $onTextChange(e.target.value);
+            }}
+            onKeyDown={(e: KeyboardEvent) => {
+              if (e.key === "Enter") {
+                $editing = false;
+              }
+            }}
+            onBlur={() => {
+              $editing = false;
+            }}
+          />
+        </If>
       </div>
 
       <button class={classes.delete_btn} onClick={() => $onDelete()}>

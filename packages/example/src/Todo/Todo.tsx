@@ -82,12 +82,15 @@ export const App = () => {
 
       <div class={classes.list}>
         <For of={$todos}>
-          {($todo, $index) => (
+          {($todo) => (
             <TodoItem
-              text={`${$todo.text}, 序号: ${$index}`}
+              text={$todo.text}
               completed={$todo.completed}
               onToggle={() => toggleTodo($todo.id)}
               onDelete={() => deleteTodo($todo.id)}
+              onTextChange={(text) => {
+                $todo = { ...$todo, text };
+              }}
             />
           )}
         </For>
