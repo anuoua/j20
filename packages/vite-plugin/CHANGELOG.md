@@ -1,5 +1,13 @@
 # @j20org/vite-plugin
 
+## 0.0.10
+
+### Patch Changes
+
+- 830f367: Fix CI/CD command
+- Updated dependencies [830f367]
+  - @j20org/jsx-transform@0.0.6
+
 ## 0.0.9
 
 ### Patch Changes
