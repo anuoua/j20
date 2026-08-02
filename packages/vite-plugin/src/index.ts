@@ -4,6 +4,8 @@ import { type PluginOption } from "vite";
 
 export function j20({
   include = "src/**/*.{js,jsx,ts,tsx}",
+}: {
+  include?: string | string[];
 } = {}): any {
   return [
     {

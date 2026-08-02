@@ -44,6 +44,18 @@ const getter = (key: string, value: T.Expression): T.ObjectMethod =>
     t.blockStatement([t.returnStatement(value)])
   );
 
+// 属性名可能含连字符（aria-*、data-* 等），此时标识符语法非法，需改用计算键。
+const propGetter = (key: string, value: T.Expression): T.ObjectMethod =>
+  /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(key)
+    ? getter(key, value)
+    : t.objectMethod(
+        "get",
+        t.stringLiteral(key),
+        [],
+        t.blockStatement([t.returnStatement(value)]),
+        true
+      );
+
 type PrimitiveAttr = { key: string; value: string | number | boolean };
 
 const formatStaticAttrs = (attrs: PrimitiveAttr[]): string => {
@@ -252,7 +264,7 @@ export const jsxTransform = (): babelCore.Visitor => {
                 if (isDom) {
                   primitiveAttrs.push({ key, value: true });
                 } else {
-                  members.push(getter(key, t.booleanLiteral(true)));
+                  members.push(propGetter(key, t.booleanLiteral(true)));
                 }
                 break;
               }
@@ -266,7 +278,7 @@ export const jsxTransform = (): babelCore.Visitor => {
               ) {
                 primitiveAttrs.push({ key, value: value.value });
               } else {
-                members.push(getter(key, value as T.Expression));
+                members.push(propGetter(key, value as T.Expression));
               }
               break;
             }

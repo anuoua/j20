@@ -24,17 +24,18 @@ export const If: FC<IfProps> = (p) => {
     },
     get children() {
       return (item: any) => {
-        const bool = item.value;
+        const bool = !!item.value;
         const propsValues = props.value;
-        const children = propsValues.children;
-        if (children && typeof children === "function") {
-          return children(!!bool);
-        }
         if (bool) {
+          const children = propsValues.children;
+          if (children && typeof children === "function") {
+            return children(true);
+          }
           return children;
-        } else {
-          return propsValues.else;
         }
+        // 未渲染分支不读取 children：读取会创建子组件（副作用），
+        // 把共享的 children fragment 内容搬进被丢弃的节点。
+        return propsValues.else;
       };
     },
   }));

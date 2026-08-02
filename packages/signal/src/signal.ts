@@ -26,6 +26,12 @@ function track(r: Reaction, s: Source): void {
   r._sourceSlots.push(obs.length);
   obs.push(r);
   s._observerSlots.push(r._sources.length - 1);
+  // Effect 记录当前依赖版本，用于运行前判断「值是否真的变了」——
+  // 多个 effect 观察同一个 computed 时，只有第一个能看到重算前后的
+  // version 变化，后续 effect 必须对比「上次运行记录的版本」才能正确触发。
+  if (r instanceof Effect) {
+    r._versions.push(s.version);
+  }
 }
 
 function removeObserver(s: Source, slot: number): void {
@@ -51,6 +57,9 @@ function cleanupSources(r: Reaction): void {
   }
   r._sources.length = 0;
   r._sourceSlots.length = 0;
+  if (r instanceof Effect) {
+    r._versions.length = 0;
+  }
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -95,19 +104,19 @@ function flushEffects(): void {
 
 function hasSourceChanged(e: Effect): boolean {
   const sources = e._sources;
+  const versions = e._versions;
+  let changed = false;
   for (let i = 0; i < sources.length; i++) {
     const src = sources[i]!;
     if (src instanceof Computed) {
-      const before = src.version;
       src._recomputeIfDirty();
-      if (src.version !== before) return true;
-    } else {
-      // Signal: Effect is in the queue only if some source changed;
-      // no lazy recompute needed for Signals (no equality check on set).
-      return true;
     }
+    // 与 effect 上次运行记录的版本对比，而非重算前后对比：
+    // 共享 computed 先被其他 effect 重算后，这里仍能识别出值确实变了。
+    if (src.version !== versions[i]) changed = true;
+    versions[i] = src.version;
   }
-  return false;
+  return changed;
 }
 
 function runEffect(e: Effect): void {
@@ -257,6 +266,7 @@ class Effect {
   _queued: boolean = false;
   readonly _sources: Source[] = [];
   readonly _sourceSlots: number[] = [];
+  readonly _versions: number[] = [];
 
   constructor(fn: () => unknown) {
     this._fn = fn;

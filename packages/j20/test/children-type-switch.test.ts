@@ -92,4 +92,19 @@ describe("getChildren reactive type switching", () => {
 
     expect(div.firstChild).toBe(initialSpan);
   });
+
+  it("array children (e.g. {$children} prop): renders all elements statically", () => {
+    const span = document.createElement("span");
+    span.textContent = "static";
+    const div = document.createElement("div");
+
+    const [, fragment] = instanceCreate(() => {
+      return createElement(div, undefined, () => [() => ["A", span]]);
+    });
+    body.appendChild(fragment);
+
+    expect(div.textContent).toBe("Astatic");
+    expect(div.childNodes).toHaveLength(2);
+    expect(div.childNodes[1]).toBe(span);
+  });
 });

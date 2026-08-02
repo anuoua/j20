@@ -145,3 +145,50 @@ describe("nodeAttributesEffect granularity", () => {
     expect(div.getAttribute("c")).toBe("3");
   });
 });
+
+describe("aria/data boolean attribute semantics", () => {
+  it("renders aria-*/data-* booleans as literal true/false", () => {
+    const div = document.createElement("div");
+
+    instanceCreate(() => {
+      return createElement(
+        div,
+        () => ({
+          "aria-checked": true,
+          "data-open": false,
+        }),
+        undefined
+      );
+    });
+    body.appendChild(div);
+
+    expect(div.getAttribute("aria-checked")).toBe("true");
+    expect(div.getAttribute("data-open")).toBe("false");
+  });
+
+  it("updates aria-*/data-* booleans reactively", () => {
+    const $open = signal(false);
+    const div = document.createElement("div");
+
+    instanceCreate(() => {
+      return createElement(
+        div,
+        () => ({
+          get "data-open"() {
+            return $open.value;
+          },
+        }),
+        undefined
+      );
+    });
+    body.appendChild(div);
+
+    expect(div.getAttribute("data-open")).toBe("false");
+
+    $open.value = true;
+    expect(div.getAttribute("data-open")).toBe("true");
+
+    $open.value = false;
+    expect(div.getAttribute("data-open")).toBe("false");
+  });
+});

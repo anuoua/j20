@@ -15,6 +15,34 @@ importers:
         specifier: ^3.9.6
         version: 3.9.6
 
+  packages/components:
+    dependencies:
+      '@stylec/runtime':
+        specifier: 0.0.8
+        version: 0.0.8
+      j20:
+        specifier: workspace:*
+        version: link:../j20
+    devDependencies:
+      '@j20org/vite-plugin':
+        specifier: workspace:*
+        version: link:../vite-plugin
+      '@stylec/vite':
+        specifier: 0.0.8
+        version: 0.0.8(vite@8.0.1(@types/node@24.3.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))
+      happy-dom:
+        specifier: ^10.1.1
+        version: 10.11.2
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vite:
+        specifier: ^8.0.1
+        version: 8.0.1(@types/node@24.3.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)
+      vitest:
+        specifier: ^0.33.0
+        version: 0.33.0(happy-dom@10.11.2)(lightningcss@1.32.0)
+
   packages/doc:
     devDependencies:
       vitepress:
@@ -22,6 +50,10 @@ importers:
         version: 2.0.0-alpha.15(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.32.0)(postcss@8.5.8)(tsx@4.21.0)(typescript@5.9.3)
 
   packages/example:
+    dependencies:
+      '@j20org/components':
+        specifier: workspace:*
+        version: link:../components
     devDependencies:
       '@j20org/vite-plugin':
         specifier: workspace:*
@@ -158,8 +190,8 @@ importers:
         specifier: workspace:*
         version: link:../jsx-transform
       signal-compiler:
-        specifier: 0.1.6
-        version: 0.1.6
+        specifier: 0.1.7
+        version: 0.1.7
     devDependencies:
       rimraf:
         specifier: ^5.0.10
@@ -2253,8 +2285,8 @@ packages:
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
 
-  signal-compiler@0.1.6:
-    resolution: {integrity: sha512-NUaVip7D5MqhDXWXB0rvwRxfgPRK0m3DNhfURcDFVsKVYEmNMAoukY212nF0jj7UKri0+Dmbo15e/dIx7s10gQ==}
+  signal-compiler@0.1.7:
+    resolution: {integrity: sha512-DcUDX+g1D9V+F+jRTnvqO4TebwJpmcLZlaLi2l6CrbDIv/B/LiRM1yxJ0JLruv2rhyZzp8rE1bmiwjtqed4GjQ==}
 
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
@@ -4654,7 +4686,7 @@ snapshots:
 
   siginfo@2.0.0: {}
 
-  signal-compiler@0.1.6:
+  signal-compiler@0.1.7:
     dependencies:
       '@babel/core': 7.24.9
       '@babel/helper-module-imports': 7.27.1

@@ -23,7 +23,15 @@ const context = <T>(Context: { defaultValue: T }) => {
     index = index.parent;
   }
 
-  return Context.defaultValue;
+  // 与 Provider 存储的形态保持一致：返回带 value getter 的包装，
+  // 否则 `$ctx.field` 编译为 `$ctx.value.field` 时对原始 default 会取到 undefined。
+  return isSignal(Context.defaultValue)
+    ? (Context.defaultValue as any)
+    : ({
+        get value() {
+          return Context.defaultValue;
+        },
+      } as any);
 };
 
 export const createContext = <T>(defaultValue: T) => {

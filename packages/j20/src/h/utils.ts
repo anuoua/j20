@@ -16,9 +16,30 @@ export const getEventName = (eventName: string) =>
 
 export const getChildren = (propChildren: any[]) => {
   const arr: any[] = [];
+
+  // 归一化为节点序列：文本/数字 → 文本节点，数组递归展开（支持 {$children} 这类
+  // 组件 children prop），null/undefined 忽略。
+  const flatten = (el: any): Node[] => {
+    if (typeof el === "number" || typeof el === "string") {
+      return [document.createTextNode(el + "")];
+    }
+    if (Array.isArray(el)) {
+      const nodes: Node[] = [];
+      for (const sub of el) {
+        if (sub == null) continue;
+        nodes.push(...flatten(sub));
+      }
+      return nodes;
+    }
+    return el != null ? [el] : [];
+  };
+
   for (let i = 0; i < propChildren.length; i++) {
     const child = propChildren[i];
     if (typeof child === "function") {
+      // 函数 child：文本保持响应式（原地更新）；元素/数组为静态（渲染一次）。
+      // 组件 body 由这里的 effect 承载，因此元素分支必须 dispose —— 否则
+      // body 在无实例上下文的 signal 变化时重跑，会破坏 context/生命周期。
       let textNode: Text | undefined;
       let current: Node | undefined;
       const effectInstance = effect(() => {
@@ -35,13 +56,17 @@ export const getChildren = (propChildren: any[]) => {
             }
           }
           current = textNode;
-        } else if (el != null) {
+        } else {
+          const nodes = flatten(el);
           if (current?.parentNode) {
-            current.parentNode.replaceChild(el, current);
+            const parent = current.parentNode;
+            const after = current.nextSibling;
+            for (const node of nodes) parent.insertBefore(node, after ?? null);
+            parent.removeChild(current);
           } else {
-            arr.push(el);
+            arr.push(...nodes);
           }
-          current = el;
+          current = nodes[nodes.length - 1];
           textNode = undefined;
         }
       });
@@ -70,6 +95,20 @@ export const styleObjectToString = (style: Record<string, string | number>) => {
   return styleString.trim();
 };
 
+// aria-*/data-* 属性需要字面量 "true"/"false"，而非 HTML 布尔语义（存在/移除）。
+const isAriaData = (key: string) =>
+  key.startsWith("aria-") || key.startsWith("data-");
+
+// 序列化属性值；返回 null 表示该值应移除属性。
+export const attrValue = (key: string, v: any): string | null => {
+  if (key === "style" && typeof v === "object") return styleObjectToString(v);
+  if (isAriaData(key) && (v === true || v === false))
+    return v ? "true" : "false";
+  if (v === true) return "";
+  if (v === false || v == null) return null;
+  return v;
+};
+
 export const update = (
   node: HTMLElement | SVGElement,
   key: string,
@@ -86,15 +125,10 @@ export const update = (
     node.removeEventListener(getEventName(key), oldValue);
     node.addEventListener(getEventName(key), newValue);
   } else {
-    if (newValue === false || newValue == null) {
+    const value = attrValue(key, newValue);
+    if (value === null) {
       node.removeAttribute(key);
     } else {
-      const value =
-        key === "style" && typeof newValue === "object"
-          ? styleObjectToString(newValue)
-          : newValue === true
-            ? ""
-            : newValue;
       node.setAttribute(key, value);
     }
   }
@@ -138,13 +172,8 @@ export const add = (
     }
     newValue.current = node;
   } else {
-    if (newValue !== false && newValue != null) {
-      const value =
-        key === "style" && typeof newValue === "object"
-          ? styleObjectToString(newValue)
-          : newValue === true
-            ? ""
-            : newValue;
+    const value = attrValue(key, newValue);
+    if (value !== null) {
       node.setAttribute(key, value);
     }
   }
