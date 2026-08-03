@@ -166,25 +166,7 @@ Type:
 
 J20 provides the `createContext` method for creating context.
 
-Usage is similar to React 19 - no additional Provider needed. Use the created context object directly.
-
-```tsx
-import { createContext } from "j20";
-export const SomeContext = createContext<{ name: string }>({ name: "" });
-
-<SomeContext value={{ name: "J20" }}>
-  <Inner />
-</SomeContext>;
-
-function Inner() {
-  return (
-    <SomeContext.Consumer>
-      {/* $ctx is a signal */}
-      {($ctx) => <span>{$ctx.name}</span>}
-    </SomeContext.Consumer>
-  );
-}
-```
+Usage and examples: [Context](/en/guide/context).
 
 ## $useContext
 
@@ -192,15 +174,7 @@ Type: `<T>(c: { defaultValue: T }) => T`
 
 Gets context data.
 
-```tsx
-import { $useContext } from "j20";
-import { SomeContext } from "./SomeContext";
-
-function Inner() {
-  const $ctx = $useContext(SomeContext);
-  return <span>{$ctx.name}</span>;
-}
-```
+Usage and examples: [Context](/en/guide/context).
 
 ## $
 

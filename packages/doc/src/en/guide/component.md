@@ -32,9 +32,52 @@ const App = () => {
 };
 ```
 
+### Any value works
+
+`let` signals are not limited to primitives — **any expression (including object literals) is automatically wrapped in `signal(...)`**:
+
+```tsx
+const App = () => {
+  let $state = {
+    open: false,
+    setOpen: (next: boolean) => {
+      $state = { ...$state, open: next };
+    },
+  };
+
+  return (
+    <button onClick={() => $state.setOpen(true)}>
+      {String($state.open)}
+    </button>
+  );
+};
+```
+
+> When updating a compound value, **rebuild the object reference** (immutable update). A signal only notifies when its reference changes:
+> `$state = { ...$state, open: next }` ✓ triggers update
+> `$state.open = next` ✗ same reference, no update
+
+### Compile rules at a glance
+
+| Source | Compiled to |
+| --- | --- |
+| `let $x = v` | `let $x = signal(v)` |
+| `const $x = expr` | `const $x = computed(() => expr)` |
+| read `$x` | `$x.value` |
+| assign `$x = v` | `$x.value = v` |
+| read `$x.field` | `$x.value.field` |
+
+> **Never write `$x.value` in source**. The compiler inserts `.value` for you:
+> - Reading would become `$x.value.value`
+> - Type-wise `$x` is the value type (no `.value` property), so it fails type-check
+>
+> Always write `$x` / `$x.field`; the compiler handles `.value`.
+
 ## Derived Signals
 
 Use `const` with the `$` prefix to declare a derived signal. Derived signal values are immutable and read-only.
+
+`const $x = expr` compiles to `computed(() => expr)` and recomputes automatically when the `$` signals it depends on change. **Derived signals cannot be assigned** (it compiles to an assignment on a computed, which is a no-op at runtime):
 
 ```tsx
 const App = () => {

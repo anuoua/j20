@@ -74,9 +74,11 @@ registerWebComponent(App);
 
 ```tsx
 const Ctx = createContext(defaultValue);
-// 提供值：<Ctx value={...}>
-// 消费值：$useContext(Ctx) 或 <Ctx.Consumer>
+// 提供值：<Ctx value={...}>，值需要更新时用 let $ 变量承载并重建对象引用
+// 消费值：$useContext(Ctx) 或 <Ctx.Consumer>；精细订阅用 const $field = $ctx.field
 ```
+
+详见 [references/context.md](references/context.md)。
 
 ### 其他 API
 
@@ -116,6 +118,7 @@ const Ctx = createContext(defaultValue);
 | [references/start.md](references/start.md)                 | 创建应用与简单组件                      |
 | [references/jsx.md](references/jsx.md)                     | JSX 语法（class、style、事件、插值）    |
 | [references/component.md](references/component.md)         | 组件、信号、Props、自定义 Hooks、插槽   |
+| [references/context.md](references/context.md)             | 上下文（createContext、$useContext、传可变值、订阅粒度） |
 | [references/conditional.md](references/conditional.md)     | 条件渲染（If、Switch、Some）            |
 | [references/list.md](references/list.md)                   | 列表渲染（For 组件、trait 与 item 分工） |
 | [references/perf.md](references/perf.md)                   | 性能优化（可写 item 信号、单行更新）    |

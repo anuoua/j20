@@ -32,9 +32,52 @@ const App = () => {
 };
 ```
 
+### 任意值都可以
+
+`let` 信号不限于基础类型，**任意表达式（含对象字面量）都会被自动包装成 `signal(...)`**：
+
+```tsx
+const App = () => {
+  let $state = {
+    open: false,
+    setOpen: (next: boolean) => {
+      $state = { ...$state, open: next };
+    },
+  };
+
+  return (
+    <button onClick={() => $state.setOpen(true)}>
+      {String($state.open)}
+    </button>
+  );
+};
+```
+
+> 复合值更新时请**重建对象引用**（不可变更新）。信号只有在引用变化时才会触发更新：
+> `$state = { ...$state, open: next }` ✓ 触发更新
+> `$state.open = next` ✗ 引用不变，不触发
+
+### 编译规则速查
+
+| 源码写法 | 编译结果 |
+| --- | --- |
+| `let $x = v` | `let $x = signal(v)` |
+| `const $x = expr` | `const $x = computed(() => expr)` |
+| 读取 `$x` | `$x.value` |
+| 赋值 `$x = v` | `$x.value = v` |
+| 读取 `$x.field` | `$x.value.field` |
+
+> **源码里不要手写 `$x.value`**。编译器会自动补 `.value`：
+> - 读取时手写会变成 `$x.value.value`
+> - 类型上 `$x` 是值类型（没有 `.value` 属性），手写会报错
+>
+> 一律写 `$x` / `$x.field`，编译器负责插入 `.value`。
+
 ## 派生信号
 
 使用 `const` 和 `$` 前缀符号来声明一个派生信号，派生信号的值不可变，只读。
+
+`const $x = expr` 会被编译成 `computed(() => expr)`，它内部依赖的 `$` 信号变化时自动重算。**派生信号不能被赋值**（会编译为对 computed 赋值，运行时无效）：
 
 ```tsx
 const App = () => {

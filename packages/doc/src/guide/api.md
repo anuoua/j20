@@ -164,43 +164,17 @@ const App = () => {
 }
 ```
 
-J20 默认提供了 `createContext` 方法，用于创建上下文。
+J20 提供了 `createContext` 方法，用于创建上下文。
 
-用法和 React 19 类似，无需额外使用 Provider ，直接使用创建的上下文对象。
-
-```tsx
-import { createContext } from "j20";
-export const SomeContext = createContext<{ name: string }>({ name: "" });
-
-<SomeContext value={{ name: "J20" }}>
-  <Inner />
-</SomeContext>;
-
-function Inner() {
-  return (
-    <SomeContext.Consumer>
-      {/* $ctx 是信号 */}
-      {($ctx) => <span>{$ctx.name}</span>}
-    </SomeContext.Consumer>
-  );
-}
-```
+用法与示例见 [上下文 Context](/guide/context)。
 
 ## $useContext
 
 类型：`<T>(c: { defaultValue: T }) => T`
 
-获取上下文数据
+获取上下文数据。
 
-```tsx
-import { $useContext } from "j20";
-import { SomeContext } from "./SomeContext";
-
-function Inner() {
-  const $ctx = $useContext(SomeContext);
-  return <span>{$ctx.name}</span>;
-}
-```
+用法与示例见 [上下文 Context](/guide/context)。
 
 ## $
 
