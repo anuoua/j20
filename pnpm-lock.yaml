@@ -15,34 +15,6 @@ importers:
         specifier: ^3.9.6
         version: 3.9.6
 
-  packages/components:
-    dependencies:
-      '@stylec/runtime':
-        specifier: 0.0.8
-        version: 0.0.8
-      j20:
-        specifier: workspace:*
-        version: link:../j20
-    devDependencies:
-      '@j20org/vite-plugin':
-        specifier: workspace:*
-        version: link:../vite-plugin
-      '@stylec/vite':
-        specifier: 0.0.8
-        version: 0.0.8(vite@8.0.1(@types/node@24.3.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))
-      happy-dom:
-        specifier: ^10.1.1
-        version: 10.11.2
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-      vite:
-        specifier: ^8.0.1
-        version: 8.0.1(@types/node@24.3.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)
-      vitest:
-        specifier: ^0.33.0
-        version: 0.33.0(happy-dom@10.11.2)(lightningcss@1.32.0)
-
   packages/doc:
     devDependencies:
       vitepress:
@@ -50,20 +22,16 @@ importers:
         version: 2.0.0-alpha.15(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.32.0)(postcss@8.5.8)(tsx@4.21.0)(typescript@5.9.3)
 
   packages/example:
-    dependencies:
-      '@j20org/components':
-        specifier: workspace:*
-        version: link:../components
     devDependencies:
       '@j20org/vite-plugin':
         specifier: workspace:*
         version: link:../vite-plugin
       '@stylec/runtime':
-        specifier: 0.0.8
-        version: 0.0.8
+        specifier: 0.0.11
+        version: 0.0.11
       '@stylec/vite':
-        specifier: 0.0.8
-        version: 0.0.8(vite@8.0.1(@types/node@24.3.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))
+        specifier: 0.0.11
+        version: 0.0.11(vite@8.0.1(@types/node@24.3.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))
       j20:
         specifier: workspace:*
         version: link:../j20
@@ -1241,18 +1209,18 @@ packages:
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
 
-  '@stylec/cli@0.0.8':
-    resolution: {integrity: sha512-Ttmqg3wEGydJNuLMDzr2fuMXCTe1MhRDt2QkknQdxf1p1bob4DVZ3grhsKfvP0bnrzF9YT6l2QF0wDnsoRqyxg==}
+  '@stylec/cli@0.0.11':
+    resolution: {integrity: sha512-uWhndprfZHGuOEH65Yan+2WyVc4bS9XIRiYa5LJRxa/waIsyGzoHiq/+sxSxRInoTXrQY0Zu4U3jUOLPoOncDA==}
     hasBin: true
 
-  '@stylec/compiler@0.0.8':
-    resolution: {integrity: sha512-EdzmZUdhv06KtAJ4yTj6Byf44pQROLnXC64FqJnPugwxZbCkNlV3WEME2wviybj4nqF+0jaJI1bskQn9iECotw==}
+  '@stylec/compiler@0.0.11':
+    resolution: {integrity: sha512-Nu2PDl9i2xdeDekIT3nkI5Ag1YwncDtlibEhUBN4UX4LZO4O/5V50OlBnbGxFpncRwbBSuGvhQ+b7ZbYA8ZUUQ==}
 
-  '@stylec/runtime@0.0.8':
-    resolution: {integrity: sha512-jk6G9MQMbz4dDHCfhdeAqhRp6m8mCiosa3WSHcyn3Z8tmHTUvgyLxxcSwqBk/68YwWxmwSlc6yh325Z1hU2+wg==}
+  '@stylec/runtime@0.0.11':
+    resolution: {integrity: sha512-TtYHeAf7HB4iwGVQg9+UB/dIAPl15Dfau3OFyDAWdJNsLr0BZGbc9jBOUkxp9FRQoa3kYtgYlD039mdkD8Y66Q==}
 
-  '@stylec/vite@0.0.8':
-    resolution: {integrity: sha512-FjGH9IS16z9gK14y3MHREJQhm4of2ScIuuk4FEqMX50WJhHX8n+xfhilcZhVyJOHRwzAZdxxA6wlz8Eko35sGQ==}
+  '@stylec/vite@0.0.11':
+    resolution: {integrity: sha512-DgfbdvafVxJV6TAwRm9dYwxrtNFg/8S22bwlUah2VB9ykIG2SBiMuf9CyT8Db8sqhgkVjxnlaK5VX4bib4RzwA==}
     peerDependencies:
       vite: '>=5.0.0'
 
@@ -3547,26 +3515,26 @@ snapshots:
 
   '@sinclair/typebox@0.27.8': {}
 
-  '@stylec/cli@0.0.8':
+  '@stylec/cli@0.0.11':
     dependencies:
-      '@stylec/compiler': 0.0.8
+      '@stylec/compiler': 0.0.11
 
-  '@stylec/compiler@0.0.8':
+  '@stylec/compiler@0.0.11':
     dependencies:
       '@jridgewell/gen-mapping': 0.3.13
-      '@stylec/runtime': 0.0.8
+      '@stylec/runtime': 0.0.11
       magic-string: 0.30.21
       postcss: 8.5.8
       postcss-selector-parser: 7.1.4
 
-  '@stylec/runtime@0.0.8':
+  '@stylec/runtime@0.0.11':
     dependencies:
       csstype: 3.2.3
 
-  '@stylec/vite@0.0.8(vite@8.0.1(@types/node@24.3.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))':
+  '@stylec/vite@0.0.11(vite@8.0.1(@types/node@24.3.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0))':
     dependencies:
-      '@stylec/cli': 0.0.8
-      '@stylec/compiler': 0.0.8
+      '@stylec/cli': 0.0.11
+      '@stylec/compiler': 0.0.11
       vite: 8.0.1(@types/node@24.3.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)
 
   '@tybys/wasm-util@0.10.1':
