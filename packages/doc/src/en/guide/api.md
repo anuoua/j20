@@ -18,13 +18,28 @@
 
 Type: `<T>(init: T): Signal<T>`
 
-_Creates a signal value. Typically not used directly - automatically created by the compiler._
+Creates a signal value.
+
+> [!WARNING]
+> **Do not use `signal` directly unless absolutely necessary.**
+>
+> For regular declarations just write `let $x = v`; the compiler automatically compiles it to `signal(v)`.
+> Calling `signal` manually is redundant and error-prone (and breaks the consistency of seamless signals). Only consider it in extreme scenarios the compiler cannot cover, e.g.:
+>
+> - Global shared state outside component scope
+> - Interacting with third-party libraries that don't support J20 syntax
 
 ## computed
 
 Type: `<T>(fn: () => T) => Computed<T>`
 
-_Creates a derived signal value. Typically not used directly - automatically created by the compiler._
+Creates a derived signal value.
+
+> [!WARNING]
+> **Do not use `computed` directly unless absolutely necessary.**
+>
+> For regular derivation just write `const $x = expr`; the compiler automatically compiles it to `computed(() => expr)`.
+> Calling `computed` manually is redundant and error-prone (patterns like hand-writing `$x.value` in source conflict with the compiled output). Only consider it in extreme scenarios the compiler cannot cover.
 
 ## ref
 
@@ -182,10 +197,14 @@ Type: `<T>(val: T) => T extends SignalLike ? (typeof val)["value"] : SignalLike<
 
 Converter between signal variables and normal variables. When you know a variable is reactive, or when you need to convert a reactive variable to a normal variable, use `$` to convert it.
 
-**Main Use Cases**
-
-1. **Type escape**: When passing Signal objects to third-party libraries that don't support J20 syntax
-2. **Debugging**: Inspect Signal object internal structure in console
+> [!WARNING]
+> **`$` is an escape-hatch API — don't overuse it in business code.**
+>
+> In normal cases you **don't need** `$`: `let $x` declarations, `const $x` derivations, and direct read/write of `$x` cover 99% of scenarios.
+> Use `$` only in these special scenarios:
+>
+> 1. **Type escape**: When passing Signal objects to third-party libraries that don't support J20 syntax
+> 2. **Debugging**: Inspect Signal object internal structure in console
 
 ### Example
 
