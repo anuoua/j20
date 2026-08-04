@@ -1,5 +1,11 @@
 # j20
 
+## 0.0.35
+
+### Patch Changes
+
+- Add edge case for signal and refact jsx-transform-plugin
+
 ## 0.0.34
 
 ### Patch Changes

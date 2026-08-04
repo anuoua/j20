@@ -1,5 +1,13 @@
 # @j20org/vite-plugin
 
+## 0.0.11
+
+### Patch Changes
+
+- Add edge case for signal and refact jsx-transform-plugin
+- Updated dependencies
+  - @j20org/jsx-transform@0.0.7
+
 ## 0.0.10
 
 ### Patch Changes
