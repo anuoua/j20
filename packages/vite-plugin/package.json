@@ -1,6 +1,6 @@
 {
   "name": "@j20org/vite-plugin",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Vite plugin for j20 framework",
   "type": "module",
   "main": "./dist/index.js",
@@ -23,7 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "@j20org/jsx-transform": "workspace:*",
-    "signal-compiler": "0.1.7"
+    "signal-compiler": "0.1.9"
   },
   "devDependencies": {
     "rimraf": "^5.0.10",

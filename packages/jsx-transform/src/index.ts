@@ -4,6 +4,7 @@ import type { PluginObj } from "@babel/core";
 import { composeVisitors } from "./utils/compose-visitors";
 import type { Config } from "./types";
 import { jsxTransform } from "./strategies/jsx-transform";
+import { markSignalComponent } from "./strategies/mark-signal-component";
 import { autoImport } from "./strategies/add-source";
 
 const defaultConfig: Config = {
@@ -19,6 +20,7 @@ export const j20JsxTransform = (
 
   const strategies: babelCore.Visitor[] = [
     config.autoImport ? autoImport(babel, config) : null,
+    markSignalComponent(),
     jsxTransform(),
   ].filter((i): i is babelCore.Visitor => i !== null);
 

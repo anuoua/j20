@@ -18,13 +18,15 @@ export function j20({
         };
       },
     } satisfies PluginOption,
-    signalCompilerRollup({
+    // JSX 转换必须先于 signal-compiler 执行：jsx-transform 要为行内组件
+    // （render prop）附加 @signal-component 注释标记，signal-compiler 才能识别。
+    j20JsxTransformRollup({
       include,
       config: {
         importSource: "j20",
       },
     }) as PluginOption,
-    j20JsxTransformRollup({
+    signalCompilerRollup({
       include,
       config: {
         importSource: "j20",
