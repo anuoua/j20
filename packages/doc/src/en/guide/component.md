@@ -193,31 +193,116 @@ function Msg({ name }: { name: string }) {
 
 ## Component Slots
 
-J20's best practice for slots is to encapsulate them as render functions, unless they are static slots (like Web Component slots). Any reusable slot should be encapsulated as a render function.
+When a component's content area needs to be customized by its users, J20 offers two approaches depending on the nature of the content:
+
+- **Static content** — a fixed fragment that does not participate in reactive updates; put it in `children` or a lowercase prop.
+- **Inline components (render props)** — reusable fragments that take parameters and participate in reactivity; pass them as capitalized props, replacing React's render prop pattern.
+
+### Inline components (render props)
+
+Content that takes parameters and participates in reactive updates can be defined as an anonymous function on a component prop — the replacement for React's render prop pattern.
+
+The compiler recognizes a slot function by three conventions, and only compiles it as a component when all three hold (`$`-destructured params become read-only derived signals):
+
+1. **Capitalized attribute name** (`Action`, `Header` — component-style naming);
+2. **Anonymous function value** (arrow function or anonymous function expression);
+3. **`$`-destructured params** (`({ count: $count })`).
+
+#### Declaring a component with slots
+
+Declare slot props with `FC<Props>` and invoke the slot via JSX inside the component:
 
 ```tsx
-const App = ($props: {
-  header: JSX.Element;
-  option: () => JSX.Element;
+const Panel = ($props: {
+  title: string;
+  Action?: FC<{ count: number }>;
 }) => {
-  let $visible = false;
+  let $count = 0;
+  const { Action } = $props;
+
+  return (
+    <div class="panel">
+      <h2>{$props.title}</h2>
+      {Action ? <Action count={$count} /> : null}
+    </div>
+  );
+};
+```
+
+#### Using slots
+
+```tsx
+<Panel
+  title="Counter"
+  Action={({ count: $count }) => <span>Current: {$count}</span>}
+/>
+```
+
+`$count` inside the slot is a **read-only derived signal**: it updates automatically when the parent's signal changes; you cannot assign to `$` params inside a slot (`$count++` is a no-op).
+
+#### Always invoke slots via JSX
+
+Slots must be invoked in JSX form — the runtime wraps props into a reactive signal, so the slot can read values and stay reactive:
+
+```tsx
+// ✅ Correct: JSX invocation
+{Action ? <Action count={$count} /> : null}
+
+// ❌ Wrong: direct function call — the slot cannot access the reactive value
+{$props.Action({ count: $count })}
+```
+
+> Guard optional slots before rendering; rendering an `undefined` component throws.
+
+### Static content
+
+Content that needs no parameters and does not participate in reactive updates doesn't need a slot at all. Two placements:
+
+1. **children**: `<Panel>static content</Panel>`;
+2. **lowercase props**: `<Panel bottom={<span>bottom</span>} />`.
+
+J20 JSX props are lazy — a bound object is initialized only when the component actually uses it, so static content costs nothing.
+
+```tsx
+const Panel = ($props: {
+  children?: JSX.Element;
+  bottom?: JSX.Element;
+}) => {
+  const { children, bottom } = $props;
 
   return (
     <div>
-      <div class="header">
-        {$props.header}
-      </div>
-      <div>
-         <If of={$visible} else={<div>{$props.option(false)}</div>}>
-          {$props.option()}
-        </If>
-      </div>
+      {children}
+      {bottom}
     </div>
   );
 };
 
-<App
-  header={<h1>header</h1>}
-  some={(visible) => <div>{visible ? "none" : "some"}</div>}
-/>
+<Panel bottom={<span>bottom</span>}>static content</Panel>
 ```
+
+Static content has a single constraint: **the bound object must be stable** — once created, it never changes. Because it is stable, you can simply destructure and use it inside the component; no signal conversion needed.
+
+"Stable" means the object itself never changes, not that the content can never change. If content must switch between two states, don't write that mutation into the prop binding:
+
+```tsx
+// ❌ Unstable: bottom flips between two objects as $visible changes
+<Panel bottom={$visible ? <span>visible</span> : <div>invisible</div>} />
+
+// ✅ Stable: bottom is always the same <If> object; the switch happens inside If
+<Panel bottom={<If of={$visible} else={<div>invisible</div>}><span>visible</span></If>} />
+```
+
+The appearance, disappearance and switching of content — UI mutations — are the responsibility of logic components like `If` / `For` / `Switch`. Expressing mutations with dynamic expressions does work (e.g. forcing a remount with `Replace`), but it scatters rendering logic into prop bindings — don't do this.
+
+### Replacing React render props
+
+| React | J20 |
+| --- | --- |
+| `props.header(data)` (render prop) | `const { Header } = $props;` → `<Header {...data} />` |
+| `props.children(data)` (children as a function) | `const { Children } = $props;` → `<Children {...data} />` |
+| static content (fixed JSX) | children or lowercase props |
+
+On the J20 side, destructure the slot component first, then invoke it via JSX, passing data with `{...data}` spread.
+
+> Lowercase `children` is reserved for built-in logic components (`If` / `For` / `Switch`, etc.); for function-based content in your own components, use a capitalized inline component (e.g. `Children`) — not lowercase `children`.
