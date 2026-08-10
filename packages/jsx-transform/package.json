@@ -28,6 +28,7 @@
   "dependencies": {
     "rollup": "^4.53.3",
     "@rollup/pluginutils": "~5.2.0",
+    "signal-compiler": "^0.1.9",
     "@babel/core": "~7.24.5",
     "@babel/generator": "^7.28.5",
     "@babel/helper-annotate-as-pure": "^7.27.3",

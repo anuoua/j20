@@ -89,6 +89,44 @@ j20JsxTransformRollup({
 | `@j20org/jsx-transform` | `j20JsxTransform`, `Config` | Babel 插件 |
 | `@j20org/jsx-transform/rollup` | `j20JsxTransformRollup`, `Options` | Rollup 插件 |
 
+## 行内组件（render prop）
+
+行内组件（render prop）是**匿名函数**，没有名字，signal-compiler 无法自动识别为组件。因此 jsx-transform 会在满足以下**全部条件**时，在函数节点上附加 `/* @signal-component */` 块注释标记，signal-compiler 检测到标记后按组件编译（参数解构 → `computed`）：
+
+1. 属性名大写开头（如 `Insert={...}`）；
+2. 属性值是无名函数（箭头函数或无 id 的函数表达式）；
+3. 解构参数中含有 `$` 绑定（如 `({ value: $value }) => ...`）。
+
+```jsx
+<TodoItem Insert={({ value: $value }) => {
+  let $msg = "msg";
+  return <div>{$value}{$msg}</div>;
+}} />
+```
+
+编译为（配合 signal-compiler 的第二 pass）：
+
+```js
+// jsx-transform 输出：
+get Insert() {
+  return /* @signal-component */({ value: $value }) => {
+    let $msg = "msg";
+    return _jsxs(__tmpl1(), undefined, () => [() => $value, () => $msg]);
+  };
+}
+
+// signal-compiler 输出：
+get Insert() {
+  return /* @signal-component */__$0 => {
+    const $value = _computed(() => __$0.value["value"]);
+    let $msg = _signal("msg");
+    return _jsxs(__tmpl1(), undefined, () => [() => $value.value, () => $msg.value]);
+  };
+}
+```
+
+> 标记必须是块注释（不能用行注释——行内组件常在 `return` 位置，行注释会触发 ASI 损坏代码），且 jsx-transform 必须先于 signal-compiler 执行（独立 Babel pass）。
+
 ## License
 
 MIT @anuoua

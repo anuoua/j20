@@ -23,7 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "@j20org/jsx-transform": "workspace:*",
-    "signal-compiler": "0.1.7"
+    "signal-compiler": "0.1.9"
   },
   "devDependencies": {
     "rimraf": "^5.0.10",
