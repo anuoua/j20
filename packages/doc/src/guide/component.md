@@ -192,24 +192,57 @@ function Msg({ name }: { name: string }) {
 
 ## 组件插槽
 
-组件的内容区需要让使用者自定义时，J20 按内容的性质提供两种方式：
+组件的内容区需要让使用者自定义时，J20 提供两种方式：
 
-- **静态内容**——固定片段，不参与响应更新，直接放 children 或小写属性；
-- **行内组件（render prop）**——需要接收参数、参与响应更新的复用片段，作为大写属性传入，平替 React 的 render prop。
+- **children**——静态内容，没有入参，直接放固定 JSX；
+- **动态插槽**——接收参数，通过行内组件实现，作为大写属性传入，内容可复用。
 
-### 行内组件（render prop）
+### children
 
-需要接收参数、参与响应更新的内容，定义成组件属性上的匿名函数，用来平替 React 的 render prop 模式。
+自定义组件的 `children` 是**静态内容**——没有入参，使用者直接把内容放进来。只有 `If` / `For` / `Switch` 等内置逻辑组件的 `children` 可以是函数。
 
-编译器识别插槽函数靠三个约定，全部满足才会把它当作组件编译（`$` 解构参数会被编译成只读的派生信号）：
+```tsx
+const Panel = ($props: {
+  children?: JSX.Element;
+}) => {
+  const { children } = $props;
+
+  return (
+    <div>
+      {children}
+    </div>
+  );
+};
+
+<Panel>静态内容</Panel>
+```
+
+children 内容需要更新时，搭配 `If` / `For` / `Switch` 等内置逻辑组件使用：
+
+```tsx
+let $visible = true;
+
+<Panel>
+  <If of={$visible} else={<div>invisible</div>}>
+    <span>visible</span>
+  </If>
+</Panel>
+```
+
+### 动态插槽
+
+动态插槽接收参数，通过行内组件实现，内容**可复用**——同一份插槽可以传给多个组件，也可以在组件内多次调用。
+
+#### 行内组件
+
+行内组件是写在 JSX 属性上的组件。
+
+编译器识别行内组件靠以下约定，全部满足才会把它当作组件编译（`$` 解构参数会被编译成只读的派生信号）：
 
 1. **属性名大写开头**（`Action`、`Header`，组件式命名）；
-2. **属性值是无名函数**（箭头函数或匿名函数表达式）；
-3. **参数用 `$` 解构**（`({ count: $count })`）。
+2. **组件函数入参必须含有 `$` 变量**（比如 `$props` 或者解构 `({ count: $count })`）；
 
-#### 声明带插槽的组件
-
-插槽属性用 `FC<Props>` 声明，组件内通过 JSX 调用插槽：
+插槽属性用 `FC<Props>` 声明，组件内解构后通过 JSX 调用插槽：
 
 ```tsx
 const Panel = ($props: {
@@ -228,7 +261,7 @@ const Panel = ($props: {
 };
 ```
 
-#### 使用插槽
+使用时属性值是匿名函数，参数用 `$` 解构：
 
 ```tsx
 <Panel
@@ -237,9 +270,7 @@ const Panel = ($props: {
 />
 ```
 
-插槽内的 `$count` 是**只读的派生信号**：父组件的信号变化时插槽自动更新；插槽内不能给 `$` 参数赋值（`$count++` 不会生效）。
-
-#### 必须用 JSX 调用插槽
+插槽内的 `$count` 是**只读的派生信号**：父组件的信号变化时插槽自动更新。
 
 调用插槽必须走 JSX 形式，运行时会把 props 包成响应式信号，插槽内部才能拿到值并保持响应：
 
@@ -251,57 +282,3 @@ const Panel = ($props: {
 {$props.Action({ count: $count })}
 ```
 
-> 可选插槽需要先判空，直接渲染 `undefined` 组件会报错。
-
-### 静态内容
-
-不需要参数、不参与响应更新的内容，没必要动用插槽。两种放法：
-
-1. **children**：`<Panel>静态内容</Panel>`；
-2. **小写属性**：`<Panel bottom={<span>bottom</span>} />`。
-
-J20 的 JSX 属性是 lazy 的——绑定对象在组件真正用到它时才初始化，因此静态内容零成本。
-
-```tsx
-const Panel = ($props: {
-  children?: JSX.Element;
-  bottom?: JSX.Element;
-}) => {
-  const { children, bottom } = $props;
-
-  return (
-    <div>
-      {children}
-      {bottom}
-    </div>
-  );
-};
-
-<Panel bottom={<span>bottom</span>}>静态内容</Panel>
-```
-
-静态内容的约束只有一个：**绑定的对象必须稳定**——对象一旦创建就不再变化。正因为稳定，组件内直接解构使用即可，不需要转成信号。
-
-「稳定」指的是对象本身不变，而不是内容永不变化。如果内容需要在两种状态间切换，不要把这个突变写进属性绑定：
-
-```tsx
-// ❌ 不稳定：bottom 随 $visible 在两种对象间切换
-<Panel bottom={$visible ? <span>visible</span> : <div>invisible</div>} />
-
-// ✅ 稳定：bottom 始终是同一个 <If> 对象，切换由 If 内部处理
-<Panel bottom={<If of={$visible} else={<div>invisible</div>}><span>visible</span></If>} />
-```
-
-内容的出现、消失、切换——也就是界面突变——是 `If` / `For` / `Switch` 等逻辑组件的职责。用动态表达式表达突变虽然也能跑（比如 `Replace` 强制重挂载），但会把渲染逻辑散落到属性绑定里，不要这么干。
-
-### 平替 React render prop
-
-| React | J20 |
-| --- | --- |
-| `props.header(data)`（render prop） | `const { Header } = $props;` → `<Header {...data} />` |
-| `props.children(data)`（children-as-function） | `const { Children } = $props;` → `<Children {...data} />` |
-| 静态内容（固定 JSX） | children 或小写属性 |
-
-J20 侧先解构出插槽组件，再通过 JSX 调用，用 `{...data}` 展开传参。
-
-> 小写 `children` 是内置逻辑组件（`If` / `For` / `Switch` 等）的专用约定；自定义组件的函数式内容请用大写的行内组件（如 `Children`），不要使用小写 `children`。

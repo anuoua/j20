@@ -252,16 +252,16 @@ Slots must be invoked in JSX form — the runtime wraps props into a reactive si
 {$props.Action({ count: $count })}
 ```
 
-> Guard optional slots before rendering; rendering an `undefined` component throws.
-
 ### Static content
+
+In J20, a custom component's `children` is **static content by convention** — only built-in logic components like `If` / `For` / `Switch` may have function `children`.
 
 Content that needs no parameters and does not participate in reactive updates doesn't need a slot at all. Two placements:
 
 1. **children**: `<Panel>static content</Panel>`;
 2. **lowercase props**: `<Panel bottom={<span>bottom</span>} />`.
 
-J20 JSX props are lazy — a bound object is initialized only when the component actually uses it, so static content costs nothing.
+J20 JSX props are lazy — a bound object is initialized only when the property is read, so static content costs nothing.
 
 ```tsx
 const Panel = ($props: {
@@ -297,12 +297,50 @@ The appearance, disappearance and switching of content — UI mutations — are 
 
 ### Replacing React render props
 
-| React | J20 |
-| --- | --- |
-| `props.header(data)` (render prop) | `const { Header } = $props;` → `<Header {...data} />` |
-| `props.children(data)` (children as a function) | `const { Children } = $props;` → `<Children {...data} />` |
-| static content (fixed JSX) | children or lowercase props |
+React's render prop pattern has a corresponding pattern in J20; the J20 implementation is covered in [Inline components (render props)](#inline-components-render-props) and [Static content](#static-content). Below is the comparison from a React migration perspective, listing only the key differences.
 
-On the J20 side, destructure the slot component first, then invoke it via JSX, passing data with `{...data}` spread.
+#### `props.header(data)` (render prop)
 
-> Lowercase `children` is reserved for built-in logic components (`If` / `For` / `Switch`, etc.); for function-based content in your own components, use a capitalized inline component (e.g. `Children`) — not lowercase `children`.
+**React**
+
+```tsx
+// Declaration: receive a render function as a prop and call it during render
+const Panel = ({ header, count }) => (
+  <div class="panel">{header({ count })}</div>
+);
+
+// Usage: pass an anonymous function; the param is the data passed in by the parent
+<Panel
+  count={1}
+  header={(data) => <span>Current: {data.count}</span>}
+/>
+```
+
+The J20 equivalent — a capitalized slot — is covered in [Inline components (render props)](#inline-components-render-props). Key differences:
+
+- React calls the function directly during render and passes a data snapshot; J20 treats the slot as a component and **invokes it via JSX** — the runtime wraps props into a reactive signal so the slot can access reactive values;
+- In J20, slot params are **read-only derived signals**: the slot updates automatically when the parent's signals change;
+- To pass an entire data object, use `{...data}` spread.
+
+React's `props.children(data)` (children as a function) is merged into this same pattern: a custom component's `children` is [static content](#static-content), and function-based content always goes through a capitalized slot — which is also the replacement for children-as-function.
+
+#### Static content (fixed JSX)
+
+**React**
+
+```tsx
+// Declaration: children is an element directly, no function call
+const Panel = ({ children }) => (
+  <div class="panel">{children}</div>
+);
+
+// Usage: place fixed JSX directly
+<Panel>
+  <span>fixed content</span>
+</Panel>
+```
+
+The J20 equivalent — children or lowercase props — is covered in [Static content](#static-content). Key differences:
+
+- J20 JSX props are lazy — a bound object is initialized only when the property is read, so static content costs nothing;
+- The bound object of static content must be **stable** (it never changes after creation); the appearance, disappearance and switching of content is the responsibility of logic components like `If` / `For` / `Switch`.
