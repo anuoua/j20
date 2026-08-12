@@ -192,31 +192,93 @@ function Msg({ name }: { name: string }) {
 
 ## 组件插槽
 
-J20 的插槽的最佳实践是封装成 render 函数，除非是静态的插槽（类似 Web Component 的 slot），凡是需要复用的插槽，都应封装成 render 函数。
+组件的内容区需要让使用者自定义时，J20 提供两种方式：
+
+- **children**——静态内容，没有入参，直接放固定 JSX；
+- **动态插槽**——接收参数，通过行内组件实现，作为大写属性传入，内容可复用。
+
+### children
+
+自定义组件的 `children` 是**静态内容**——没有入参，使用者直接把内容放进来。只有 `If` / `For` / `Switch` 等内置逻辑组件的 `children` 可以是函数。
 
 ```tsx
- const App = ($props: {
-   header: JSX.Element,
-  option: () => JSX.Element,
+const Panel = ($props: {
+  children?: JSX.Element;
 }) => {
-  let $visible = false;
+  const { children } = $props;
 
   return (
     <div>
-      <div class="header">
-        {$props.header}
-      </div>
-      <div>
-         <If of={$visible} else ={<div>{$props.option(false)}</div>}>
-          {$props.option()}
-        </If>
-      </div>
+      {children}
     </div>
   );
 };
 
-<App 
-  header={<h1>header</h1>}
-  some={(visible) => <div>{visible ? "none" : "some"}</div>}
+<Panel>静态内容</Panel>
+```
+
+children 内容需要更新时，搭配 `If` / `For` / `Switch` 等内置逻辑组件使用：
+
+```tsx
+let $visible = true;
+
+<Panel>
+  <If of={$visible} else={<div>invisible</div>}>
+    <span>visible</span>
+  </If>
+</Panel>
+```
+
+### 动态插槽
+
+动态插槽接收参数，通过行内组件实现，内容**可复用**——同一份插槽可以传给多个组件，也可以在组件内多次调用。
+
+#### 行内组件
+
+行内组件是写在 JSX 属性上的组件。
+
+编译器识别行内组件靠以下约定，全部满足才会把它当作组件编译（`$` 解构参数会被编译成只读的派生信号）：
+
+1. **属性名大写开头**（`Action`、`Header`，组件式命名）；
+2. **组件函数入参必须含有 `$` 变量**（比如 `$props` 或者解构 `({ count: $count })`）；
+
+插槽属性用 `FC<Props>` 声明，组件内解构后通过 JSX 调用插槽：
+
+```tsx
+const Panel = ($props: {
+  title: string;
+  Action?: FC<{ count: number }>;
+}) => {
+  let $count = 0;
+  const { Action } = $props;
+
+  return (
+    <div class="panel">
+      <h2>{$props.title}</h2>
+      {Action ? <Action count={$count} /> : null}
+    </div>
+  );
+};
+```
+
+使用时属性值是匿名函数，参数用 `$` 解构：
+
+```tsx
+<Panel
+  title="计数器"
+  Action={({ count: $count }) => <span>当前值：{$count}</span>}
 />
 ```
+
+插槽内的 `$count` 是**只读的派生信号**：父组件的信号变化时插槽自动更新。
+
+调用插槽必须走 JSX 形式，运行时会把 props 包成响应式信号，插槽内部才能拿到值并保持响应：
+
+```tsx
+// ✅ 正确：JSX 调用
+{Action ? <Action count={$count} /> : null}
+
+// ❌ 错误：直接函数调用，插槽内部拿不到响应式值
+{$props.Action({ count: $count })}
+```
+
