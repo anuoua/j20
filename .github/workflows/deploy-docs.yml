@@ -2,60 +2,51 @@ name: Deploy Documentation
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+    paths: ["packages/doc/**"]
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
-  deploy-docs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'release(doc):')
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
           version: 10
 
-      - name: Get version from commit message
-        id: version
-        run: |
-          MESSAGE="${{ github.event.head_commit.message }}"
-          if [[ $MESSAGE =~ release\(doc\):\ ([0-9]+\.[0-9]+\.[0-9]+) ]]; then
-            echo "version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
-            echo "Found version: ${BASH_REMATCH[1]}"
-          else
-            echo "No valid version found in commit message"
-            exit 1
-          fi
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
 
       - name: Install dependencies
-        run: |
-          cd packages/doc
-          pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build documentation
-        run: |
-          cd packages/doc
-          pnpm build
+        run: pnpm --filter doc build
 
-      - name: Deploy to doc branch
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./packages/doc/.vitepress/dist
-          publish_branch: doc
-          force_orphan: true
-          commit_message: "Release docs ${{ steps.version.outputs.version }}"
-          cname: ''
+          path: packages/doc/.vitepress/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
