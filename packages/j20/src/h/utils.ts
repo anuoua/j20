@@ -109,6 +109,37 @@ export const attrValue = (key: string, v: any): string | null => {
   return v;
 };
 
+// 表单控件的 value/checked/selected 必须通过 DOM 属性（IDL attribute）设置：
+// 对应的 content 属性只表示"默认值"，用户一旦输入（dirty value flag 置位），
+// setAttribute 便无法再更新实际值。这也是 React 对受控组件设置 property 的原因。
+const isControlledProp = (key: string) =>
+  key === "value" || key === "checked" || key === "selected";
+
+const setPropOrAttr = (
+  node: HTMLElement | SVGElement,
+  key: string,
+  value: any
+) => {
+  if (isControlledProp(key) && key in node) {
+    (node as any)[key] = value ?? "";
+  } else {
+    const attr = attrValue(key, value);
+    if (attr === null) {
+      node.removeAttribute(key);
+    } else {
+      node.setAttribute(key, attr);
+    }
+  }
+};
+
+const unsetPropOrAttr = (node: HTMLElement | SVGElement, key: string) => {
+  if (isControlledProp(key) && key in node) {
+    (node as any)[key] = "";
+  } else {
+    node.removeAttribute(key);
+  }
+};
+
 export const update = (
   node: HTMLElement | SVGElement,
   key: string,
@@ -125,12 +156,7 @@ export const update = (
     node.removeEventListener(getEventName(key), oldValue);
     node.addEventListener(getEventName(key), newValue);
   } else {
-    const value = attrValue(key, newValue);
-    if (value === null) {
-      node.removeAttribute(key);
-    } else {
-      node.setAttribute(key, value);
-    }
+    setPropOrAttr(node, key, newValue);
   }
 };
 
@@ -148,7 +174,7 @@ export const unset = (
   } else if (key === "ref") {
     oldValue.current = null;
   } else {
-    node.removeAttribute(key);
+    unsetPropOrAttr(node, key);
   }
 };
 
@@ -172,10 +198,7 @@ export const add = (
     }
     newValue.current = node;
   } else {
-    const value = attrValue(key, newValue);
-    if (value !== null) {
-      node.setAttribute(key, value);
-    }
+    setPropOrAttr(node, key, newValue);
   }
 };
 
