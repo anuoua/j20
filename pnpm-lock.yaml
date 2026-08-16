@@ -107,8 +107,8 @@ importers:
         specifier: ^4.53.3
         version: 4.53.3
       signal-compiler:
-        specifier: ^0.1.9
-        version: 0.1.9
+        specifier: ^0.1.11
+        version: 0.1.11
     devDependencies:
       '@types/babel__core':
         specifier: ^7.20.5
@@ -165,8 +165,8 @@ importers:
         specifier: workspace:*
         version: link:../jsx-transform
       signal-compiler:
-        specifier: 0.1.9
-        version: 0.1.9
+        specifier: 0.1.11
+        version: 0.1.11
     devDependencies:
       rimraf:
         specifier: ^5.0.10
@@ -2291,8 +2291,8 @@ packages:
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
 
-  signal-compiler@0.1.9:
-    resolution: {integrity: sha512-Bg3Hp7nZ/+mHhewrlBo5qZKveoXTtooVvGbPPSQ1OZ1SU4Xu6ZhlyK3AtM3BM43FhbFjVg2TyDmhR8O87cWU6g==}
+  signal-compiler@0.1.11:
+    resolution: {integrity: sha512-grUBq471rmK/CGhurruPy4bQcFm//X/KGeYdS2gwuanHAGFMuLqQ8JKSW9DOe3irmpHERwqRHSMdFpSYG4B2Ww==}
 
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
@@ -2810,15 +2810,15 @@ snapshots:
   '@babel/helpers@7.28.3':
     dependencies:
       '@babel/template': 7.27.2
-      '@babel/types': 7.28.5
+      '@babel/types': 7.29.8
 
   '@babel/parser@7.28.3':
     dependencies:
-      '@babel/types': 7.28.5
+      '@babel/types': 7.29.8
 
   '@babel/parser@7.28.5':
     dependencies:
-      '@babel/types': 7.28.5
+      '@babel/types': 7.29.8
 
   '@babel/parser@7.29.8':
     dependencies:
@@ -2835,7 +2835,7 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.27.1
       '@babel/parser': 7.28.3
-      '@babel/types': 7.28.5
+      '@babel/types': 7.29.8
 
   '@babel/traverse@7.28.3':
     dependencies:
@@ -2844,7 +2844,7 @@ snapshots:
       '@babel/helper-globals': 7.28.0
       '@babel/parser': 7.28.3
       '@babel/template': 7.27.2
-      '@babel/types': 7.28.5
+      '@babel/types': 7.29.8
       debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
@@ -3613,11 +3613,11 @@ snapshots:
   '@types/babel__template@7.4.4':
     dependencies:
       '@babel/parser': 7.28.3
-      '@babel/types': 7.28.5
+      '@babel/types': 7.29.8
 
   '@types/babel__traverse@7.28.0':
     dependencies:
-      '@babel/types': 7.28.5
+      '@babel/types': 7.29.8
 
   '@types/chai-subset@1.3.6(@types/chai@4.3.20)':
     dependencies:
@@ -4717,12 +4717,12 @@ snapshots:
 
   siginfo@2.0.0: {}
 
-  signal-compiler@0.1.9:
+  signal-compiler@0.1.11:
     dependencies:
       '@babel/core': 7.24.9
       '@babel/helper-module-imports': 7.27.1
       '@babel/plugin-syntax-jsx': 7.27.1(@babel/core@7.24.9)
-      '@babel/types': 7.28.5
+      '@babel/types': 7.29.8
       '@rollup/pluginutils': 5.2.0(rollup@4.53.3)
       '@types/babel__core': 7.20.5
       '@types/babel__helper-module-imports': 7.18.3
