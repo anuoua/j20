@@ -35,7 +35,7 @@
     "@babel/types": "^7.28.2",
     "@rollup/pluginutils": "~5.2.0",
     "rollup": "^4.53.3",
-    "signal-compiler": "^0.1.11"
+    "signal-compiler": "^0.1.12"
   },
   "devDependencies": {
     "@types/babel__core": "^7.20.5",
