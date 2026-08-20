@@ -17,7 +17,7 @@ export const TodoItem = ($props: TodoItemProps) => {
     onToggle: $onToggle = () => {},
     onDelete: $onDelete = () => {},
     onTextChange: $onTextChange = () => {},
-    override,
+    override: $override,
   } = $props;
 
   let $editing = false;
@@ -30,9 +30,9 @@ export const TodoItem = ($props: TodoItemProps) => {
     }
   });
 
-  styleSheet(override?.css ?? css);
+  styleSheet($override?.css ?? css);
 
-  const classes = override?.classes ?? originClasses;
+  const classes = $override?.classes ?? originClasses;
 
   return (
     <div class={classes.item}>
