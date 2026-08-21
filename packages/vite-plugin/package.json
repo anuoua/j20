@@ -1,6 +1,6 @@
 {
   "name": "@j20org/vite-plugin",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Vite plugin for j20 framework",
   "type": "module",
   "main": "./dist/index.js",
