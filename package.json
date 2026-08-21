@@ -14,5 +14,10 @@
   "devDependencies": {
     "@changesets/cli": "^2.31.1",
     "prettier": "^3.9.6"
+  },
+  "pnpm": {
+    "overrides": {
+      "@babel/types": "^7.29.8"
+    }
   }
 }
