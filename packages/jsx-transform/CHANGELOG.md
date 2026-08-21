@@ -1,5 +1,11 @@
 # @j20org/jsx-transform
 
+## 0.0.10
+
+### Patch Changes
+
+- 844edcc: allover upgrade
+
 ## 0.0.9
 
 ### Patch Changes

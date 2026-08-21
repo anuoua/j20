@@ -1,5 +1,13 @@
 # @j20org/vite-plugin
 
+## 0.0.14
+
+### Patch Changes
+
+- 844edcc: allover upgrade
+- Updated dependencies [844edcc]
+  - @j20org/jsx-transform@0.0.10
+
 ## 0.0.13
 
 ### Patch Changes
