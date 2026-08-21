@@ -1,5 +1,13 @@
 # @j20org/vite-plugin
 
+## 0.0.13
+
+### Patch Changes
+
+- Overall upgrade
+- Updated dependencies
+  - @j20org/jsx-transform@0.0.9
+
 ## 0.0.12
 
 ### Patch Changes
