@@ -13,8 +13,6 @@
   keys are now written as DOM properties (like React does for controlled
   components); everything else still goes through attributes.
 
-- Overall upgrade
-
 ## 0.0.35
 
 ### Patch Changes
