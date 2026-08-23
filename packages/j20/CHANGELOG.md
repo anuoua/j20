@@ -1,5 +1,11 @@
 # j20
 
+## 0.0.39
+
+### Patch Changes
+
+- bd74746: Context leak fix
+
 ## 0.0.38
 
 ### Patch Changes
