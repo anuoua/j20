@@ -25,11 +25,12 @@ function Some<T>(p: SomeProps<T>): JSX.Element {
       return arr.value;
     },
     get children() {
-      return (item: any) => {
+      return () => (item: any) => {
         const bool = item.value;
         const propsValues = props.value;
-        const { children } = propsValues;
         if (bool) {
+          // children 是惰性 thunk：解包后是用户函数，传入当前值调用
+          const children = (propsValues.children as any)();
           return children(computed(() => resSig.value) as any);
         } else {
           return propsValues.none;

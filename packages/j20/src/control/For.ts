@@ -87,7 +87,10 @@ export const For = <T>(p: ListProps<T>) => {
       const itemSignal = new RowSignal<T>(item);
       const [newInstance, newInstanceFragment] = instanceCreate(() => {
         const newChild = untrack(() =>
-          props.children(itemSignal as unknown as T, indexSignal as unknown as number)
+          (props.children as any)()(
+            itemSignal as unknown as T,
+            indexSignal as unknown as number
+          )
         );
         return newChild;
       }, currentInstance);

@@ -25,8 +25,9 @@ export const Replace = <T>(p: ReplaceProps<T>) => {
   return createComponent(For as (p: any) => any, () => ({
     of: list.value,
     get children() {
-      return (item: any) => {
-        const children = props.value.children;
+      return () => (item: any) => {
+        // children 是惰性 thunk：解包后才可能是用户函数（带当前值参数）
+        const children = (props.value.children as any)();
         return typeof children === "function" ? children(item.value) : children;
       };
     },

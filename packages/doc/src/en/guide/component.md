@@ -261,7 +261,7 @@ Content that needs no parameters and does not participate in reactive updates do
 1. **children**: `<Panel>static content</Panel>`;
 2. **lowercase props**: `<Panel bottom={<span>bottom</span>} />`.
 
-J20 JSX props are lazy — a bound object is initialized only when the property is read, so static content costs nothing.
+J20 JSX props are lazy — a bound object is initialized only when the property is read, so static content costs nothing. `children` is compiled to a lazy thunk (`children: () => content`): it is created only when the component calls it (e.g. mounting it via `{children}`), never at prop-spread or destructure time.
 
 ```tsx
 const Panel = ($props: {
@@ -342,5 +342,5 @@ const Panel = ({ children }) => (
 
 The J20 equivalent — children or lowercase props — is covered in [Static content](#static-content). Key differences:
 
-- J20 JSX props are lazy — a bound object is initialized only when the property is read, so static content costs nothing;
+- J20 JSX props are lazy — a bound object is initialized only when the property is read, so static content costs nothing; `children` is a thunk created only when the component mounts it;
 - The bound object of static content must be **stable** (it never changes after creation); the appearance, disappearance and switching of content is the responsibility of logic components like `If` / `For` / `Switch`.

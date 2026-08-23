@@ -217,6 +217,8 @@ const Panel = ($props: {
 <Panel>静态内容</Panel>
 ```
 
+J20 的 JSX props 是惰性的——绑定对象只在属性被读取时才初始化，因此静态内容零成本。`children` 被编译成惰性 thunk（`children: () => content`）：只在组件调用它时（例如通过 `{children}` 挂载）才创建内容，props 展开或解构时不会触发创建。
+
 children 内容需要更新时，搭配 `If` / `For` / `Switch` 等内置逻辑组件使用：
 
 ```tsx

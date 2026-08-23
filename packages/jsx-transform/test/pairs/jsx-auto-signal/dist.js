@@ -12,27 +12,21 @@ const __tmpl10 = __tmpl6;
 const App = () => {};
 App.Item = () => {};
 const hello = _jsxs(App, () => ({
-  get children() {
-    return [_jsxs(__tmpl5(), undefined, () => [_jsx(__tmpl1(true)), _jsx(__tmpl2(true)), _jsx(__tmpl3(true)), _jsx(__tmpl4(true))]), _jsxs(_Fragment, () => ({
-      get children() {
-        return ["text", _jsxs(__tmpl8(), () => ({
-          get style() {
-            return $k;
-          },
-          ...{
-            ...$a,
-            ...$b
-          }
-        }), () => [_jsx(__tmpl6(), undefined, () => () => $hello), _jsx(__tmpl7(), undefined, () => () => $hello), () => $hello, ...$s]), _jsx(__tmpl9(), () => ({
-          get onChange() {
-            return add;
-          }
-        }))];
+  children: () => [_jsxs(__tmpl5(), undefined, () => [_jsx(__tmpl1(true)), _jsx(__tmpl2(true)), _jsx(__tmpl3(true)), _jsx(__tmpl4(true))]), _jsxs(_Fragment, () => ({
+    children: () => ["text", _jsxs(__tmpl8(), () => ({
+      get style() {
+        return $k;
+      },
+      ...{
+        ...$a,
+        ...$b
       }
-    })), _jsxs(__tmpl10(), undefined, () => ["hello", 123]), _jsx(App.Item, () => ({
-      get children() {
-        return $hello;
+    }), () => [_jsx(__tmpl6(), undefined, () => () => $hello), _jsx(__tmpl7(), undefined, () => () => $hello), () => $hello, ...$s]), _jsx(__tmpl9(), () => ({
+      get onChange() {
+        return add;
       }
-    }))];
-  }
+    }))]
+  })), _jsxs(__tmpl10(), undefined, () => ["hello", 123]), _jsx(App.Item, () => ({
+    children: () => $hello
+  }))]
 }));

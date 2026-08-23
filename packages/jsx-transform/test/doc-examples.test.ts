@@ -88,9 +88,9 @@ it("doc: 静态内容 — children/小写属性，直接解构不转信号", () 
   // 组件内直接解构 $props.value，不产生 computed
   expect(d.s2).toContain("} = $props.value;");
   expect(d.s2).not.toContain("_computed");
-  // children 与小写属性都是 lazy getter（使用时才初始化）
+  // 小写属性是 lazy getter；children 是惰性 thunk（使用时才调用创建）
   expect(u.s1).toContain("get bottom()");
-  expect(u.s1).toContain("get children()");
+  expect(u.s1).toContain("children: () => \"static content\"");
   // 静态内容不是插槽，不被标记
   expect(u.s1).not.toContain("@signal-component");
 });

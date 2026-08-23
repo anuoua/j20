@@ -1,4 +1,5 @@
 import { effect } from "../api/effect";
+import { untrack } from "../api/untrack";
 import { getCurrentInstance } from "./instance";
 
 export const exist = (val: any) => val !== undefined;
@@ -43,7 +44,17 @@ export const getChildren = (propChildren: any[]) => {
       let textNode: Text | undefined;
       let current: Node | undefined;
       const effectInstance = effect(() => {
-        const el = child();
+        let el = child();
+        if (typeof el === "function") {
+          // children thunk（isLogic）：当作逻辑组件创建，untrack 一次性调用
+          // （静态内容约定）。嵌套 children thunk（组件把 children 再传给子
+          // 组件）会逐层解包。其他函数结果继续在 effect 里追踪调用。
+          if (el.isLogic) {
+            while (typeof el === "function") el = untrack(() => el());
+          } else {
+            el = el();
+          }
+        }
         if (typeof el === "number" || typeof el === "string") {
           if (textNode) {
             textNode.nodeValue = el + "";

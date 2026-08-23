@@ -13,13 +13,14 @@ beforeEach(() => {
 });
 
 // 回归：组件对 $props 做 rest 解构（const { className, ...$rest } = $props）
-// 时，JS 的 rest 收集会强制求值 props 对象上剩余的 getter——包括 children。
-// children getter 求值即创建子组件实例；若创建发生在某个 computed/effect
-// 的求值上下文里，子组件函数体内读取的信号会被注册到该反应上（依赖泄漏），
-// 状态变化时 children 被无谓重挂载，且重挂载发生在 flush 阶段（实例栈为空），
-// context 查找失败、消费方抛错会中断 flush。
+// 时，JS 的 rest 收集会强制求值 props 对象上剩余的 getter。旧编译策略把
+// children 放进 getter，求值即创建子组件实例——若创建发生在某个
+// computed/effect 的求值上下文里，子组件函数体内读取的信号会被注册到该
+// 反应上（依赖泄漏）。新策略下 children 是惰性 thunk，rest 解构只拷贝函数
+// 引用、不再触发创建，问题从根上消除；但 createComponent 仍保留 untrack
+// 作为通用防御（组件创建副作用不捕获到触发者）。本测试继续验证该防御。
 //
-// 本测试手写编译产物形态（不依赖 babel）：Root 内 $rest 为 computed，
+// 本测试手写旧编译产物形态（不依赖 babel）：Root 内 $rest 为 computed，
 // `<div {...$rest}>` 的粗粒度属性 effect 读取 $rest.value（模拟 spread），
 // children 为 getter。断言：点击后文本更新、子组件不重挂载、无异常抛出。
 describe("props rest destructuring", () => {

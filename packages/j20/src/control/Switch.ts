@@ -20,14 +20,15 @@ interface MatchChildrenInner {
 
 export const Switch: FC<SwitchProps> = (p) => {
   const props = p as unknown as SwitchPropsInner;
-  const children = props.value.children as unknown as MatchChildrenInner[];
+  // children 是惰性 thunk：解包得到 Case 数组
+  const children = (props.value.children as any)() as unknown as MatchChildrenInner[];
   const res = computed(() => children.filter((i) => i.valid)[0]);
 
   return createComponent(For as (p: any) => any, () => ({
     of: res.value ? [res.value] : [],
     trait: (item: any) => item.id,
     get children() {
-      return (item: any) => item.value.children;
+      return () => (item: any) => item.value.children;
     },
   }));
 };
