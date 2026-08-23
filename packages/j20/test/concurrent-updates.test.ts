@@ -65,7 +65,7 @@ describe("Concurrent Updates", () => {
             return $items.value;
           },
           get children() {
-            return (item: any) => {
+            return () => (item: any) => {
               const div = document.createElement("div");
               return createElement(
                 div,
@@ -145,12 +145,14 @@ describe("Concurrent Updates", () => {
                 return $visible.value;
               },
               get children() {
-                const div = document.createElement("div");
-                return createElement(
-                  div,
-                  () => ({}),
-                  () => [() => $inner.value]
-                );
+                return () => {
+                  const div = document.createElement("div");
+                  return createElement(
+                    div,
+                    () => ({}),
+                    () => [() => $inner.value]
+                  );
+                };
               },
             }),
             undefined
@@ -196,7 +198,7 @@ describe("Concurrent Updates", () => {
             For as any,
             () => ({
               of: $list1.value,
-              children: (item: any) => {
+              children: () => (item: any) => {
                 const div = document.createElement("div");
                 div.className = "list1";
                 div.textContent = item.value.toString();
@@ -209,7 +211,7 @@ describe("Concurrent Updates", () => {
             For as any,
             () => ({
               of: $list2.value,
-              children: (item: any) => {
+              children: () => (item: any) => {
                 const div = document.createElement("div");
                 div.className = "list2";
                 div.textContent = item.value.toString();
@@ -297,7 +299,7 @@ describe("Concurrent Updates", () => {
         Switch as any,
         () => ({
           get children() {
-            return [
+            return () => [
               createElement(
                 Case as any,
                 () => ({
@@ -461,7 +463,7 @@ describe("Concurrent Updates", () => {
                 return (item: any) => item;
               },
               get children() {
-                return (item: any) => {
+                return () => (item: any) => {
                   const div = document.createElement("div");
                   div.className = "item";
                   return createElement(

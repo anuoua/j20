@@ -25,7 +25,7 @@ describe("Context", () => {
               (Theme as any).Consumer as any,
               () => ({
                 get children() {
-                  return (val: any) => {
+                  return () => (val: any) => {
                     captured.push(val?.value ?? val);
                     const div = document.createElement("div");
                     div.textContent = "theme=" + (val?.value ?? val);
@@ -67,7 +67,7 @@ describe("Context", () => {
                     (CtxB as any).Consumer as any,
                     () => ({
                       get children() {
-                        return (val: any) => {
+                        return () => (val: any) => {
                           capturedB.push(val?.value ?? val);
                           return document.createElement("div");
                         };
@@ -106,7 +106,7 @@ describe("Context", () => {
               (CtxB as any).Consumer as any,
               () => ({
                 get children() {
-                  return (val: any) => {
+                  return () => (val: any) => {
                     capturedB.push(val?.value ?? val);
                     return document.createElement("div");
                   };

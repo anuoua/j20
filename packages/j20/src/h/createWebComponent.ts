@@ -34,24 +34,28 @@ export const createWebComponent = (tag: WC, props: undefined | (() => any)) => {
   }
 
   const runner = () => {
-    let childrenGetter = () =>
-      untrack(() => (props ? props().children : undefined));
-
     const ret: any = tag(
       computed(() => {
         const retProps = props ? props() : {};
-        childrenGetter =
-          Object.getOwnPropertyDescriptor(retProps, "children")?.get ??
-          (() => undefined);
         delete retProps.children;
         return retProps;
       })
     );
 
+    // children 是惰性 thunk：调用得到内容（静态内容约定），untrack 隔离创建
+    const childrenGetter = () =>
+      untrack(() => {
+        const c = props ? props().children : undefined;
+        return typeof c === "function" ? c() : c;
+      });
+
     if (el.customElement.mode) {
       (el as any).appendToShadowDom(getChildren([].concat(ret)));
-      childrenGetter &&
-        (el as any).appendToLightDom(getChildren([].concat(childrenGetter())));
+      const lightChildren = childrenGetter();
+      lightChildren != null &&
+        (el as any).appendToLightDom(
+          getChildren([].concat(lightChildren))
+        );
     } else {
       (el as any).appendToBody(getChildren([].concat(ret)));
     }

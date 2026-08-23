@@ -120,7 +120,7 @@ const childrenValue = (children: T.Expression[]): T.Expression =>
 interface CallParts {
   isDom: boolean;
   tagExpr: T.Expression;
-  members: (T.ObjectMethod | T.SpreadElement)[];
+  members: (T.ObjectMethod | T.SpreadElement | T.ObjectProperty)[];
   children: T.Expression[];
 }
 
@@ -129,7 +129,7 @@ const buildCall = (
   { isDom, tagExpr, members, children }: CallParts
 ): T.CallExpression => {
   const hasAttrs = members.length > 0;
-  const propsArrow = (extra: T.ObjectMethod[]): T.Expression =>
+  const propsArrow = (extra: (T.ObjectMethod | T.ObjectProperty)[]): T.Expression =>
     t.arrowFunctionExpression([], t.objectExpression([...members, ...extra]));
 
   // DOM node: children are the 3rd argument.
@@ -146,11 +146,18 @@ const buildCall = (
       : t.callExpression(callee, [tagExpr]);
   }
 
-  // Component: children live as a `children` getter inside props.
+  // Component: children are a lazy thunk property inside props. The runtime
+  // marks the thunk with `.isLogic` and creates it like a logic component
+  // (untracked one-shot), so the thunk body stays inert until it is called.
   if (children.length > 0) {
     return t.callExpression(callee, [
       tagExpr,
-      propsArrow([getter("children", childrenValue(children))]),
+      propsArrow([
+        t.objectProperty(
+          t.identifier("children"),
+          t.arrowFunctionExpression([], childrenValue(children))
+        ),
+      ]),
     ]);
   }
   return hasAttrs
@@ -247,7 +254,7 @@ export const jsxTransform = (): babelCore.Visitor => {
         const children = collectChildren(path, isDom);
 
         const primitiveAttrs: PrimitiveAttr[] = [];
-        const members: (T.ObjectMethod | T.SpreadElement)[] = [];
+        const members: (T.ObjectMethod | T.SpreadElement | T.ObjectProperty)[] = [];
 
         for (const attrPath of path.get("openingElement").get("attributes")) {
           const attr = attrPath.node;

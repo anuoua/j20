@@ -66,11 +66,16 @@ export const createContext = <T>(defaultValue: T) => {
       value: { children: (value: T) => JSX.Element };
     };
 
+    // children 是惰性 thunk：解包后是用户函数，传入 context 值调用
+    const children = (props.value as any).children() as (
+      value: T
+    ) => JSX.Element;
+
     const data = context(Context);
 
-    if (data) return props.value.children(data);
+    if (data) return children(data);
 
-    return props.value.children(
+    return children(
       isSignal(defaultValue)
         ? defaultValue
         : ({

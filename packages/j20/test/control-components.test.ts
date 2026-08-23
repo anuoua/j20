@@ -23,7 +23,7 @@ describe("Control Components", () => {
         For as any,
         () => ({
           of: items.value,
-          children: (item: any) => {
+          children: () => (item: any) => {
             const div = document.createElement("div");
             div.textContent = item.value.toString();
             return div;
@@ -56,10 +56,12 @@ describe("Control Components", () => {
             return condition.value;
           },
           get children() {
-            const div = document.createElement("div");
-            div.textContent = "true";
-            return div;
-          },
+            return () => {
+              const div = document.createElement("div");
+              div.textContent = "true";
+              return div;
+            };
+            },
           get else() {
             const div = document.createElement("div");
             div.textContent = "false";
@@ -88,7 +90,7 @@ describe("Control Components", () => {
         Switch as any,
         () => ({
           get children() {
-            return [
+            return () => [
               createElement(
                 Case as any,
                 () => ({
@@ -163,7 +165,7 @@ describe("Control Components", () => {
             return element.value;
           },
           get children() {
-            return element.value;
+            return () => element.value;
           },
         }),
         undefined
@@ -201,7 +203,7 @@ describe("Control Components", () => {
         () => ({
           of: items.value,
           trait: (item: any) => item.id, // 使用 id 作为 trait
-          children: (item: any) => {
+          children: () => (item: any) => {
             const div = document.createElement("div");
             div.textContent = item.value.name;
             return div;
@@ -238,7 +240,7 @@ describe("Control Components", () => {
         () => ({
           of: items.value,
           trait: (item: any) => item.id,
-          children: (item: any) => {
+          children: () => (item: any) => {
             rowSignal = item;
             const div = document.createElement("div");
             effect(() => {
@@ -272,7 +274,7 @@ describe("Control Components", () => {
         () => ({
           of: items.value,
           trait: (item: any) => item.id,
-          children: (item: any) => {
+          children: () => (item: any) => {
             const div = document.createElement("div");
             effect(() => {
               div.textContent = item.value.text;

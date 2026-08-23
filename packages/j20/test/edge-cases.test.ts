@@ -23,7 +23,7 @@ describe("Edge Cases", () => {
           For as any,
           () => ({
             of: items.value,
-            children: (item: any) => {
+            children: () => (item: any) => {
               const div = document.createElement("div");
               div.textContent = item.value.toString();
               return div;
@@ -45,7 +45,7 @@ describe("Edge Cases", () => {
           For as any,
           () => ({
             of: items.value,
-            children: (item: any) => {
+            children: () => (item: any) => {
               const div = document.createElement("div");
               div.textContent = item.value.toString();
               return div;
@@ -73,7 +73,7 @@ describe("Edge Cases", () => {
           For as any,
           () => ({
             of: items.value,
-            children: (item: any) => {
+            children: () => (item: any) => {
               const div = document.createElement("div");
               div.textContent = item.value.toString();
               return div;
@@ -99,7 +99,7 @@ describe("Edge Cases", () => {
           For as any,
           () => ({
             of: items.value,
-            children: (item: any) => {
+            children: () => (item: any) => {
               const div = document.createElement("div");
               div.textContent = item.value.toString();
               return div;
@@ -126,7 +126,7 @@ describe("Edge Cases", () => {
           () => ({
             of: items.value,
             trait: (item: any) => item.id,
-            children: (item: any) => {
+            children: () => (item: any) => {
               const div = document.createElement("div");
               div.textContent = item.value.name;
               return div;
@@ -156,7 +156,7 @@ describe("Edge Cases", () => {
           () => ({
             of: items.value,
             trait: (item: any) => item.id,
-            children: (item: any) => {
+            children: () => (item: any) => {
               const div = document.createElement("div");
               div.textContent = item.value.text;
               return div;
@@ -194,7 +194,7 @@ describe("Edge Cases", () => {
           () => ({
             of: items.value,
             trait: (item: any) => item.id,
-            children: (item: any) => {
+            children: () => (item: any) => {
               const div = document.createElement("div");
               div.textContent = item.value.nested.value;
               return div;
@@ -222,10 +222,12 @@ describe("Edge Cases", () => {
               return value.value;
             },
             get children() {
-              const div = document.createElement("div");
-              div.textContent = "truthy";
-              return div;
-            },
+              return () => {
+                const div = document.createElement("div");
+                div.textContent = "truthy";
+                return div;
+              };
+              },
             get else() {
               const div = document.createElement("div");
               div.textContent = "falsy";
@@ -255,10 +257,12 @@ describe("Edge Cases", () => {
               return value.value;
             },
             get children() {
-              const div = document.createElement("div");
-              div.textContent = "has value";
-              return div;
-            },
+              return () => {
+                const div = document.createElement("div");
+                div.textContent = "has value";
+                return div;
+              };
+              },
             get else() {
               const div = document.createElement("div");
               div.textContent = "no value";
@@ -292,10 +296,12 @@ describe("Edge Cases", () => {
               return value.value;
             },
             get children() {
-              const div = document.createElement("div");
-              div.textContent = "has value";
-              return div;
-            },
+              return () => {
+                const div = document.createElement("div");
+                div.textContent = "has value";
+                return div;
+              };
+              },
             get else() {
               const div = document.createElement("div");
               div.textContent = "empty";
@@ -321,10 +327,12 @@ describe("Edge Cases", () => {
               return value.value;
             },
             get children() {
-              const div = document.createElement("div");
-              div.textContent = "truthy";
-              return div;
-            },
+              return () => {
+                const div = document.createElement("div");
+                div.textContent = "truthy";
+                return div;
+              };
+              },
             get else() {
               const div = document.createElement("div");
               div.textContent = "falsy";
@@ -502,7 +510,7 @@ describe("Edge Cases", () => {
               return value.value;
             },
             get children() {
-              return null;
+              return () => null;
             },
           }),
           undefined
@@ -525,7 +533,7 @@ describe("Edge Cases", () => {
               return value.value;
             },
             get children() {
-              return (item: any) => {
+              return () => (item: any) => {
                 const div = document.createElement("div");
                 div.textContent = `value: ${item}`;
                 return div;
