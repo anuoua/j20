@@ -1,5 +1,23 @@
 # j20
 
+## 0.0.39
+
+### Patch Changes
+
+- bd74746: Context leak fix
+
+## 0.0.38
+
+### Patch Changes
+
+- d872e00: Allover upgrade
+
+## 0.0.37
+
+### Patch Changes
+
+- 844edcc: allover upgrade
+
 ## 0.0.36
 
 ### Patch Changes
@@ -12,8 +30,6 @@
   reset programmatically. The same applies to `checked` and `selected`. These
   keys are now written as DOM properties (like React does for controlled
   components); everything else still goes through attributes.
-
-- Overall upgrade
 
 ## 0.0.35
 
