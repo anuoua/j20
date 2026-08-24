@@ -67,6 +67,8 @@ const App = () => {
 
 副作用函数，在组件渲染时执行，在执行时搜集用到的信号，当依赖的信号变更时重新执行，并在执行前运行清理函数。
 
+> ⚠️ **反模式**：不要在 effect 内调用“读+写同一信号”的函数（如 `$list = [...$list, x]` 的注册函数）。effect 会依赖上自己写入的信号，造成无限重跑（页面卡死）。这类读写请用 `untrack` 包住，见 [FAQ](./faq.md#effect-内调用读写同一信号的函数会导致死循环)。
+
 ```tsx
 import { effect } from "j20";
 
@@ -147,6 +149,27 @@ const App = () => {
   return <div onClick={handleClick}>{untrack(() => $count)}</div>;
 };
 ```
+
+### 注册类函数（读+写同一信号）
+
+effect 内调用“先读后写同一信号”的函数会死循环（发散式自写），用 untrack 包住函数体内的读写即可解除：
+
+```tsx
+import { untrack, effect } from "j20";
+
+let $messages: string[] = [];
+const register = (id) => {
+  untrack(() => {
+    $messages = [...$messages, id]; // 读写都不被当前 effect 搜集
+  });
+};
+
+effect(() => {
+  if ($valid) register("err"); // 安全：不依赖 $messages，不会自触发
+});
+```
+
+untrack 不影响信号变更对其他 effect / 视图的通知，注册结果依然正常触发界面更新。
 
 ## onMount
 

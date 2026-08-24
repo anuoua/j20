@@ -67,6 +67,8 @@ Type: `(handler: () => void | (() => void)) => Effect`
 
 Side effect function that executes during component rendering, collects signals used during execution, re-executes when dependencies change, and runs cleanup functions before re-execution.
 
+> ⚠️ **Anti-pattern**: don't call functions that “read and write the same signal” inside an effect (such as registration functions like `$list = [...$list, x]`). The effect will depend on a signal it writes itself, causing infinite re-runs (page freeze). Wrap such reads/writes with `untrack` — see [FAQ](./faq.md#calling-a-function-that-reads-and-writes-the-same-signal-inside-an-effect-causes-an-infinite-loop).
+
 ```tsx
 import { effect } from "j20";
 
@@ -147,6 +149,27 @@ const App = () => {
   return <div onClick={handleClick}>{untrack(() => $count)}</div>;
 };
 ```
+
+### Registration functions (read + write the same signal)
+
+Calling a function that “reads then writes the same signal” inside an effect causes an infinite loop (divergent self-write). Wrap the reads and writes inside the function body with `untrack` to break it:
+
+```tsx
+import { untrack, effect } from "j20";
+
+let $messages: string[] = [];
+const register = (id) => {
+  untrack(() => {
+    $messages = [...$messages, id]; // neither the read nor the write is collected by the current effect
+  });
+};
+
+effect(() => {
+  if ($valid) register("err"); // safe: no dependency on $messages, no self-trigger
+});
+```
+
+`untrack` does not affect notifications of signal changes to other effects / views; the registration result still triggers UI updates normally.
 
 ## onMount
 
