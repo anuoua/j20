@@ -110,8 +110,8 @@ importers:
         specifier: ^4.53.3
         version: 4.53.3
       signal-compiler:
-        specifier: ^0.1.12
-        version: 0.1.12
+        specifier: ^0.1.13
+        version: 0.1.13
     devDependencies:
       '@types/babel__core':
         specifier: ^7.20.5
@@ -168,8 +168,8 @@ importers:
         specifier: workspace:*
         version: link:../jsx-transform
       signal-compiler:
-        specifier: 0.1.12
-        version: 0.1.12
+        specifier: 0.1.13
+        version: 0.1.13
     devDependencies:
       rimraf:
         specifier: ^5.0.10
@@ -2282,8 +2282,8 @@ packages:
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
 
-  signal-compiler@0.1.12:
-    resolution: {integrity: sha512-QjpiO3E+/8ykombjiZtPfD2SKDmzVQ37hCkE6QH91zOVlVSYwKwrnCGgI21d3MR5+6rjT7PvfCEK0PNJ5ObkVQ==}
+  signal-compiler@0.1.13:
+    resolution: {integrity: sha512-ww2kVfB1BCRjYSPdtIx2FVxKbvTPHw4UOZ2KTqTKDA9DOSSeiztxmPK5FcX/nmPKcSw/qJpNEYozsPQIXm/OKw==}
 
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
@@ -4696,7 +4696,7 @@ snapshots:
 
   siginfo@2.0.0: {}
 
-  signal-compiler@0.1.12:
+  signal-compiler@0.1.13:
     dependencies:
       '@babel/core': 7.24.9
       '@babel/helper-module-imports': 7.27.1
