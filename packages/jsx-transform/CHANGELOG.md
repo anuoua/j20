@@ -1,5 +1,11 @@
 # @j20org/jsx-transform
 
+## 0.1.1
+
+### Patch Changes
+
+- 5ea54ee: Upgrade `signal-compiler` dependency to 0.1.13.
+
 ## 0.1.0
 
 ### Minor Changes
