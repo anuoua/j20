@@ -1,5 +1,13 @@
 # @j20org/vite-plugin
 
+## 0.0.17
+
+### Patch Changes
+
+- 5ea54ee: Upgrade `signal-compiler` dependency to 0.1.13.
+- Updated dependencies [5ea54ee]
+  - @j20org/jsx-transform@0.1.1
+
 ## 0.0.16
 
 ### Patch Changes
